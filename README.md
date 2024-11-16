@@ -8,24 +8,27 @@ local Window = library:AddWindow("Lite Hub Muscle Legends", {
 })
 
 local AutoKillToggle = false
-local whitelistEnabled = false
-local selectedWhitelistPlayer = nil
 
 local function autoKillPlayers()
     spawn(function()
         while AutoKillToggle do
             local player = game.Players.LocalPlayer
             local character = player.Character or player.CharacterAdded:Wait()
-            local rightHand = character:FindFirstChild("RightHand")
-            if rightHand then
-                for _, target in pairs(game.Players:GetPlayers()) do
-                    if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
-                        if not (whitelistEnabled and target.Name == selectedWhitelistPlayer) then
-                            target.Character.Head.CFrame = rightHand.CFrame
+            
+            if character then
+                local rightHand = character:FindFirstChild("RightHand")
+                if rightHand then
+                    for _, target in pairs(game.Players:GetPlayers()) do
+                        if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
+                            local targetHead = target.Character:FindFirstChild("Head")
+                            if targetHead then
+                                targetHead.CFrame = rightHand.CFrame
+                            end
                         end
                     end
                 end
             end
+            
             wait(0.1)
         end
     end)
