@@ -10,7 +10,7 @@ local Window = library:AddWindow("Lite Hub Muscle Legends", {
 local Auto Farm = Window:AddTab("Auto Farm")
 
 -- Toggle for Pushups
-AutoFarm:AddSwitch("PushupsToggle", false, function(state)
+Auto Farm:AddSwitch("PushupsToggle", false, function(state)
     -- Continuously equip and use Pushups tool when toggle is on
     while state do
         local pushupsTool = game.Players.LocalPlayer.Backpack:FindFirstChild("Pushups")
@@ -22,7 +22,7 @@ AutoFarm:AddSwitch("PushupsToggle", false, function(state)
 end)
 
 -- Toggle for Situps
-AutoFarm:AddSwitch("SitupsToggle", false, function(state)
+Auto Farm:AddSwitch("SitupsToggle", false, function(state)
     -- Continuously equip and use Situps tool when toggle is on
     while state do
         local situpsTool = game.Players.LocalPlayer.Backpack:FindFirstChild("Situps")
@@ -34,7 +34,7 @@ AutoFarm:AddSwitch("SitupsToggle", false, function(state)
 end)
 
 -- Toggle for Weight
-AutoFarm:AddSwitch("WeightToggle", false, function(state)
+Auto Farm:AddSwitch("WeightToggle", false, function(state)
     -- Continuously equip and use Weight tool when toggle is on
     while state do
         local weightTool = game.Players.LocalPlayer.Backpack:FindFirstChild("Weight")
@@ -46,7 +46,7 @@ AutoFarm:AddSwitch("WeightToggle", false, function(state)
 end)
 
 -- Toggle for Handstands
-AutoFarm:AddSwitch("HandstandsToggle", false, function(state)
+Auto Farm:AddSwitch("HandstandsToggle", false, function(state)
     -- Continuously equip and use Handstands tool when toggle is on
     while state do
         local handstandsTool = game.Players.LocalPlayer.Backpack:FindFirstChild("Handstands")
