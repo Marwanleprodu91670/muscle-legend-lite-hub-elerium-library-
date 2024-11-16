@@ -7,38 +7,76 @@ local Window = library:AddWindow("Lite Hub Muscle Legends", {
     can_resize = true,
 })
 
+--variable
+local autoPunchEnabled = false
+local autoKillEnabled = false
+
+
+--function
+-- Function to toggle Auto Punch
+function AutoPunch()
+    spawn(function()
+        while autoPunchEnabled do
+            local player = game.Players.LocalPlayer
+            local punchTool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+            
+            if punchTool then
+                player.Character.Humanoid:EquipTool(punchTool)
+                punchTool:Activate()
+            end
+            wait(0.1)
+        end
+    end)
+end
+
+local function autoKillPlayers()
+    -- Loop to continuously check Auto Kill toggle
+    spawn(function()
+        while AutoKillToggle do
+            -- Get the player and character
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            
+            -- Get the right hand of the character
+            local rightHand = character:FindFirstChild("RightHand")
+            
+            -- Check if the right hand exists
+            if rightHand then
+                -- Loop through all players in the game
+                for _, target in pairs(game.Players:GetPlayers()) do
+                    -- Check that the target is a valid player and is not the local player
+                    if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
+                        -- Check for whitelist if enabled
+                        if not (whitelistEnabled and target.Name == selectedWhitelistPlayer) then
+                            -- Teleport the target's head to the right hand's position
+                            target.Character.Head.CFrame = rightHand.CFrame
+                        end
+                    end
+                end
+            end
+            -- Wait a short time before repeating the loop
+            wait(0.1) -- Delay for smoother execution
+        end
+    end)
+end
+
 local Kill = Window:AddTab("Kill")
 
-Kill:AddSwitch("Expand Punch Hitbox", false, function(state)
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-
-    -- Locate the "Punch" tool
-    local tool = character:FindFirstChild("Punch")
-
-    if tool then
-        -- Locate the hitbox part within the "Punch" tool
-        local hitbox = tool:FindFirstChild("Hitbox") or tool:FindFirstChildWhichIsA("BasePart")
-
-        if hitbox then
-            if state then
-                -- Expand the hitbox by a factor of 100000000
-                local currentSize = hitbox.Size
-                hitbox.Size = currentSize * 100000000  -- Multiply the current size by 100,000,000
-                hitbox.Transparency = 1  -- Make the hitbox invisible for stealth
-                hitbox.CanCollide = true  -- Disable collisions to avoid interference
-            else
-                -- Reset hitbox to default size (change to the actual default size of your tool)
-                hitbox.Size = Vector3.new(2, 2, 2)  -- Default size (adjust if needed)
-                hitbox.Transparency = 0  -- Restore visibility
-                hitbox.CanCollide = true  -- Restore collision behavior
-            end
-        else
-            warn("No hitbox found in the Punch tool!")
+Kill:AddSwitch("Auto Kill", false, function(state)
+    AutoKillToggle = value
+        if value then
+            autoKillPlayers()
         end
-    else
-        warn("Punch tool not found in character!")
     end
 end)
+
+Kill:AddSwitch("Auto Punch", false, function(state)
+    autoPunchEnabled = value
+        if value then
+            AutoPunch()
+        end
+    end
+end)
+
 
 
