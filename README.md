@@ -91,6 +91,9 @@ Kill:AddSwitch("Auto Punch", function(value)
     end
 end)
 
+-- Add label "Target Player" under the Auto Punch toggle
+Kill:AddLabel("Target Player")
+
 -- Add Kill Target toggle
 Kill:AddSwitch("Kill Target", function(value)
     KillTargetToggle = value  -- Update the KillTarget toggle state
@@ -101,8 +104,6 @@ Kill:AddTextBox("Select Target", function(text)
     targetPlayerName = text  -- Update the target player name when the textbox is filled
 end)
 
--- Add label "Target Player" under the Auto Punch toggle
-Kill:AddLabel("Target Player")
 
 -- Default values for the toggles
 Kill:GetSwitch("Auto Kill"):Set(true)  -- Ensure the Auto Kill toggle starts in the "On" position
