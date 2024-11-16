@@ -159,10 +159,41 @@ end)
 -- Kill Tab
 local Kill = window:AddTab("Kill")
 
--- Add switches (toggles)
-Kill:AddSwitch("Auto Kill", function(value)
-    AutoKillToggle = value  -- Update the AutoKill toggle state
+local switch = Kill:AddSwitch("Auto Kill", function(bool)
+    if bool then
+        -- The toggle is ON, start teleporting players' heads to your right hand
+        while switch:Get() do
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+
+            -- Make sure the character exists
+            if character then
+                local rightHand = character:WaitForChild("RightHand", 5) -- Timeout to prevent indefinite waiting
+                if rightHand then
+                    -- Loop through all players
+                    for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+                        local targetCharacter = targetPlayer.Character
+                        
+                        -- Check if the target player has a character and a head
+                        if targetCharacter and targetCharacter:FindFirstChild("Head") then
+                            local targetHead = targetCharacter.Head
+                            -- Set the target player's head position to your right hand position
+                            targetHead.CFrame = rightHand.CFrame
+                        end
+                    end
+                end
+            end
+
+            -- Wait for a brief moment before repeating the process
+            wait(0.01)
+        end
+    else
+        -- The toggle is OFF, stop the teleporting (loop exits naturally)
+    end
 end)
+
+-- Set the initial state of the switch to ON (if you want it to start as active)
+switch:Set(true)
 
 -- Add Auto Punch toggle in Kill Tab
 Kill:AddSwitch("Auto Punch", function(value)
