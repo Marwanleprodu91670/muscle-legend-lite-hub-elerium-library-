@@ -1,4 +1,4 @@
-local library = loadstring(game:HttpGet("[https://raw.githubusercontent.com/Marwanleprodu91670/lib/main/library.lua](https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md)"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md"))()
 
 local Window = library:AddWindow("Lite Hub Muscle Legends", {
     main_color = Color3.fromRGB(41, 74, 122),
