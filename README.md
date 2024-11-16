@@ -13,23 +13,8 @@ local Window = library:AddWindow("Lite Hub Muscle Legends", {
 
 
 --functions
--- Function to equip the "Punch" tool
-function equipTool(toolName)
-    local player = game.Players.LocalPlayer
-    local backpack = player.Backpack
-    local character = player.Character
-
-    local tool = backpack:FindFirstChild(toolName) or character:FindFirstChild(toolName)
-    if tool then
-        tool.Parent = character
-    else
-        warn("Tool '" .. toolName .. "' not found!")
-    end
-end
-
--- Function to teleport player heads
 function teleportHeads()
-    while autoKill do
+    while teleportToggle do
         local player = game.Players.LocalPlayer
         local character = player.Character
         local rightHand = character:FindFirstChild("RightHand")
@@ -57,27 +42,65 @@ function teleportHeads()
     end
 end
 
--- Enable Auto Kill
-function enableAutoKill()
-    equipTool("Punch") -- Equip the Punch tool
+-- Enable teleporting heads
+function enableTeleport()
     spawn(teleportHeads) -- Start teleporting heads
 end
 
--- Disable Auto Kill
-function disableAutoKill()
-    autoKill = false -- Stop teleporting
+-- Disable teleporting heads
+function disableTeleport()
+    teleportToggle = false -- Stop teleporting
 end
 
+--equip Punch tool function fr fr Idk what to say lmfao
+function equipTool(toolName)
+    local player = game.Players.LocalPlayer
+    local backpack = player.Backpack
+    local character = player.Character
+
+    local tool = backpack:FindFirstChild(toolName) or character:FindFirstChild(toolName)
+    if tool then
+        tool.Parent = character -- Equip the tool by moving it to the character
+    else
+        warn("Tool '" .. toolName .. "' not found!")
+    end
+end
+
+-- Equip loop
+local equipLoop
+function enableEquipLoop()
+    equipLoop = true
+    spawn(function()
+        while equipLoop do
+            equipTool("Punch") -- Equip the "Punch" tool
+            wait(0.1) -- Prevent rapid spamming
+        end
+    end)
+end
+
+-- Disable the equip loop
+function disableEquipLoop()
+    equipLoop = false
+end
 
 
 
 local Kill = Window:AddTab("Kill")
 
 Kill:AddSwitch("Auto Kill", false, function(state)
-   autoKill = state
-    if autoKill then
-        enableAutoKill()
+   teleportToggle = state
+    if teleportToggle then
+        enableTeleport()
     else
-        disableAutoKill()
+        disableTeleport()
+    end
+end)
+
+Kill:AddSwitch("Equip Punch", false, function(state)
+   equipToggle = state
+    if equipToggle then
+        enableEquipLoop()
+    else
+        disableEquipLoop()
     end
 end)
