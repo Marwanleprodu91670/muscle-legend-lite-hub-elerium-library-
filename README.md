@@ -363,90 +363,43 @@ function stopSpectating()
     print("Stopped spectating")
 end
 
--- Assuming you already have the 'features' tab created
-local features = window:AddTab("Stats")
 
--- Table to hold player stats
-local playerStats = {}
+local features = window:AddTab("Teleport")
 
--- Helper function to simulate getting a player's stats (replace with actual logic)
-local function getPlayerStats(player)
-    -- Placeholder function to simulate stats
-    return {
-        Strength = math.random(10, 100),
-        Durability = math.random(10, 100),
-        Agility = math.random(10, 100),
-        Kill = math.random(0, 50),
-    }
-end
+-- Define the teleport positions for each island
+local islands = {
+    ["Tiny Island"] = CFrame.new(-38.4037132, 9.66723633, 1832.29114),
+    ["Frost Island"] = CFrame.new(-2533.64258, 13.7738762, -408.134796),
+    ["Mythical Island"] = CFrame.new(2170.5437, 13.8738737, 1073.75525),
+    ["Inferno Island"] = CFrame.new(-6678.75635, 13.8738737, -1285.4198),
+    ["Legend Island"] = CFrame.new(4685.5625, 997.608765, -3910.30908),
+    ["Muscle King"] = CFrame.new(-8546.25879, 23.045435, -5636.78418)
+}
 
--- Function to update the dropdown with current players in the game
-local function updatePlayerDropdown(dropdown)
-    -- Clear existing dropdown items
-    dropdown:Clear()
-
-    -- Add all players in the game to the dropdown
-    for _, player in ipairs(game.Players:GetPlayers()) do
-        dropdown:Add(player.Name)
-    end
-end
-
--- Create the dropdown to select a player
-local dropdown = features:AddDropdown("Select Player", function(selectedPlayerName)
-    -- Store the selected player
-    print("Selected player: " .. selectedPlayerName)
-end)
-
--- Add initial players to the dropdown when the script runs
-updatePlayerDropdown(dropdown)
-
--- Listen for new players joining and update the dropdown
-game.Players.PlayerAdded:Connect(function(player)
-    -- Add the new player to the dropdown
-    dropdown:Add(player.Name)
-
-    -- Track stats for the new player
-    playerStats[player.UserId] = getPlayerStats(player)
-end)
-
--- Listen for players leaving and update the dropdown
-game.Players.PlayerRemoving:Connect(function(player)
-    -- Remove the player from the dropdown
-    dropdown:Remove(player.Name)
-
-    -- Remove the player stats
-    playerStats[player.UserId] = nil
-end)
-
--- Create the toggle switch for printing stats
-local switch = features:AddSwitch("Toggle Stats", function(enabled)
-    -- Get the currently selected player name from the dropdown
-    local selectedPlayerName = dropdown:GetSelected()
-
-    -- Check if a player is selected and stats are available
-    if selectedPlayerName and playerStats[selectedPlayerName] then
-        local stats = playerStats[selectedPlayerName]
-
-        -- If the toggle is enabled, print the stats to the console
-        if enabled then
-            print("Strength: " .. stats.Strength)
-            print("Durability: " .. stats.Durability)
-            print("Agility: " .. stats.Agility)
-            print("Kill: " .. stats.Kill)
+-- Add the toggle to teleport to the selected island
+Teleport:AddSwitch("Tp to Island", function(bool)
+    if bool then  -- Check if the toggle is activated
+        local selectedIsland = dropdown:GetSelected()  -- Get the selected island from the dropdown
+        if islands[selectedIsland] then
+            -- Teleport to the selected island's position
+            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(islands[selectedIsland])
         end
-    else
-        print("No player selected or stats are unavailable.")
     end
 end)
+switch:Set(true)
 
--- Default state of the toggle (off)
-switch:Set(false)
-
--- Periodically update the player dropdown in case a player is added after some delay
-game:GetService("RunService").Heartbeat:Connect(function()
-    updatePlayerDropdown(dropdown)
+-- Add the dropdown for selecting an island
+Teleport:AddDropdown("Select Island", function(text)
+    -- The logic for handling different island options will be handled by the toggle logic
 end)
 
+-- Add island options to the dropdown
+local tinyIsland = dropdown:Add("Tiny Island")
+local frostIsland = dropdown:Add("Frost Island")
+local mythicalIsland = dropdown:Add("Mythical Island")
+local infernoIsland = dropdown:Add("Inferno Island")
+local legendIsland = dropdown:Add("Legend Island")
+local muscleKing = dropdown:Add("Muscle King")
 
 
 
