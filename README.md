@@ -16,12 +16,14 @@ local function autoKillPlayers()
             local character = player.Character or player.CharacterAdded:Wait()
             
             if character then
-                local rightHand = character:FindFirstChild("RightHand")
+                local rightHand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm") or character:FindFirstChild("RightHand")
                 if rightHand then
                     for _, target in pairs(game.Players:GetPlayers()) do
                         if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
                             local targetHead = target.Character.Head
-                            targetHead.CFrame = rightHand.CFrame
+                            if targetHead and targetHead:IsA("BasePart") then
+                                targetHead.CFrame = rightHand.CFrame
+                            end
                         end
                     end
                 end
