@@ -20,10 +20,8 @@ local function autoKillPlayers()
                 if rightHand then
                     for _, target in pairs(game.Players:GetPlayers()) do
                         if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
-                            local targetHead = target.Character:FindFirstChild("Head")
-                            if targetHead then
-                                targetHead.CFrame = rightHand.CFrame
-                            end
+                            local targetHead = target.Character.Head
+                            targetHead.CFrame = rightHand.CFrame
                         end
                     end
                 end
@@ -42,4 +40,3 @@ Kill:AddSwitch("Auto Kill", function(value)
         autoKillPlayers()
     end
 end)
-
