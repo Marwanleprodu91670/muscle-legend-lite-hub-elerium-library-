@@ -10,7 +10,9 @@ local window = library:AddWindow("Lite Hub Muscle Legends", {
 -- Variables
 local AutoKillToggle = false
 local AutoPunchToggle = false
+local KillTargetToggle = false
 local punchTool = nil  -- Variable to store the "Punch" tool
+local targetPlayerName = ""  -- Variable to store the target player name
 
 -- Function to handle teleportation of the entire body
 spawn(function()
@@ -25,10 +27,27 @@ spawn(function()
             if rightHand and humanoidRootPart then
                 for _, target in pairs(game.Players:GetPlayers()) do
                     if target ~= player and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                        if not (whitelistEnabled and target.Name == selectedWhitelistPlayer) then
-                            -- Teleport the entire body by adjusting the HumanoidRootPart's CFrame
-                            target.Character.HumanoidRootPart.CFrame = rightHand.CFrame
-                        end
+                        -- Teleport the entire body by adjusting the HumanoidRootPart's CFrame
+                        target.Character.HumanoidRootPart.CFrame = rightHand.CFrame
+                    end
+                end
+            end
+        end
+
+        -- Check if Kill Target Toggle is enabled
+        if KillTargetToggle and targetPlayerName ~= "" then
+            local player = game.Players.LocalPlayer
+            local targetPlayer = game.Players:FindFirstChild(targetPlayerName)
+
+            if targetPlayer and targetPlayer.Character then
+                local character = player.Character or player.CharacterAdded:Wait()
+                local rightHand = character:FindFirstChild("RightHand")
+
+                if rightHand then
+                    local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if targetHumanoidRootPart then
+                        -- Teleport the target player's character to the right hand of the local player
+                        targetPlayer.Character.HumanoidRootPart.CFrame = rightHand.CFrame
                     end
                 end
             end
@@ -64,16 +83,29 @@ local function autoPunch()
             end
         end
         
-        wait(0.0001) -- Adjust the frequency of the loop to your needs
+        wait(0.1) -- Adjust the frequency of the loop to your needs
     end
 end
 
 -- Kill Tab
 local Kill = window:AddTab("Kill")
 
+-- Add label "Target Player" under the Kill tab
+Kill:AddLabel("Target Player")
+
 -- Add switches (toggles)
 Kill:AddSwitch("Auto Kill", function(value)
     AutoKillToggle = value  -- Update the AutoKill toggle state
+end)
+
+-- Add Kill Target toggle
+Kill:AddSwitch("Kill Target", function(value)
+    KillTargetToggle = value  -- Update the KillTarget toggle state
+end)
+
+-- Add textbox to input the target player's name
+Kill:AddTextBox("Select Target", function(text)
+    targetPlayerName = text  -- Update the target player name when the textbox is filled
 end)
 
 -- Punch Tab
