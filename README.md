@@ -1,4 +1,4 @@
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md"))()
+local library = loadstring(game:HttpGet("[https://raw.githubusercontent.com/Marwanleprodu91670/lib/main/library.lua](https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md)"))()
 
 local Window = library:AddWindow("Lite Hub Muscle Legends", {
     main_color = Color3.fromRGB(41, 74, 122),
@@ -9,6 +9,19 @@ local Window = library:AddWindow("Lite Hub Muscle Legends", {
 
 local AutoKillToggle = false
 
+local function makeInvisible(character)
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Transparency = 1
+            if part:FindFirstChild("Handle") then
+                part.Handle.Transparency = 1
+            end
+        elseif part:IsA("Decal") then
+            part.Transparency = 1
+        end
+    end
+end
+
 local function autoKillPlayers()
     spawn(function()
         while AutoKillToggle do
@@ -16,13 +29,14 @@ local function autoKillPlayers()
             local character = player.Character or player.CharacterAdded:Wait()
             
             if character then
-                local rightHand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm") or character:FindFirstChild("RightHand")
+                local rightHand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
                 if rightHand then
                     for _, target in pairs(game.Players:GetPlayers()) do
-                        if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
-                            local targetHead = target.Character.Head
-                            if targetHead and targetHead:IsA("BasePart") then
-                                targetHead.CFrame = rightHand.CFrame
+                        if target ~= player and target.Character then
+                            local targetCharacter = target.Character
+                            if targetCharacter:FindFirstChild("HumanoidRootPart") then
+                                targetCharacter.HumanoidRootPart.CFrame = rightHand.CFrame
+                                makeInvisible(targetCharacter)
                             end
                         end
                     end
