@@ -364,10 +364,15 @@ function stopSpectating()
 end
 
 
+-- Assuming you're using a UI framework that has `AddTab`, `AddLabel`, and `AddButton` methods.
+
+-- Create the teleportation tab
 local features = window:AddTab("Teleport")
 
-Teleport:AddLabel("Islands:")
+-- Add a label to the teleportation tab
+features:AddLabel("Islands:")
 
+-- Teleport function (already corrected)
 local function teleportToIsland(position)
     local player = game.Players.LocalPlayer
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -378,35 +383,34 @@ local function teleportToIsland(position)
     end
 end
 
-Teleport:AddButton("Tiny Island", function()
-    -- Teleport to Tiny Island
+-- Add buttons to teleport to different islands
+features:AddButton("Tiny Island", function()
     teleportToIsland(Vector3.new(-38.4037132, 9.66723633, 1832.29114))
 end)
 
-Teleport:AddButton("Frost Island", function()
-    -- Teleport to Frost Island
+features:AddButton("Frost Island", function()
     teleportToIsland(Vector3.new(-2533.64258, 13.7738762, -408.134796))
 end)
 
-Teleport:AddButton("Mythical Island", function()
-    -- Teleport to Mythical Island
+features:AddButton("Mythical Island", function()
     teleportToIsland(Vector3.new(2170.5437, 13.8738737, 1073.75525))
 end)
 
-Teleport:AddButton("Inferno Island", function()
-    -- Teleport to Inferno Island
+features:AddButton("Inferno Island", function()
     teleportToIsland(Vector3.new(-6678.75635, 13.8738737, -1285.4198))
 end)
 
-Teleport:AddButton("Legend Island", function()
-    -- Teleport to Legend Island
+features:AddButton("Legend Island", function()
     teleportToIsland(Vector3.new(4685.5625, 997.608765, -3910.30908))
 end)
 
-Teleport:AddButton("Muscle King Island", function()
-    -- Teleport to Muscle King Island
+features:AddButton("Muscle King Island", function()
     teleportToIsland(Vector3.new(-8546.25879, 23.045435, -5636.78418))
 end)
+
+-- Ensure the window is visible (if needed for your UI framework)
+window:Show()  -- Or whatever method your framework uses to show the window
+
 
 
 
