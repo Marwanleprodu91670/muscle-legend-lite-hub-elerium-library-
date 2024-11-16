@@ -56,7 +56,11 @@ spawn(function()
                 if punchTool and punchTool.Parent == character then
                     -- Check if the tool has an "Activated" event (usually used for activation)
                     if punchTool:FindFirstChild("Activated") then
+                        -- Use the tool's activated event continuously
                         punchTool.Activated:Fire()  -- Fire the punch tool's activation method
+                    elseif punchTool:FindFirstChild("ToolTip") then
+                        -- If no Activated event, you may need to simulate a different type of use (like clicking)
+                        punchTool:Activate()  -- Fire a method like Activate (for other types of tools)
                     end
                 end
             end
@@ -75,11 +79,19 @@ end)
 Kill:AddSwitch("Auto Punch", function(value)
     AutoPunchToggle = value  -- Update the AutoPunch toggle state
     if AutoPunchToggle then
-        -- If AutoPunch is turned on, ensure that the punch tool is equipped and used
-    else
-        -- If AutoPunch is turned off, stop using the punch tool (remove it)
+        -- Ensure the Punch tool is equipped and used when toggled on
+        local player = game.Players.LocalPlayer
+        punchTool = player.Backpack:FindFirstChild("Punch")
         if punchTool then
-            punchTool.Parent = game.Players.LocalPlayer.Backpack  -- Move it back to the backpack if disabled
+            -- Equip the Punch tool if it's not already equipped
+            if not player.Character:FindFirstChildOfClass("Tool") then
+                punchTool.Parent = player.Character
+            end
+        end
+    else
+        -- If AutoPunch is turned off, move the Punch tool back to the Backpack
+        if punchTool then
+            punchTool.Parent = game.Players.LocalPlayer.Backpack
         end
     end
 end)
