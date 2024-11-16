@@ -1,7 +1,7 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md"))()
 
 local Window = library:AddWindow("Lite Hub Muscle Legends", {
-    main_color = Color3.fromRGB(41, 74, 122),
+    main_color = Color3.fromRGB(199, 44, 44),
     min_size = Vector2.new(450, 340),
     toggle_key = Enum.KeyCode.RightShift,
     can_resize = true,
