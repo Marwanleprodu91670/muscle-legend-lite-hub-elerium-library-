@@ -64,7 +64,7 @@ local function autoPunch()
             end
         end
         
-        wait(0.1) -- Adjust the frequency of the loop to your needs
+        wait(0.0001) -- Adjust the frequency of the loop to your needs
     end
 end
 
