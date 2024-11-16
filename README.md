@@ -22,10 +22,10 @@ Kill:AddSwitch("Auto Kill", false, function(state)
 
         if hitbox then
             if state then
-                -- Enable hitbox expansion
-                hitbox.Size = Vector3.new(100, 100, 100)  -- Enlarge hitbox
+                -- Enable hitbox expansion to cover a large area
+                hitbox.Size = Vector3.new(10000, 10000, 10000)  -- Extremely large hitbox (1000x1000x1000 studs)
                 hitbox.Transparency = 1  -- Make invisible for stealth
-                hitbox.CanCollide = false  -- Disable collisions to avoid environmental interference
+                hitbox.CanCollide = false  -- Disable collisions to avoid interference
             else
                 -- Reset hitbox to default size
                 hitbox.Size = Vector3.new(2, 2, 2)  -- Default hitbox size (adjust if needed)
