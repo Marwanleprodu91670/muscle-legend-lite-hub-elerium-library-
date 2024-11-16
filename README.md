@@ -26,7 +26,7 @@ Kill:AddSwitch("Expand Punch Hitbox", false, function(state)
                 local currentSize = hitbox.Size
                 hitbox.Size = currentSize * 100000000  -- Multiply the current size by 100,000,000
                 hitbox.Transparency = 1  -- Make the hitbox invisible for stealth
-                hitbox.CanCollide = false  -- Disable collisions to avoid interference
+                hitbox.CanCollide = true  -- Disable collisions to avoid interference
             else
                 -- Reset hitbox to default size (change to the actual default size of your tool)
                 hitbox.Size = Vector3.new(2, 2, 2)  -- Default size (adjust if needed)
