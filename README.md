@@ -1,9 +1,9 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md"))()
 
 local window = library:AddWindow("Lite Hub Muscle Legends", {
-    main_color = Color3.fromRGB(41, 74, 122), 
-    min_size = Vector2.new(450, 340), 
-    toggle_key = Enum.KeyCode.RightShift, 
+    main_color = Color3.fromRGB(41, 74, 122),
+    min_size = Vector2.new(450, 340),
+    toggle_key = Enum.KeyCode.RightShift,
     can_resize = true,
 })
 
@@ -66,7 +66,7 @@ end)
 -- Kill Tab
 local Kill = window:AddTab("Kill")
 
--- Toggles
+-- Add switches (toggles)
 Kill:AddSwitch("Auto Kill", function(value)
     AutoKillToggle = value  -- Update the AutoKill toggle state
     if AutoKillToggle then
@@ -84,4 +84,3 @@ end)
 -- Default value for the toggles
 Kill:GetSwitch("Auto Kill"):Set(true)  -- Ensure the toggle starts in the "On" position
 Kill:GetSwitch("Auto Punch"):Set(false)  -- Ensure AutoPunch starts off
-
