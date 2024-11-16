@@ -7,76 +7,52 @@ local Window = library:AddWindow("Lite Hub Muscle Legends", {
     can_resize = true,
 })
 
---variable
-local autoPunchEnabled = false
-local autoKillEnabled = false
+local Auto Farm = Window:AddTab("Auto Farm")
 
-
---function
--- Function to toggle Auto Punch
-function AutoPunch()
-    spawn(function()
-        while autoPunchEnabled do
-            local player = game.Players.LocalPlayer
-            local punchTool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
-            
-            if punchTool then
-                player.Character.Humanoid:EquipTool(punchTool)
-                punchTool:Activate()
-            end
-            wait(0.1)
+-- Toggle for Pushups
+AutoFarm:AddSwitch("PushupsToggle", false, function(state)
+    -- Continuously equip and use Pushups tool when toggle is on
+    while state do
+        local pushupsTool = game.Players.LocalPlayer.Backpack:FindFirstChild("Pushups")
+        if pushupsTool then
+            pushupsTool:Activate()  -- Assuming Activate is the correct method for using the tool
         end
-    end)
-end
-
-local function autoKillPlayers()
-    -- Loop to continuously check Auto Kill toggle
-    spawn(function()
-        while AutoKillToggle do
-            -- Get the player and character
-            local player = game.Players.LocalPlayer
-            local character = player.Character or player.CharacterAdded:Wait()
-            
-            -- Get the right hand of the character
-            local rightHand = character:FindFirstChild("RightHand")
-            
-            -- Check if the right hand exists
-            if rightHand then
-                -- Loop through all players in the game
-                for _, target in pairs(game.Players:GetPlayers()) do
-                    -- Check that the target is a valid player and is not the local player
-                    if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
-                        -- Check for whitelist if enabled
-                        if not (whitelistEnabled and target.Name == selectedWhitelistPlayer) then
-                            -- Teleport the target's head to the right hand's position
-                            target.Character.Head.CFrame = rightHand.CFrame
-                        end
-                    end
-                end
-            end
-            -- Wait a short time before repeating the loop
-            wait(0.1) -- Delay for smoother execution
-        end
-    end)
-end
-
-local Kill = Window:AddTab("Kill")
-
-Kill:AddSwitch("Auto Kill", false, function(state)
-    AutoKillToggle = value
-        if value then
-            autoKillPlayers()
-        end
+        wait(0.1)  -- Short delay to prevent flooding
     end
 end)
 
-Kill:AddSwitch("Auto Punch", false, function(state)
-    autoPunchEnabled = value
-        if value then
-            AutoPunch()
+-- Toggle for Situps
+AutoFarm:AddSwitch("SitupsToggle", false, function(state)
+    -- Continuously equip and use Situps tool when toggle is on
+    while state do
+        local situpsTool = game.Players.LocalPlayer.Backpack:FindFirstChild("Situps")
+        if situpsTool then
+            situpsTool:Activate()  -- Assuming Activate is the correct method for using the tool
         end
+        wait(0.1)  -- Short delay to prevent flooding
     end
 end)
 
+-- Toggle for Weight
+AutoFarm:AddSwitch("WeightToggle", false, function(state)
+    -- Continuously equip and use Weight tool when toggle is on
+    while state do
+        local weightTool = game.Players.LocalPlayer.Backpack:FindFirstChild("Weight")
+        if weightTool then
+            weightTool:Activate()  -- Assuming Activate is the correct method for using the tool
+        end
+        wait(0.1)  -- Short delay to prevent flooding
+    end
+end)
 
-
+-- Toggle for Handstands
+AutoFarm:AddSwitch("HandstandsToggle", false, function(state)
+    -- Continuously equip and use Handstands tool when toggle is on
+    while state do
+        local handstandsTool = game.Players.LocalPlayer.Backpack:FindFirstChild("Handstands")
+        if handstandsTool then
+            handstandsTool:Activate()  -- Assuming Activate is the correct method for using the tool
+        end
+        wait(0.1)  -- Short delay to prevent flooding
+    end
+end)
