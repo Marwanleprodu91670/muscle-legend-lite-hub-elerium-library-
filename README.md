@@ -363,15 +363,15 @@ function stopSpectating()
     print("Stopped spectating")
 end
 
--- Assuming the 'features' tab is already created
+-- Assuming you already have the 'features' tab created
 local features = window:AddTab("Stats")
 
--- Track all players in the server and their stats
+-- Table to hold player stats
 local playerStats = {}
 
--- Helper function to simulate getting a player's stats (you'll replace this with actual code for your game)
+-- Helper function to simulate getting a player's stats (replace with actual logic)
 local function getPlayerStats(player)
-    -- Placeholder for player stats, replace this with your actual logic
+    -- Placeholder function to simulate stats
     return {
         Strength = math.random(10, 100),
         Durability = math.random(10, 100),
@@ -380,7 +380,7 @@ local function getPlayerStats(player)
     }
 end
 
--- Function to update the dropdown options with players
+-- Function to update the dropdown with current players in the game
 local function updatePlayerDropdown(dropdown)
     -- Clear existing dropdown items
     dropdown:Clear()
@@ -391,42 +391,43 @@ local function updatePlayerDropdown(dropdown)
     end
 end
 
--- Create the player dropdown
-local dropdown = features:AddDropdown("Select Player", function(selectedPlayer)
+-- Create the dropdown to select a player
+local dropdown = features:AddDropdown("Select Player", function(selectedPlayerName)
     -- Store the selected player
-    print("Selected player: " .. selectedPlayer)
+    print("Selected player: " .. selectedPlayerName)
 end)
 
--- Add initial players to the dropdown
+-- Add initial players to the dropdown when the script runs
 updatePlayerDropdown(dropdown)
 
--- Listen for new players joining
+-- Listen for new players joining and update the dropdown
 game.Players.PlayerAdded:Connect(function(player)
-    -- Add new player to the dropdown
+    -- Add the new player to the dropdown
     dropdown:Add(player.Name)
 
-    -- Track stats for the player
+    -- Track stats for the new player
     playerStats[player.UserId] = getPlayerStats(player)
 end)
 
--- Listen for players leaving
+-- Listen for players leaving and update the dropdown
 game.Players.PlayerRemoving:Connect(function(player)
-    -- Remove player from the dropdown
+    -- Remove the player from the dropdown
     dropdown:Remove(player.Name)
 
-    -- Remove player's stats from tracking
+    -- Remove the player stats
     playerStats[player.UserId] = nil
 end)
 
 -- Create the toggle switch for printing stats
 local switch = features:AddSwitch("Toggle Stats", function(enabled)
+    -- Get the currently selected player name from the dropdown
     local selectedPlayerName = dropdown:GetSelected()
-    
-    -- Check if a player is selected
+
+    -- Check if a player is selected and stats are available
     if selectedPlayerName and playerStats[selectedPlayerName] then
         local stats = playerStats[selectedPlayerName]
-        
-        -- Print player stats to the console if toggle is on
+
+        -- If the toggle is enabled, print the stats to the console
         if enabled then
             print("Strength: " .. stats.Strength)
             print("Durability: " .. stats.Durability)
@@ -434,12 +435,18 @@ local switch = features:AddSwitch("Toggle Stats", function(enabled)
             print("Kill: " .. stats.Kill)
         end
     else
-        print("No player selected.")
+        print("No player selected or stats are unavailable.")
     end
 end)
-switch:Set(false)  -- Default state is off
 
--- Optionally, if you need to update stats when a player joins or stats change, you could hook into events or triggers.
+-- Default state of the toggle (off)
+switch:Set(false)
+
+-- Periodically update the player dropdown in case a player is added after some delay
+game:GetService("RunService").Heartbeat:Connect(function()
+    updatePlayerDropdown(dropdown)
+end)
+
 
 
 
