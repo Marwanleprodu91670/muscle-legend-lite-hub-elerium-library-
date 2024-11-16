@@ -55,42 +55,24 @@ spawn(function()
     end
 end)
 
--- Function to equip and continuously use the "Punch" tool
-local function autoPunch()
-    while AutoPunchToggle do
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        
-        -- Look for the "Punch" tool in the player's Backpack
-        if not punchTool then
-            punchTool = player.Backpack:FindFirstChild("Punch")
-        end
-        
-        if punchTool then
-            -- Equip the "Punch" tool if it is found
-            if not character:FindFirstChild("Punch") then
-                punchTool.Parent = character
+-- Function to handle the Auto Punch functionality
+local function AutoPunch()
+    spawn(function()
+        while AutoPunchToggle do
+            local player = game.Players.LocalPlayer
+            local punchTool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+            
+            if punchTool then
+                -- Equip the Punch tool if it's found
+                player.Character.Humanoid:EquipTool(punchTool)
+
+                -- Use the Punch tool by activating it
+                punchTool:Activate()
             end
             
-            -- Use the Punch tool (This might depend on how the tool's functionality works in the game)
-            if character:FindFirstChild("Punch") then
-                local punch = character:FindFirstChild("Punch")
-                
-                -- Simulate using the Punch tool
-                -- Check if the Punch tool has an Activate() function and use it
-                if punch and punch:FindFirstChild("Activate") then
-                    punch:Activate()
-                end
-                
-                -- Alternatively, you may need to simulate a specific action, such as clicking or performing an action manually:
-                -- For example:
-                -- game:GetService("ReplicatedStorage"):WaitForChild("PunchEvent"):FireServer()
-                
-            end
+            wait(0.1) -- Adjust frequency of tool activation to your needs
         end
-        
-        wait(0.1) -- Adjust the frequency of the loop to your needs
-    end
+    end)
 end
 
 -- Kill Tab
@@ -105,7 +87,7 @@ end)
 Kill:AddSwitch("Auto Punch", function(value)
     AutoPunchToggle = value  -- Update the AutoPunch toggle state
     if AutoPunchToggle then
-        spawn(autoPunch)  -- Start the auto punch loop when the toggle is enabled
+        AutoPunch()  -- Start the Auto Punch loop when the toggle is enabled
     end
 end)
 
