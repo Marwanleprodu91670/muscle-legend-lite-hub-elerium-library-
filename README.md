@@ -363,6 +363,84 @@ function stopSpectating()
     print("Stopped spectating")
 end
 
+-- Assuming the 'features' tab is already created
+local features = window:AddTab("Stats")
+
+-- Track all players in the server and their stats
+local playerStats = {}
+
+-- Helper function to simulate getting a player's stats (you'll replace this with actual code for your game)
+local function getPlayerStats(player)
+    -- Placeholder for player stats, replace this with your actual logic
+    return {
+        Strength = math.random(10, 100),
+        Durability = math.random(10, 100),
+        Agility = math.random(10, 100),
+        Kill = math.random(0, 50),
+    }
+end
+
+-- Function to update the dropdown options with players
+local function updatePlayerDropdown(dropdown)
+    -- Clear existing dropdown items
+    dropdown:Clear()
+
+    -- Add all players in the game to the dropdown
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        dropdown:Add(player.Name)
+    end
+end
+
+-- Create the player dropdown
+local dropdown = features:AddDropdown("Select Player", function(selectedPlayer)
+    -- Store the selected player
+    print("Selected player: " .. selectedPlayer)
+end)
+
+-- Add initial players to the dropdown
+updatePlayerDropdown(dropdown)
+
+-- Listen for new players joining
+game.Players.PlayerAdded:Connect(function(player)
+    -- Add new player to the dropdown
+    dropdown:Add(player.Name)
+
+    -- Track stats for the player
+    playerStats[player.UserId] = getPlayerStats(player)
+end)
+
+-- Listen for players leaving
+game.Players.PlayerRemoving:Connect(function(player)
+    -- Remove player from the dropdown
+    dropdown:Remove(player.Name)
+
+    -- Remove player's stats from tracking
+    playerStats[player.UserId] = nil
+end)
+
+-- Create the toggle switch for printing stats
+local switch = features:AddSwitch("Toggle Stats", function(enabled)
+    local selectedPlayerName = dropdown:GetSelected()
+    
+    -- Check if a player is selected
+    if selectedPlayerName and playerStats[selectedPlayerName] then
+        local stats = playerStats[selectedPlayerName]
+        
+        -- Print player stats to the console if toggle is on
+        if enabled then
+            print("Strength: " .. stats.Strength)
+            print("Durability: " .. stats.Durability)
+            print("Agility: " .. stats.Agility)
+            print("Kill: " .. stats.Kill)
+        end
+    else
+        print("No player selected.")
+    end
+end)
+switch:Set(false)  -- Default state is off
+
+-- Optionally, if you need to update stats when a player joins or stats change, you could hook into events or triggers.
+
 
 
 
