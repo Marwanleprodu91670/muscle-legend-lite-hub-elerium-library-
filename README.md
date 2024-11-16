@@ -366,40 +366,37 @@ end
 
 local features = window:AddTab("Teleport")
 
--- Define the teleport positions for each island
-local islands = {
-    ["Tiny Island"] = CFrame.new(-38.4037132, 9.66723633, 1832.29114),
-    ["Frost Island"] = CFrame.new(-2533.64258, 13.7738762, -408.134796),
-    ["Mythical Island"] = CFrame.new(2170.5437, 13.8738737, 1073.75525),
-    ["Inferno Island"] = CFrame.new(-6678.75635, 13.8738737, -1285.4198),
-    ["Legend Island"] = CFrame.new(4685.5625, 997.608765, -3910.30908),
-    ["Muscle King"] = CFrame.new(-8546.25879, 23.045435, -5636.78418)
-}
+Teleport:AddLabel("Islands:")
 
--- Add the toggle to teleport to the selected island
-Teleport:AddSwitch("Tp to Island", function(bool)
-    if bool then  -- Check if the toggle is activated
-        local selectedIsland = dropdown:GetSelected()  -- Get the selected island from the dropdown
-        if islands[selectedIsland] then
-            -- Teleport to the selected island's position
-            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(islands[selectedIsland])
-        end
-    end
-end)
-switch:Set(true)
-
--- Add the dropdown for selecting an island
-Teleport:AddDropdown("Select Island", function(text)
-    -- The logic for handling different island options will be handled by the toggle logic
+Teleport:AddButton("Tiny Island", function()
+    -- Teleport to Tiny Island
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-38.4037132, 9.66723633, 1832.29114))
 end)
 
--- Add island options to the dropdown
-local tinyIsland = dropdown:Add("Tiny Island")
-local frostIsland = dropdown:Add("Frost Island")
-local mythicalIsland = dropdown:Add("Mythical Island")
-local infernoIsland = dropdown:Add("Inferno Island")
-local legendIsland = dropdown:Add("Legend Island")
-local muscleKing = dropdown:Add("Muscle King")
+Teleport:AddButton("Frost Island", function()
+    -- Teleport to Frost Island
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-2533.64258, 13.7738762, -408.134796))
+end)
+
+Teleport:AddButton("Mythical Island", function()
+    -- Teleport to Mythical Island
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(2170.5437, 13.8738737, 1073.75525))
+end)
+
+Teleport:AddButton("Inferno Island", function()
+    -- Teleport to Inferno Island
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-6678.75635, 13.8738737, -1285.4198))
+end)
+
+Teleport:AddButton("Legend Island", function()
+    -- Teleport to Legend Island
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(4685.5625, 997.608765, -3910.30908))
+end)
+
+Teleport:AddButton("Muscle King Island", function()
+    -- Teleport to Muscle King Island
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-8546.25879, 23.045435, -5636.78418))
+end)
 
 
 
