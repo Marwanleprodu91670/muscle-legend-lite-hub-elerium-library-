@@ -52,16 +52,14 @@ spawn(function()
                     punchTool.Parent = character
                 end
 
-                -- Simulate infinite punching by activating the tool repeatedly
-                if punchTool and punchTool.Parent == character then
+                -- Continuously simulate punching (trigger the tool's Activated event)
+                while AutoPunchToggle and punchTool.Parent == character do
                     -- Check if the tool has an "Activated" event (usually used for activation)
                     if punchTool:FindFirstChild("Activated") then
-                        -- Use the tool's activated event continuously
-                        punchTool.Activated:Fire()  -- Fire the punch tool's activation method
-                    elseif punchTool:FindFirstChild("ToolTip") then
-                        -- If no Activated event, you may need to simulate a different type of use (like clicking)
-                        punchTool:Activate()  -- Fire a method like Activate (for other types of tools)
+                        -- Fire the punch tool's activation method
+                        punchTool.Activated:Fire()
                     end
+                    wait(0.1)  -- Delay to avoid too rapid activation
                 end
             end
         end
@@ -78,20 +76,18 @@ end)
 
 Kill:AddSwitch("Auto Punch", function(value)
     AutoPunchToggle = value  -- Update the AutoPunch toggle state
-    if AutoPunchToggle then
-        -- Ensure the Punch tool is equipped and used when toggled on
-        local player = game.Players.LocalPlayer
-        punchTool = player.Backpack:FindFirstChild("Punch")
-        if punchTool then
-            -- Equip the Punch tool if it's not already equipped
-            if not player.Character:FindFirstChildOfClass("Tool") then
-                punchTool.Parent = player.Character
-            end
+    local player = game.Players.LocalPlayer
+    -- Ensure the Punch tool is equipped and used when toggled on
+    punchTool = player.Backpack:FindFirstChild("Punch")
+    if AutoPunchToggle and punchTool then
+        -- Equip the Punch tool if it's not already equipped
+        if not player.Character:FindFirstChildOfClass("Tool") then
+            punchTool.Parent = player.Character
         end
     else
         -- If AutoPunch is turned off, move the Punch tool back to the Backpack
         if punchTool then
-            punchTool.Parent = game.Players.LocalPlayer.Backpack
+            punchTool.Parent = player.Backpack
         end
     end
 end)
