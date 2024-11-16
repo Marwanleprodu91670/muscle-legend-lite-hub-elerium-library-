@@ -1,5 +1,5 @@
 -- Chargement de la bibliothèque
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/main/library.lua"))() -- Assure-toi que cette URL pointe vers un fichier Lua valide.
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md"))() -- Assure-toi que cette URL pointe vers un fichier Lua valide.
 
 -- Création de la fenêtre principale
 local Window = library:AddWindow("Lite Hub Muscle Legends", {
