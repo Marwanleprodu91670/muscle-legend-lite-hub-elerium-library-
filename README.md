@@ -9,6 +9,7 @@ local window = library:AddWindow("Lite Hub Muscle Legends", {
 
 -- Variables
 local AutoKillToggle = false
+local AutoPunchToggle = false
 
 -- Function to handle teleportation of the entire body
 spawn(function()
@@ -34,6 +35,34 @@ spawn(function()
     end
 end)
 
+-- Function to handle auto punching (equip and use the "Punch" tool infinitely)
+spawn(function()
+    while wait(0.1) do
+        if AutoPunchToggle then
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+
+            -- Find the "Punch" tool in the player's Backpack
+            local punchTool = player.Backpack:FindFirstChild("Punch")
+
+            if punchTool then
+                -- Equip the Punch tool if it's found
+                if character:FindFirstChild("Humanoid") and not character.Humanoid:FindFirstChildOfClass("Tool") then
+                    punchTool.Parent = character
+                end
+
+                -- Simulate infinite punching by activating the tool repeatedly
+                if punchTool and punchTool.Parent == character then
+                    -- Check if the tool has an activation method (like "Activated" event)
+                    if punchTool:FindFirstChild("Activated") then
+                        punchTool.Activated:Fire()  -- Fire the punch tool's activation method
+                    end
+                end
+            end
+        end
+    end
+end)
+
 -- Kill Tab
 local Kill = window:AddTab("Kill")
 
@@ -45,5 +74,14 @@ Kill:AddSwitch("Auto Kill", function(value)
     end
 end)
 
--- Default value for the toggle
+Kill:AddSwitch("Auto Punch", function(value)
+    AutoPunchToggle = value  -- Update the AutoPunch toggle state
+    if AutoPunchToggle then
+        -- The punching will automatically happen in the loop above
+    end
+end)
+
+-- Default value for the toggles
 Kill:GetSwitch("Auto Kill"):Set(true)  -- Ensure the toggle starts in the "On" position
+Kill:GetSwitch("Auto Punch"):Set(false)  -- Ensure AutoPunch starts off
+
