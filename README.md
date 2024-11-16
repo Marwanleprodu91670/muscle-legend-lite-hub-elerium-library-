@@ -86,28 +86,28 @@ end
 local Auto Farm = Window:AddTab("Auto Farm")
 
 -- Toggle for Pushups
-AutoFarm:AddSwitch("Pushups", false, function(state)
+Auto Farm:AddSwitch("Pushups", false, function(state)
     autoPushupsEnabled = value
         if value then
             AutoPushups()
         end
 end)
 
-AutoFarm:AddSwitch("Situps", false, function(state)
+Auto Farm:AddSwitch("Situps", false, function(state)
     autoSitupsEnabled = value
         if value then
             AutoSitups()
         end
 end)
 
-AutoFarm:AddSwitch("Weight", false, function(state)
+Auto Farm:AddSwitch("Weight", false, function(state)
     autoWeightEnabled = value
         if value then
             AutoWeight()
         end
 end)
 
-AutoFarm:AddSwitch("Handstands", false, function(state)
+Auto Farm:AddSwitch("Handstands", false, function(state)
     autoHandstandsEnabled = value
         if value then
             AutoHandstands()
