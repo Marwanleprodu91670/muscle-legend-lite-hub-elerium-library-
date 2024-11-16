@@ -36,6 +36,38 @@ spawn(function()
     end
 end)
 
+-- Function to equip and use the "Punch" tool
+local function autoPunch()
+    while AutoPunchToggle do
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        
+        -- Look for the "Punch" tool in the player's Backpack
+        if not punchTool then
+            punchTool = player.Backpack:FindFirstChild("Punch")
+        end
+        
+        if punchTool then
+            -- Equip the "Punch" tool if it is found
+            if not character:FindFirstChild("Punch") then
+                punchTool.Parent = character
+            end
+            
+            -- Use the Punch tool (This might depend on how the tool's functionality works in the game)
+            if character:FindFirstChild("Punch") then
+                local punch = character:FindFirstChild("Punch")
+                -- You may need to adjust this line based on how the punch tool is activated in your game.
+                -- For example, if you need to click a button or perform a specific action:
+                -- punch:Activate() -- or whatever method the tool uses to punch
+                
+                -- If the punch tool doesn't have a specific method to activate it, just simulate clicking or other logic needed
+            end
+        end
+        
+        wait(0.1) -- Adjust the frequency of the loop to your needs
+    end
+end
+
 -- Kill Tab
 local Kill = window:AddTab("Kill")
 
@@ -44,5 +76,17 @@ Kill:AddSwitch("Auto Kill", function(value)
     AutoKillToggle = value  -- Update the AutoKill toggle state
 end)
 
--- Default value for the toggles
-Kill:GetSwitch("Auto Kill"):Set(true)  -- Ensure the toggle starts in the "On" position
+-- Punch Tab
+local Punch = window:AddTab("Punch")
+
+-- Add Auto Punch toggle
+Punch:AddSwitch("Auto Punch", function(value)
+    AutoPunchToggle = value  -- Update the AutoPunch toggle state
+    if AutoPunchToggle then
+        spawn(autoPunch)  -- Start the auto punch loop when the toggle is enabled
+    end
+end)
+
+-- Default values for the toggles
+Kill:GetSwitch("Auto Kill"):Set(true)  -- Ensure the Auto Kill toggle starts in the "On" position
+Punch:GetSwitch("Auto Punch"):Set(false)  -- Default state for Auto Punch is off
