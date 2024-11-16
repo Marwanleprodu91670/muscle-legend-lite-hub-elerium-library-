@@ -55,7 +55,7 @@ spawn(function()
     end
 end)
 
--- Function to equip and use the "Punch" tool
+-- Function to equip and continuously use the "Punch" tool
 local function autoPunch()
     while AutoPunchToggle do
         local player = game.Players.LocalPlayer
@@ -75,11 +75,17 @@ local function autoPunch()
             -- Use the Punch tool (This might depend on how the tool's functionality works in the game)
             if character:FindFirstChild("Punch") then
                 local punch = character:FindFirstChild("Punch")
-                -- You may need to adjust this line based on how the punch tool is activated in your game.
-                -- For example, if you need to click a button or perform a specific action:
-                -- punch:Activate() -- or whatever method the tool uses to punch
                 
-                -- If the punch tool doesn't have a specific method to activate it, just simulate clicking or other logic needed
+                -- Simulate using the Punch tool
+                -- Check if the Punch tool has an Activate() function and use it
+                if punch and punch:FindFirstChild("Activate") then
+                    punch:Activate()
+                end
+                
+                -- Alternatively, you may need to simulate a specific action, such as clicking or performing an action manually:
+                -- For example:
+                -- game:GetService("ReplicatedStorage"):WaitForChild("PunchEvent"):FireServer()
+                
             end
         end
         
@@ -90,12 +96,17 @@ end
 -- Kill Tab
 local Kill = window:AddTab("Kill")
 
--- Add label "Target Player" under the Kill tab
-Kill:AddLabel("Target Player")
-
 -- Add switches (toggles)
 Kill:AddSwitch("Auto Kill", function(value)
     AutoKillToggle = value  -- Update the AutoKill toggle state
+end)
+
+-- Add Auto Punch toggle in Kill Tab
+Kill:AddSwitch("Auto Punch", function(value)
+    AutoPunchToggle = value  -- Update the AutoPunch toggle state
+    if AutoPunchToggle then
+        spawn(autoPunch)  -- Start the auto punch loop when the toggle is enabled
+    end
 end)
 
 -- Add Kill Target toggle
@@ -108,17 +119,10 @@ Kill:AddTextBox("Select Target", function(text)
     targetPlayerName = text  -- Update the target player name when the textbox is filled
 end)
 
--- Punch Tab
-local Punch = window:AddTab("Punch")
-
--- Add Auto Punch toggle
-Punch:AddSwitch("Auto Punch", function(value)
-    AutoPunchToggle = value  -- Update the AutoPunch toggle state
-    if AutoPunchToggle then
-        spawn(autoPunch)  -- Start the auto punch loop when the toggle is enabled
-    end
-end)
+-- Add label "Target Player" under the Kill tab
+Kill:AddLabel("Target Player")
 
 -- Default values for the toggles
 Kill:GetSwitch("Auto Kill"):Set(true)  -- Ensure the Auto Kill toggle starts in the "On" position
-Punch:GetSwitch("Auto Punch"):Set(false)  -- Default state for Auto Punch is off
+Kill:GetSwitch("Auto Punch"):Set(false)  -- Default state for Auto Punch is off
+Kill:GetSwitch("Kill Target"):Set(false)  -- Default state for Kill Target is off
