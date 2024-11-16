@@ -13,51 +13,13 @@ local AutoPunchToggle = false
 local KillTargetToggle = false
 local AutoWeightToggle = false
 local AutoPushupsToggle = false
+local SitupsToggle = false
+local MuscleKingFarmToggle = false
 local punchTool = nil  -- Variable to store the "Punch" tool
-local targetPlayerName = ""  -- Variable to store the target player name
 local weightTool = nil  -- Variable to store the "Weight" tool
 local pushupsTool = nil  -- Variable to store the "Pushups" tool
-
--- Function to handle teleportation of the entire body
-spawn(function()
-    while wait(0.1) do
-        if AutoKillToggle then
-            local player = game.Players.LocalPlayer
-            local character = player.Character or player.CharacterAdded:Wait()
-
-            local rightHand = character:FindFirstChild("RightHand")
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
-            if rightHand and humanoidRootPart then
-                for _, target in pairs(game.Players:GetPlayers()) do
-                    if target ~= player and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                        -- Teleport the entire body by adjusting the HumanoidRootPart's CFrame
-                        target.Character.HumanoidRootPart.CFrame = rightHand.CFrame
-                    end
-                end
-            end
-        end
-
-        -- Check if Kill Target Toggle is enabled
-        if KillTargetToggle and targetPlayerName ~= "" then
-            local player = game.Players.LocalPlayer
-            local targetPlayer = game.Players:FindFirstChild(targetPlayerName)
-
-            if targetPlayer and targetPlayer.Character then
-                local character = player.Character or player.CharacterAdded:Wait()
-                local rightHand = character:FindFirstChild("RightHand")
-
-                if rightHand then
-                    local targetHumanoidRootPart = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                    if targetHumanoidRootPart then
-                        -- Teleport the target player's character to the right hand of the local player
-                        targetPlayer.Character.HumanoidRootPart.CFrame = rightHand.CFrame
-                    end
-                end
-            end
-        end
-    end
-end)
+local situpsTool = nil  -- Variable to store the "Situps" tool
+local targetPlayerName = ""  -- Variable to store the target player name
 
 -- Function to handle the Auto Punch functionality
 local function AutoPunch()
@@ -119,6 +81,46 @@ local function AutoPushups()
     end)
 end
 
+-- Function to handle the Situps (Second Version) functionality
+local function AutoSitups()
+    spawn(function()
+        while SitupsToggle do
+            local player = game.Players.LocalPlayer
+            local situpsTool = player.Backpack:FindFirstChild("Situps") or player.Character:FindFirstChild("Situps")
+            
+            if situpsTool then
+                -- Equip the Situps tool if it's found
+                player.Character.Humanoid:EquipTool(situpsTool)
+
+                -- Use the Situps tool by activating it
+                situpsTool:Activate()
+            end
+            
+            wait(0.1) -- Adjust frequency of tool activation to your needs
+        end
+    end)
+end
+
+-- Function to handle the Muscle King Farm functionality
+local function MuscleKingFarm()
+    spawn(function()
+        while MuscleKingFarmToggle do
+            local player = game.Players.LocalPlayer
+            -- Teleport the player to the specified location
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(-8546.25879, 23.045435, -5636.78418)
+
+            -- Equip the "Pushups" tool
+            local pushupsTool = player.Backpack:FindFirstChild("Pushups") or player.Character:FindFirstChild("Pushups")
+            if pushupsTool then
+                player.Character.Humanoid:EquipTool(pushupsTool)
+                pushupsTool:Activate()  -- Use the Pushups tool by activating it
+            end
+            
+            wait(0.1)  -- Adjust frequency of tool activation to your needs
+        end
+    end)
+end
+
 -- Auto Farm Tab
 local AutoFarm = window:AddTab("Auto Farm")
 
@@ -135,6 +137,22 @@ AutoFarm:AddSwitch("Auto Pushups (Second Version)", function(value)
     AutoPushupsToggle = value  -- Update the AutoPushups toggle state
     if AutoPushupsToggle then
         AutoPushups()  -- Start the Auto Pushups loop when the toggle is enabled
+    end
+end)
+
+-- Add Situps toggle in Auto Farm Tab
+AutoFarm:AddSwitch("Situps (Second Version)", function(value)
+    SitupsToggle = value  -- Update the Situps toggle state
+    if SitupsToggle then
+        AutoSitups()  -- Start the Auto Situps loop when the toggle is enabled
+    end
+end)
+
+-- Add Muscle King Farm toggle in Auto Farm Tab
+AutoFarm:AddSwitch("Muscle King Farm", function(value)
+    MuscleKingFarmToggle = value  -- Update the MuscleKingFarm toggle state
+    if MuscleKingFarmToggle then
+        MuscleKingFarm()  -- Start the Muscle King Farm loop when the toggle is enabled
     end
 end)
 
@@ -171,6 +189,8 @@ end)
 -- Default values for the toggles
 AutoFarm:GetSwitch("Auto Weight"):Set(false)  -- Default state for Auto Weight is off
 AutoFarm:GetSwitch("Auto Pushups (Second Version)"):Set(false)  -- Default state for Auto Pushups is off
+AutoFarm:GetSwitch("Situps (Second Version)"):Set(false)  -- Default state for Situps is off
+AutoFarm:GetSwitch("Muscle King Farm"):Set(false)  -- Default state for Muscle King Farm is off
 Kill:GetSwitch("Auto Kill"):Set(true)  -- Ensure the Auto Kill toggle starts in the "On" position
 Kill:GetSwitch("Auto Punch"):Set(false)  -- Default state for Auto Punch is off
 Kill:GetSwitch("Kill Target"):Set(false)  -- Default state for Kill Target is off
