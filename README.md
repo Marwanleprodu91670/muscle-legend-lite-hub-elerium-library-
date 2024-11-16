@@ -11,8 +11,12 @@ local window = library:AddWindow("Lite Hub Muscle Legends", {
 local AutoKillToggle = false
 local AutoPunchToggle = false
 local KillTargetToggle = false
+local AutoWeightToggle = false
+local AutoPushupsToggle = false
 local punchTool = nil  -- Variable to store the "Punch" tool
 local targetPlayerName = ""  -- Variable to store the target player name
+local weightTool = nil  -- Variable to store the "Weight" tool
+local pushupsTool = nil  -- Variable to store the "Pushups" tool
 
 -- Function to handle teleportation of the entire body
 spawn(function()
@@ -75,6 +79,65 @@ local function AutoPunch()
     end)
 end
 
+-- Function to handle the Auto Weight functionality
+local function AutoWeight()
+    spawn(function()
+        while AutoWeightToggle do
+            local player = game.Players.LocalPlayer
+            local weightTool = player.Backpack:FindFirstChild("Weight") or player.Character:FindFirstChild("Weight")
+            
+            if weightTool then
+                -- Equip the Weight tool if it's found
+                player.Character.Humanoid:EquipTool(weightTool)
+
+                -- Use the Weight tool by activating it
+                weightTool:Activate()
+            end
+            
+            wait(0.1) -- Adjust frequency of tool activation to your needs
+        end
+    end)
+end
+
+-- Function to handle the Auto Pushups (Second Version) functionality
+local function AutoPushups()
+    spawn(function()
+        while AutoPushupsToggle do
+            local player = game.Players.LocalPlayer
+            local pushupsTool = player.Backpack:FindFirstChild("Pushups") or player.Character:FindFirstChild("Pushups")
+            
+            if pushupsTool then
+                -- Equip the Pushups tool if it's found
+                player.Character.Humanoid:EquipTool(pushupsTool)
+
+                -- Use the Pushups tool by activating it
+                pushupsTool:Activate()
+            end
+            
+            wait(0.1) -- Adjust frequency of tool activation to your needs
+        end
+    end)
+end
+
+-- Auto Farm Tab
+local AutoFarm = window:AddTab("Auto Farm")
+
+-- Add Auto Weight toggle in Auto Farm Tab
+AutoFarm:AddSwitch("Auto Weight", function(value)
+    AutoWeightToggle = value  -- Update the AutoWeight toggle state
+    if AutoWeightToggle then
+        AutoWeight()  -- Start the Auto Weight loop when the toggle is enabled
+    end
+end)
+
+-- Add Auto Pushups toggle in Auto Farm Tab
+AutoFarm:AddSwitch("Auto Pushups (Second Version)", function(value)
+    AutoPushupsToggle = value  -- Update the AutoPushups toggle state
+    if AutoPushupsToggle then
+        AutoPushups()  -- Start the Auto Pushups loop when the toggle is enabled
+    end
+end)
+
 -- Kill Tab
 local Kill = window:AddTab("Kill")
 
@@ -106,6 +169,8 @@ end)
 
 
 -- Default values for the toggles
+AutoFarm:GetSwitch("Auto Weight"):Set(false)  -- Default state for Auto Weight is off
+AutoFarm:GetSwitch("Auto Pushups (Second Version)"):Set(false)  -- Default state for Auto Pushups is off
 Kill:GetSwitch("Auto Kill"):Set(true)  -- Ensure the Auto Kill toggle starts in the "On" position
 Kill:GetSwitch("Auto Punch"):Set(false)  -- Default state for Auto Punch is off
 Kill:GetSwitch("Kill Target"):Set(false)  -- Default state for Kill Target is off
