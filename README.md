@@ -52,14 +52,11 @@ spawn(function()
                     punchTool.Parent = character
                 end
 
-                -- Continuously simulate punching (trigger the tool's Activated event)
+                -- Continuously simulate punching by calling the Activate() method
                 while AutoPunchToggle and punchTool.Parent == character do
-                    -- Check if the tool has an "Activated" event (usually used for activation)
-                    if punchTool:FindFirstChild("Activated") then
-                        -- Fire the punch tool's activation method
-                        punchTool.Activated:Fire()
-                    end
-                    wait(0.1)  -- Delay to avoid too rapid activation
+                    -- Call Activate() method to use the punch tool continuously
+                    punchTool:Activate()
+                    wait(0.1)  -- Delay to avoid too rapid activation and simulate continuous usage
                 end
             end
         end
