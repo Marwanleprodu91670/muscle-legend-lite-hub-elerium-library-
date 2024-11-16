@@ -368,34 +368,44 @@ local features = window:AddTab("Teleport")
 
 Teleport:AddLabel("Islands:")
 
+local function teleportToIsland(position)
+    local player = game.Players.LocalPlayer
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local humanoidRootPart = player.Character.HumanoidRootPart
+        humanoidRootPart.CFrame = CFrame.new(position)
+    else
+        warn("Player character or HumanoidRootPart not found.")
+    end
+end
+
 Teleport:AddButton("Tiny Island", function()
     -- Teleport to Tiny Island
-    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-38.4037132, 9.66723633, 1832.29114))
+    teleportToIsland(Vector3.new(-38.4037132, 9.66723633, 1832.29114))
 end)
 
 Teleport:AddButton("Frost Island", function()
     -- Teleport to Frost Island
-    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-2533.64258, 13.7738762, -408.134796))
+    teleportToIsland(Vector3.new(-2533.64258, 13.7738762, -408.134796))
 end)
 
 Teleport:AddButton("Mythical Island", function()
     -- Teleport to Mythical Island
-    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(2170.5437, 13.8738737, 1073.75525))
+    teleportToIsland(Vector3.new(2170.5437, 13.8738737, 1073.75525))
 end)
 
 Teleport:AddButton("Inferno Island", function()
     -- Teleport to Inferno Island
-    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-6678.75635, 13.8738737, -1285.4198))
+    teleportToIsland(Vector3.new(-6678.75635, 13.8738737, -1285.4198))
 end)
 
 Teleport:AddButton("Legend Island", function()
     -- Teleport to Legend Island
-    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(4685.5625, 997.608765, -3910.30908))
+    teleportToIsland(Vector3.new(4685.5625, 997.608765, -3910.30908))
 end)
 
 Teleport:AddButton("Muscle King Island", function()
     -- Teleport to Muscle King Island
-    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-8546.25879, 23.045435, -5636.78418))
+    teleportToIsland(Vector3.new(-8546.25879, 23.045435, -5636.78418))
 end)
 
 
