@@ -185,22 +185,32 @@ Kill:AddTextBox("Select Target", function(text)
     targetPlayerName = text  -- Update the target player name when the textbox is filled
 end)
 
+-- Add the "Server" tab to the window
 window:AddTab("Server")
 
+-- Anti Ping Button
 Server:AddButton("Anti Ping", function()
-    local decalsyeeted = true -- Leaving this on makes games look shitty but the fps goes up by at least 20.
+    local decalsyeeted = true -- Leaving this on reduces visual quality but increases FPS.
     local g = game
     local w = g.Workspace
     local l = g.Lighting
     local t = w.Terrain
+    
+    -- Set Terrain properties
     t.WaterWaveSize = 0
     t.WaterWaveSpeed = 0
     t.WaterReflectance = 0
     t.WaterTransparency = 0
+    
+    -- Set Lighting properties
     l.GlobalShadows = false
     l.FogEnd = 9e9
     l.Brightness = 0
+    
+    -- Set rendering quality
     settings().Rendering.QualityLevel = "Level01"
+    
+    -- Loop through all descendants and modify materials and properties
     for i, v in pairs(g:GetDescendants()) do
         if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
             v.Material = "Plastic"
@@ -220,6 +230,8 @@ Server:AddButton("Anti Ping", function()
             v.TextureID = 10385902758728957
         end
     end
+
+    -- Disable visual effects in Lighting
     for i, e in pairs(l:GetChildren()) do
         if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
             e.Enabled = false
@@ -227,13 +239,18 @@ Server:AddButton("Anti Ping", function()
     end
 end)
 
-Server:AddTab("Server"):AddButton("Anti Kick", function()
+-- Anti Kick Button
+Server:AddButton("Anti Kick", function()
     wait(0.5)
+    
+    -- Create the GUI elements for Anti Kick display
     local ba = Instance.new("ScreenGui")
     local ca = Instance.new("TextLabel")
     local da = Instance.new("Frame")
     local _b = Instance.new("TextLabel")
     local ab = Instance.new("TextLabel")
+    
+    -- Setup GUI elements
     ba.Parent = game.CoreGui
     ba.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ca.Parent = ba
@@ -246,10 +263,12 @@ Server:AddTab("Server"):AddButton("Anti Kick", function()
     ca.Text = "Anti Afk"
     ca.TextColor3 = Color3.new(0, 1, 1)
     ca.TextSize = 22
+    
     da.Parent = ca
     da.BackgroundColor3 = Color3.new(0.196078, 0.196078, 0.196078)
     da.Position = UDim2.new(0, 0, 1.0192306, 0)
     da.Size = UDim2.new(0, 370, 0, 107)
+    
     _b.Parent = da
     _b.BackgroundColor3 = Color3.new(0.176471, 0.176471, 0.176471)
     _b.Position = UDim2.new(0, 0, 0.800455689, 0)
@@ -258,6 +277,7 @@ Server:AddTab("Server"):AddButton("Anti Kick", function()
     _b.Text = "Made by luca#5432"
     _b.TextColor3 = Color3.new(0, 1, 1)
     _b.TextSize = 20
+    
     ab.Parent = da
     ab.BackgroundColor3 = Color3.new(0.176471, 0.176471, 0.176471)
     ab.Position = UDim2.new(0, 0, 0.158377, 0)
@@ -266,38 +286,42 @@ Server:AddTab("Server"):AddButton("Anti Kick", function()
     ab.Text = "Status: Active"
     ab.TextColor3 = Color3.new(0, 1, 1)
     ab.TextSize = 20
+    
     local bb = game:service'VirtualUser'
     game:service'Players'.LocalPlayer.Idled:connect(function()
         bb:CaptureController()
         bb:ClickButton2(Vector2.new())
         ab.Text = "Roblox tried kicking you but I didn't let them!"
         wait(2)
-        ab.Text = "Status : Active"
+        ab.Text = "Status: Active"
     end)
 end)
 
+-- Auto Open Muscle King Crystal (Second Version)
 serverTab:AddSwitch("Auto Open Muscle King Crystal (Second Version)", function(value)
-    
-    -- Currently, this toggle does nothing, but you can add functionality here later
+    -- This toggle does nothing at the moment, but functionality can be added later.
 end)
 
+-- Weight Speed Slider (Premium Only)
 Server:AddSlider("Weight Speed (Premium only)", function(p)
-	setwalkspeed(p)   
-end, {                    
-
-	["min"] = 0,
-	["max"] = 1000,  
+    setwalkspeed(p)
+end, {
+    ["min"] = 0,
+    ["max"] = 1000,
 })
-slider:Set(16) -- Needed
 
+-- Punch Speed Slider (Premium Only)
 Server:AddSlider("Punch Speed (Premium only)", function(p)
-	setwalkspeed(p)   
-end, {                    
-
-	["min"] = 0,
-	["max"] = 1000,  
+    setpunchspeed(p) -- Assuming there's a function `setpunchspeed`
+end, {
+    ["min"] = 0,
+    ["max"] = 1000,
 })
-slider:Set(16) -- Needed
+
+-- Set default values for sliders
+Server:GetSlider("Weight Speed (Premium only)"):Set(16)
+Server:GetSlider("Punch Speed (Premium only)"):Set(16)
+
 
 
 -- Default values for the toggles
