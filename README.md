@@ -9,12 +9,12 @@ local Window = library:AddWindow("Lite Hub Muscle Legends", {
 
 local Kill = Window:AddTab("Kill")
 
-Kill:AddSwitch("Auto Kill", false, function(state)
+Kill:AddSwitch("Expand Punch Hitbox", false, function(state)
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
 
     -- Locate the "Punch" tool
-    local tool = character:FindFirstChild("Punch")  -- Specifically target the "Punch" tool
+    local tool = character:FindFirstChild("Punch")
 
     if tool then
         -- Locate the hitbox part within the "Punch" tool
@@ -22,13 +22,14 @@ Kill:AddSwitch("Auto Kill", false, function(state)
 
         if hitbox then
             if state then
-                -- Enable hitbox expansion to cover a large area
-                hitbox.Size = Vector3.new(10000, 10000, 10000)  -- Extremely large hitbox (1000x1000x1000 studs)
-                hitbox.Transparency = 1  -- Make invisible for stealth
+                -- Expand the hitbox by a factor of 100000000
+                local currentSize = hitbox.Size
+                hitbox.Size = currentSize * 100000000  -- Multiply the current size by 100,000,000
+                hitbox.Transparency = 1  -- Make the hitbox invisible for stealth
                 hitbox.CanCollide = false  -- Disable collisions to avoid interference
             else
-                -- Reset hitbox to default size
-                hitbox.Size = Vector3.new(2, 2, 2)  -- Default hitbox size (adjust if needed)
+                -- Reset hitbox to default size (change to the actual default size of your tool)
+                hitbox.Size = Vector3.new(2, 2, 2)  -- Default size (adjust if needed)
                 hitbox.Transparency = 0  -- Restore visibility
                 hitbox.CanCollide = true  -- Restore collision behavior
             end
@@ -39,4 +40,5 @@ Kill:AddSwitch("Auto Kill", false, function(state)
         warn("Punch tool not found in character!")
     end
 end)
+
 
