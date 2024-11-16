@@ -10,6 +10,7 @@ local window = library:AddWindow("Lite Hub Muscle Legends", {
 -- Variables
 local AutoKillToggle = false
 local AutoPunchToggle = false
+local punchTool = nil  -- Variable to store the "Punch" tool
 
 -- Function to handle teleportation of the entire body
 spawn(function()
@@ -43,17 +44,17 @@ spawn(function()
             local character = player.Character or player.CharacterAdded:Wait()
 
             -- Find the "Punch" tool in the player's Backpack
-            local punchTool = player.Backpack:FindFirstChild("Punch")
+            punchTool = player.Backpack:FindFirstChild("Punch")
 
-            if punchTool then
-                -- Equip the Punch tool if it's found
-                if character:FindFirstChild("Humanoid") and not character.Humanoid:FindFirstChildOfClass("Tool") then
+            if punchTool and character:FindFirstChild("Humanoid") then
+                -- Equip the "Punch" tool if it's not already equipped
+                if not character.Humanoid:FindFirstChildOfClass("Tool") then
                     punchTool.Parent = character
                 end
 
                 -- Simulate infinite punching by activating the tool repeatedly
                 if punchTool and punchTool.Parent == character then
-                    -- Check if the tool has an activation method (like "Activated" event)
+                    -- Check if the tool has an "Activated" event (usually used for activation)
                     if punchTool:FindFirstChild("Activated") then
                         punchTool.Activated:Fire()  -- Fire the punch tool's activation method
                     end
@@ -69,15 +70,17 @@ local Kill = window:AddTab("Kill")
 -- Add switches (toggles)
 Kill:AddSwitch("Auto Kill", function(value)
     AutoKillToggle = value  -- Update the AutoKill toggle state
-    if AutoKillToggle then
-        -- Add any necessary code to start killing, if required
-    end
 end)
 
 Kill:AddSwitch("Auto Punch", function(value)
     AutoPunchToggle = value  -- Update the AutoPunch toggle state
     if AutoPunchToggle then
-        -- The punching will automatically happen in the loop above
+        -- If AutoPunch is turned on, ensure that the punch tool is equipped and used
+    else
+        -- If AutoPunch is turned off, stop using the punch tool (remove it)
+        if punchTool then
+            punchTool.Parent = game.Players.LocalPlayer.Backpack  -- Move it back to the backpack if disabled
+        end
     end
 end)
 
