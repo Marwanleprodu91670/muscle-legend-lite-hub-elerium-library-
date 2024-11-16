@@ -101,7 +101,7 @@ Kill:AddTextBox("Select Target", function(text)
     targetPlayerName = text  -- Update the target player name when the textbox is filled
 end)
 
--- Add label "Target Player" under the Kill tab
+-- Add label "Target Player" under the Auto Punch toggle
 Kill:AddLabel("Target Player")
 
 -- Default values for the toggles
