@@ -323,59 +323,56 @@ end)
 -- View Stats tab
 local ViewStatsTab = Window:AddTab("ViewStats")
 
+-- Store the labels in a table for easier access
+local labels = {}
+
 -- Add a text box to enter the username
 local playerUsernameTextBox = ViewStatsTab:AddTextBox("Write Player Username", function(Text)
-    -- Check if the player with that username exists
+    -- Get the player by the entered username
     local player = game.Players:FindFirstChild(Text)
-    
-    -- Check if player exists
+
     if player then
-        -- Try to find and update Strength
+        -- Track and update Strength
         local strengthValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Strength")
         if strengthValue then
-            -- Update the label for Strength
-            ViewStatsTab:GetLabel(2):SetText("Strength: " .. strengthValue.Value)
+            labels[1]:SetText("Strength: " .. strengthValue.Value)
         else
-            -- If no Strength value found, show N/A
-            ViewStatsTab:GetLabel(2):SetText("Strength: N/A")
+            labels[1]:SetText("Strength: N/A")
         end
 
-        -- Try to find and update Durability
+        -- Track and update Durability
         local durabilityValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Durability")
         if durabilityValue then
-            -- Update the label for Durability
-            ViewStatsTab:GetLabel(4):SetText("Durability: " .. durabilityValue.Value)
+            labels[2]:SetText("Durability: " .. durabilityValue.Value)
         else
-            -- If no Durability value found, show N/A
-            ViewStatsTab:GetLabel(4):SetText("Durability: N/A")
+            labels[2]:SetText("Durability: N/A")
         end
 
-        -- Try to find and update Agility
+        -- Track and update Agility
         local agilityValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Agility")
         if agilityValue then
-            -- Update the label for Agility
-            ViewStatsTab:GetLabel(6):SetText("Agility: " .. agilityValue.Value)
+            labels[3]:SetText("Agility: " .. agilityValue.Value)
         else
-            -- If no Agility value found, show N/A
-            ViewStatsTab:GetLabel(6):SetText("Agility: N/A")
+            labels[3]:SetText("Agility: N/A")
         end
     else
         -- If player is not found, reset labels to show an error message
-        ViewStatsTab:GetLabel(2):SetText("Strength: Player not found")
-        ViewStatsTab:GetLabel(4):SetText("Durability: Player not found")
-        ViewStatsTab:GetLabel(6):SetText("Agility: Player not found")
+        labels[1]:SetText("Strength: Player not found")
+        labels[2]:SetText("Durability: Player not found")
+        labels[3]:SetText("Agility: Player not found")
     end
 end)
 
 -- Add labels for Strength, Durability, and Agility
-ViewStatsTab:AddLabel("Strength:")
-ViewStatsTab:AddLabel("")  -- This will be updated with strength value
+ViewStatsTab:AddLabel("Strength:")  -- Label 1
+table.insert(labels, ViewStatsTab:AddLabel(""))  -- This will be updated with strength value
 
-ViewStatsTab:AddLabel("Durability:")
-ViewStatsTab:AddLabel("")  -- This will be updated with durability value
+ViewStatsTab:AddLabel("Durability:")  -- Label 2
+table.insert(labels, ViewStatsTab:AddLabel(""))  -- This will be updated with durability value
 
-ViewStatsTab:AddLabel("Agility:")
-ViewStatsTab:AddLabel("")  -- This will be updated with agility value
+ViewStatsTab:AddLabel("Agility:")  -- Label 3
+table.insert(labels, ViewStatsTab:AddLabel(""))  -- This will be updated with agility value
+
 
 
 
