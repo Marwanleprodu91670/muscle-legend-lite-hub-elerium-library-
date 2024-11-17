@@ -9,10 +9,6 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "PlayerConfig"
 })
 
--- Create a table to store the player durability values
-local playerDurability = {}
-local selectedPlayerName = nil
-
 -- Function to get all player names in the server
 local function getAllPlayers()
     local playerNames = {}
@@ -35,26 +31,16 @@ local playerDropdown = Tab:AddDropdown({
     Default = "",
     Options = getAllPlayers(),
     Callback = function(value)
-        selectedPlayerName = value
-        -- Update the durability section when a player is selected
-        updateDurability(selectedPlayerName)
+        local player = game.Players:FindFirstChild(value)
+        if player and player:FindFirstChild("Durability") then
+            -- Print the player's durability to the output
+            print("Player: " .. player.Name .. " has Durability: " .. player.Durability.Value)
+        else
+            -- If no durability is found, print this
+            print("Player: " .. player.Name .. " does not have a Durability value.")
+        end
     end
 })
-
--- Add a label to display durability
-local durabilityLabel = Tab:AddLabel("Durability: N/A")
-
--- Function to update the durability of a selected player
-local function updateDurability(playerName)
-    local player = game.Players:FindFirstChild(playerName)
-    if player and player:FindFirstChild("Durability") then
-        local durabilityValue = player.Durability.Value
-        -- Update the durability label with the player's durability value
-        durabilityLabel:Set("Durability: " .. tostring(durabilityValue))
-    else
-        durabilityLabel:Set("Durability: N/A")
-    end
-end
 
 -- Function to refresh the dropdown every second
 local function refreshDropdown()
