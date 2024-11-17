@@ -323,7 +323,7 @@ end)
 -- View Stats tab
 local ViewStatsTab = Window:AddTab("ViewStats")
 
--- Create a dropdown for player selection
+-- Create dropdown for player selection
 local dropdown = features:AddDropdown("select", function(playerName)
     -- Find the player object based on the selected username
     local player = game.Players:FindFirstChild(playerName)
@@ -340,12 +340,18 @@ local dropdown = features:AddDropdown("select", function(playerName)
             -- If the values exist, update the labels with the stats
             if strength then
                 ViewStatsTab:FindFirstChild("StrengthLabel").Text = "Strength: " .. strength.Value
+            else
+                ViewStatsTab:FindFirstChild("StrengthLabel").Text = "Strength: N/A"
             end
             if durability then
                 ViewStatsTab:FindFirstChild("DurabilityLabel").Text = "Durability: " .. durability.Value
+            else
+                ViewStatsTab:FindFirstChild("DurabilityLabel").Text = "Durability: N/A"
             end
             if agility then
                 ViewStatsTab:FindFirstChild("AgilityLabel").Text = "Agility: " .. agility.Value
+            else
+                ViewStatsTab:FindFirstChild("AgilityLabel").Text = "Agility: N/A"
             end
         end
     end
@@ -356,21 +362,15 @@ for _, player in ipairs(game.Players:GetPlayers()) do
     dropdown:Add(player.Name)
 end
 
--- Add labels to the ViewStatsTab
-local strengthLabel = ViewStatsTab:AddLabel("Strength:")
-strengthLabel.Name = "StrengthLabel"  -- Name it for later reference
+-- Add labels to the ViewStatsTab and name them for reference
+local strengthLabel = ViewStatsTab:AddLabel("Strength: N/A")
+strengthLabel.Name = "StrengthLabel"
 
-ViewStatsTab:AddLabel("")  -- Empty space or line break
+local durabilityLabel = ViewStatsTab:AddLabel("Durability: N/A")
+durabilityLabel.Name = "DurabilityLabel"
 
-local durabilityLabel = ViewStatsTab:AddLabel("Durability:")
-durabilityLabel.Name = "DurabilityLabel"  -- Name it for later reference
-
-ViewStatsTab:AddLabel("")  -- Empty space or line break
-
-local agilityLabel = ViewStatsTab:AddLabel("Agility:")
-agilityLabel.Name = "AgilityLabel"  -- Name it for later reference
-
-ViewStatsTab:AddLabel("")  -- Empty space or line break
+local agilityLabel = ViewStatsTab:AddLabel("Agility: N/A")
+agilityLabel.Name = "AgilityLabel"
 
 -- Update the dropdown when new players join the game
 game.Players.PlayerAdded:Connect(function(player)
@@ -381,6 +381,7 @@ end)
 game.Players.PlayerRemoving:Connect(function(player)
     dropdown:Remove(player.Name)
 end)
+
 
 
 
