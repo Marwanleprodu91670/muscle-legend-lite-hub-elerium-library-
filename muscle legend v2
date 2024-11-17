@@ -283,47 +283,41 @@ RockTab:AddButton("Muscle King Rock", function()
 end)
 
 -- Teleport Tab
-local TeleportTab = Window:AddTab("Teleport")
+local Tab = Window:AddTab("Teleport")
+Tab:AddButton("Beach", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-11, 5, -178)
+end)
 
--- Beach Teleport
-TeleportTab:AddButton("Beach", function()
+Tab:AddButton("Legends", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4603, 989, -3898)
+end)
+
+Tab:AddButton("Muscle", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8626, 15, -5730)
+end)
+
+Tab:AddButton("Tiny", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-38, 5, 1884)
+end)
+
+Tab:AddButton("Secret", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2596, -1, 5738)
+end)
+
+Tab:AddButton("Inferno", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6759, 5, -1285)
+end)
+
+Tab:AddButton("Frost", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2623, 5, -409)
 end)
 
--- Mythical Teleport
-TeleportTab:AddButton("Mythical", function()
+Tab:AddButton("Mythical", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2251, 5, 1073)
 end)
 
--- Tiny Rock Teleport
-TeleportTab:AddButton("Tiny Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17.6410236, -1.30998898, 2106.48926, -1, 0, 0, 0, 1, 0, 0, 0, -1)
-end)
 
--- Frozen Rock Teleport
-TeleportTab:AddButton("Frozen Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2551.75854, -0.359962642, -243.308777, -1, 0, 0, 0, 1, 0, 0, 0, -1)
-end)
 
--- Mystic Rock Teleport
-TeleportTab:AddButton("Mystic Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2186.14111, -0.359961987, 1250.59802, 0.996191859, 0, -0.0871884301, 0, 1, 0, 0, 0, 1)
-end)
-
--- Inferno Rock Teleport
-TeleportTab:AddButton("Inferno Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7262.18701, -0.359961987, -1259.24426, 1, 0, 0, 0, 1, 0, 0, 0, 1)
-end)
-
--- Legend Rock Teleport
-TeleportTab:AddButton("Legend Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4140.41797, 987.453186, -4089.34937, -1, 0, 0, 0, 1, 0, 0, 0, -1)
-end)
-
--- Muscle King Rock Teleport
-TeleportTab:AddButton("Muscle King Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8971.56641, 27.4031715, -6061.27734, -1, 0, 0, 0, 1, 0, 0, 0, -1)
-end)
 
 
 -- Credits Tab
