@@ -323,51 +323,52 @@ end)
 -- View Stats tab
 local ViewStatsTab = Window:AddTab("ViewStats")
 
--- Function to get all player names in the server
-local function getAllPlayers()
-    local playerNames = {}
-    for _, player in pairs(game.Players:GetPlayers()) do
-        table.insert(playerNames, player.Name)
-    end
-    return playerNames
-end
+-- Add a text box to enter the username
+local playerUsernameTextBox = ViewStatsTab:AddTextBox("Write Player Username", function(Text)
+    -- Get the player by the entered username
+    local player = game.Players:FindFirstChild(Text)
+    
+    if player then
+        -- Track and update Strength
+        local strengthValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Strength")
+        if strengthValue then
+            ViewStatsTab:GetLabel(2):SetText("Strength: " .. strengthValue.Value)
+        else
+            ViewStatsTab:GetLabel(2):SetText("Strength: N/A")
+        end
 
--- Create the dropdown and store it in a variable
-local dropdown = ViewStatsTab:AddDropdown("Select Player", function(text)
-    local player = game.Players:FindFirstChild(text) -- Find the selected player
+        -- Track and update Durability
+        local durabilityValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Durability")
+        if durabilityValue then
+            ViewStatsTab:GetLabel(4):SetText("Durability: " .. durabilityValue.Value)
+        else
+            ViewStatsTab:GetLabel(4):SetText("Durability: N/A")
+        end
 
-    if player and player:FindFirstChild("Durability") then
-        -- If the player has the "Durability" IntValue, print it
-        print("Player: " .. player.Name .. " has Durability: " .. player.Durability.Value)
+        -- Track and update Agility
+        local agilityValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Agility")
+        if agilityValue then
+            ViewStatsTab:GetLabel(6):SetText("Agility: " .. agilityValue.Value)
+        else
+            ViewStatsTab:GetLabel(6):SetText("Agility: N/A")
+        end
     else
-        -- If no durability is found, print this
-        print("Player: " .. player.Name .. " does not have a Durability value.")
+        -- If player is not found, clear labels
+        ViewStatsTab:GetLabel(2):SetText("Strength: Player not found")
+        ViewStatsTab:GetLabel(4):SetText("Durability: Player not found")
+        ViewStatsTab:GetLabel(6):SetText("Agility: Player not found")
     end
 end)
 
--- Function to refresh the dropdown
-local function refreshDropdown()
-    local playersList = getAllPlayers()
-    
-    -- Debugging: print the list of players
-    print("Players List: ", table.concat(playersList, ", "))
-    
-    -- Check if playersList is empty
-    if #playersList == 0 then
-        print("No players found!")
-    end
-    
-    -- Update the dropdown options with the current list of players
-    dropdown:SetOptions(playersList)  -- Reset the dropdown options
-end
+-- Add labels for Strength, Durability, and Agility
+ViewStatsTab:AddLabel("Strength:")
+ViewStatsTab:AddLabel("")  -- This will be updated with strength value
 
--- Refresh the dropdown every 1 second
-game:GetService("RunService").Heartbeat:Connect(function()
-    refreshDropdown()
-end)
+ViewStatsTab:AddLabel("Durability:")
+ViewStatsTab:AddLabel("")  -- This will be updated with durability value
 
--- Initial population of the dropdown options
-refreshDropdown()
+ViewStatsTab:AddLabel("Agility:")
+ViewStatsTab:AddLabel("")  -- This will be updated with agility value
 
 
 
