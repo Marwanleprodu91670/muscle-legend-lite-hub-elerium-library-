@@ -151,70 +151,148 @@ local Tab = Window:AddTab("Rebirthing")
 
 local Tab = Window:AddTab("Auto Farm")
 
-Tab:AddSwitch("Auto Weight", function(State)
-    if State then
-        getgenv().AutoWeight = true
-        while getgenv().AutoWeight do
-            local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Weight")
-            if tool then
-                tool.Parent = game.Players.LocalPlayer.Character
-                tool:Activate()
+--variables
+local AutoWeightToggle = false
+local AutoPushupsToggle = false
+local SitupsToggle = false
+local MuscleKingFarmToggle = false
+local punchTool = nil  -- Variable to store the "Punch" tool
+local weightTool = nil  -- Variable to store the "Weight" tool
+local pushupsTool = nil  -- Variable to store the "Pushups" tool
+local situpsTool = nil  -- Variable to store the "Situps" tool
+
+-- Function to handle the Auto Punch functionality
+local function AutoPunch()
+    spawn(function()
+        while AutoPunchToggle do
+            local player = game.Players.LocalPlayer
+            local punchTool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+            
+            if punchTool then
+                -- Equip the Punch tool if it's found
+                player.Character.Humanoid:EquipTool(punchTool)
+
+                -- Use the Punch tool by activating it
+                punchTool:Activate()
             end
-            wait(0.1)
+            
+            wait(0.1) -- Adjust frequency of tool activation to your needs
         end
-    else
-        getgenv().AutoWeight = false
+    end)
+end
+
+-- Function to handle the Auto Weight functionality
+local function AutoWeight()
+    spawn(function()
+        while AutoWeightToggle do
+            local player = game.Players.LocalPlayer
+            local weightTool = player.Backpack:FindFirstChild("Weight") or player.Character:FindFirstChild("Weight")
+            
+            if weightTool then
+                -- Equip the Weight tool if it's found
+                player.Character.Humanoid:EquipTool(weightTool)
+
+                -- Use the Weight tool by activating it
+                weightTool:Activate()
+            end
+            
+            wait(0.1) -- Adjust frequency of tool activation to your needs
+        end
+    end)
+end
+
+-- Function to handle the Auto Pushups (Second Version) functionality
+local function AutoPushups()
+    spawn(function()
+        while AutoPushupsToggle do
+            local player = game.Players.LocalPlayer
+            local pushupsTool = player.Backpack:FindFirstChild("Pushups") or player.Character:FindFirstChild("Pushups")
+            
+            if pushupsTool then
+                -- Equip the Pushups tool if it's found
+                player.Character.Humanoid:EquipTool(pushupsTool)
+
+                -- Use the Pushups tool by activating it
+                pushupsTool:Activate()
+            end
+            
+            wait(0.1) -- Adjust frequency of tool activation to your needs
+        end
+    end)
+end
+
+-- Function to handle the Situps (Second Version) functionality
+local function AutoSitups()
+    spawn(function()
+        while SitupsToggle do
+            local player = game.Players.LocalPlayer
+            local situpsTool = player.Backpack:FindFirstChild("Situps") or player.Character:FindFirstChild("Situps")
+            
+            if situpsTool then
+                -- Equip the Situps tool if it's found
+                player.Character.Humanoid:EquipTool(situpsTool)
+
+                -- Use the Situps tool by activating it
+                situpsTool:Activate()
+            end
+            
+            wait(0.1) -- Adjust frequency of tool activation to your needs
+        end
+    end)
+end
+
+-- Function to handle the Muscle King Farm functionality
+local function MuscleKingFarm()
+    spawn(function()
+        while MuscleKingFarmToggle do
+            local player = game.Players.LocalPlayer
+            -- Teleport the player to the specified location
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(-8546.25879, 23.045435, -5636.78418)
+
+            -- Equip the "Pushups" tool
+            local pushupsTool = player.Backpack:FindFirstChild("Pushups") or player.Character:FindFirstChild("Pushups")
+            if pushupsTool then
+                player.Character.Humanoid:EquipTool(pushupsTool)
+                pushupsTool:Activate()  -- Use the Pushups tool by activating it
+            end
+            
+            wait(0.1)  -- Adjust frequency of tool activation to your needs
+        end
+    end)
+end
+
+
+-- Add Auto Weight toggle in Auto Farm Tab
+AutoFarm:AddSwitch("Auto Weight", function(value)
+    AutoWeightToggle = value  -- Update the AutoWeight toggle state
+    if AutoWeightToggle then
+        AutoWeight()  -- Start the Auto Weight loop when the toggle is enabled
     end
 end)
 
-Tab:AddSwitch("Auto Situps", function(State)
-    if State then
-        getgenv().AutoSitups = true
-        while getgenv().AutoSitups do
-            local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Situps")
-            if tool then
-                tool.Parent = game.Players.LocalPlayer.Character
-                tool:Activate()
-            end
-            wait(0.1)
-        end
-    else
-        getgenv().AutoSitups = false
+-- Add Auto Pushups toggle in Auto Farm Tab
+AutoFarm:AddSwitch("Auto Pushups (Second Version)", function(value)
+    AutoPushupsToggle = value  -- Update the AutoPushups toggle state
+    if AutoPushupsToggle then
+        AutoPushups()  -- Start the Auto Pushups loop when the toggle is enabled
     end
 end)
 
-Tab:AddSwitch("Auto Pushups", function(State)
-    if State then
-        getgenv().AutoPushups = true
-        while getgenv().AutoPushups do
-            local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Pushups")
-            if tool then
-                tool.Parent = game.Players.LocalPlayer.Character
-                tool:Activate()
-            end
-            wait(0.1)
-        end
-    else
-        getgenv().AutoPushups = false
+-- Add Situps toggle in Auto Farm Tab
+AutoFarm:AddSwitch("Situps (Second Version)", function(value)
+    SitupsToggle = value  -- Update the Situps toggle state
+    if SitupsToggle then
+        AutoSitups()  -- Start the Auto Situps loop when the toggle is enabled
     end
 end)
 
-Tab:AddSwitch("Auto Handstands", function(State)
-    if State then
-        getgenv().AutoHandstands = true
-        while getgenv().AutoHandstands do
-            local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Handstands")
-            if tool then
-                tool.Parent = game.Players.LocalPlayer.Character
-                tool:Activate()
-            end
-            wait(0.1)
-        end
-    else
-        getgenv().AutoHandstands = false
+-- Add Muscle King Farm toggle in Auto Farm Tab
+AutoFarm:AddSwitch("Muscle King Farm", function(value)
+    MuscleKingFarmToggle = value  -- Update the MuscleKingFarm toggle state
+    if MuscleKingFarmToggle then
+        MuscleKingFarm()  -- Start the Muscle King Farm loop when the toggle is enabled
     end
 end)
-
 
 
 
