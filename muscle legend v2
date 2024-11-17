@@ -3,12 +3,15 @@ local Window = Library:AddWindow("Muscle Legends V2", {
     MinSize = Vector2.new(622, 650)
 })
 
-local Tab = Window:AddTab("Main")
-
+-- Default values for sliders
 local defaultWalkSpeed = 16
 local defaultJumpPower = 50
 local defaultHipHeight = 2
 
+-- Tab for Main controls
+local Tab = Window:AddTab("Main")
+
+-- WalkSpeed Slider
 Tab:AddSlider("WalkSpeed", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
@@ -16,6 +19,7 @@ Tab:AddSlider("WalkSpeed", function(Value)
     end
 end, { Min = 16, Max = 2000, Default = defaultWalkSpeed })
 
+-- JumpPower Slider
 Tab:AddSlider("JumpPower", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
@@ -23,6 +27,7 @@ Tab:AddSlider("JumpPower", function(Value)
     end
 end, { Min = 50, Max = 500, Default = defaultJumpPower })
 
+-- HipHeight Slider
 Tab:AddSlider("HipHeight", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
@@ -30,26 +35,28 @@ Tab:AddSlider("HipHeight", function(Value)
     end
 end, { Min = 0, Max = 1000, Default = defaultHipHeight })
 
-Tab:AddTextBox("Size", function(Text)
-end)
+-- TextBox and Switches
+Tab:AddTextBox("Size", function(Text) end)
 
-Tab:AddSwitch("Set Size", function(State)
-end)
+Tab:AddSwitch("Set Size", function(State) end)
 
+-- Invisible Baseplate function
 local function addInvisibleBaseplate()
     local baseplate = Instance.new("Part")
     baseplate.Size = Vector3.new(math.huge, 1, math.huge)
     baseplate.Anchored = true
     baseplate.CanCollide = true
-    baseplate.Transparency = 1 -- Makes the baseplate invisible
-    baseplate.Position = Vector3.new(0, -10, 0) -- Adjust to be under the water level
+    baseplate.Transparency = 1
+    baseplate.Position = Vector3.new(0, -10, 0)
     baseplate.Parent = game.Workspace
 end
 
 addInvisibleBaseplate()
 
-llocal Tab = Window:AddTab("Kill")
+-- Tab for Kill Functions
+local Tab = Window:AddTab("Kill")
 
+-- Speed Punch Button
 Tab:AddButton("Speed Punch", function()
     local player = game.Players.LocalPlayer
     local punch = player.Backpack:FindFirstChild("Punch")
@@ -72,6 +79,7 @@ end)
 _G.autoKillActive = false
 _G.autoPunchActive = false
 
+-- Auto Punch Toggle
 Tab:AddSwitch("Auto Punch", function(State)
     _G.autoPunchActive = State
 
@@ -93,6 +101,7 @@ Tab:AddSwitch("Auto Punch", function(State)
     end
 end)
 
+-- Function for teleporting heads to right hand
 local function teleportHeadsToRightHand()
     local player = game.Players.LocalPlayer
     local character = player.Character or game.Workspace:FindFirstChild(player.Name)
@@ -114,6 +123,7 @@ local function teleportHeadsToRightHand()
     end
 end
 
+-- Auto Kill Toggle
 Tab:AddSwitch("Auto Kill", function(State)
     _G.autoKillActive = State
 
@@ -128,40 +138,27 @@ Tab:AddSwitch("Auto Kill", function(State)
     end
 end)
 
-
-
+-- Tab for Kill V2 (empty functions for now)
 local Tab = Window:AddTab("Kill V2")
 
-Tab:AddTextBox("Instant Kill Player", function(Text)
+Tab:AddTextBox("Instant Kill Player", function(Text) end)
+Tab:AddSwitch("Instant Kill Players", function(State) end)
+Tab:AddSwitch("Auto Kill Good/Bad Karma", function(State) end)
 
-end)
-
-Tab:AddSwitch("Instant Kill Players", function(State)
-
-end)
-
-Tab:AddSwitch("Auto Kill Good/Bad Karma", function(State)
-
-end)
-
-
+-- Tab for Rebirthing and Stats (empty for now)
 local Tab = Window:AddTab("LookStats")
-
 local Tab = Window:AddTab("Rebirthing")
 
+-- Tab for Auto Farm (Functional Tools)
 local Tab = Window:AddTab("Auto Farm")
 
---variables
+-- Variables for tools and toggles
 local AutoWeightToggle = false
 local AutoPushupsToggle = false
 local SitupsToggle = false
 local MuscleKingFarmToggle = false
-local punchTool = nil  -- Variable to store the "Punch" tool
-local weightTool = nil  -- Variable to store the "Weight" tool
-local pushupsTool = nil  -- Variable to store the "Pushups" tool
-local situpsTool = nil  -- Variable to store the "Situps" tool
 
--- Function to handle the Auto Punch functionality
+-- Auto Punch Functionality
 local function AutoPunch()
     spawn(function()
         while AutoPunchToggle do
@@ -169,19 +166,15 @@ local function AutoPunch()
             local punchTool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
             
             if punchTool then
-                -- Equip the Punch tool if it's found
                 player.Character.Humanoid:EquipTool(punchTool)
-
-                -- Use the Punch tool by activating it
                 punchTool:Activate()
             end
-            
-            wait(0.1) -- Adjust frequency of tool activation to your needs
+            wait(0.1)
         end
     end)
 end
 
--- Function to handle the Auto Weight functionality
+-- Auto Weight Functionality
 local function AutoWeight()
     spawn(function()
         while AutoWeightToggle do
@@ -189,19 +182,15 @@ local function AutoWeight()
             local weightTool = player.Backpack:FindFirstChild("Weight") or player.Character:FindFirstChild("Weight")
             
             if weightTool then
-                -- Equip the Weight tool if it's found
                 player.Character.Humanoid:EquipTool(weightTool)
-
-                -- Use the Weight tool by activating it
                 weightTool:Activate()
             end
-            
-            wait(0.1) -- Adjust frequency of tool activation to your needs
+            wait(0.1)
         end
     end)
 end
 
--- Function to handle the Auto Pushups (Second Version) functionality
+-- Auto Pushups Functionality
 local function AutoPushups()
     spawn(function()
         while AutoPushupsToggle do
@@ -209,19 +198,15 @@ local function AutoPushups()
             local pushupsTool = player.Backpack:FindFirstChild("Pushups") or player.Character:FindFirstChild("Pushups")
             
             if pushupsTool then
-                -- Equip the Pushups tool if it's found
                 player.Character.Humanoid:EquipTool(pushupsTool)
-
-                -- Use the Pushups tool by activating it
                 pushupsTool:Activate()
             end
-            
-            wait(0.1) -- Adjust frequency of tool activation to your needs
+            wait(0.1)
         end
     end)
 end
 
--- Function to handle the Situps (Second Version) functionality
+-- Auto Situps Functionality
 local function AutoSitups()
     spawn(function()
         while SitupsToggle do
@@ -229,113 +214,90 @@ local function AutoSitups()
             local situpsTool = player.Backpack:FindFirstChild("Situps") or player.Character:FindFirstChild("Situps")
             
             if situpsTool then
-                -- Equip the Situps tool if it's found
                 player.Character.Humanoid:EquipTool(situpsTool)
-
-                -- Use the Situps tool by activating it
                 situpsTool:Activate()
             end
-            
-            wait(0.1) -- Adjust frequency of tool activation to your needs
+            wait(0.1)
         end
     end)
 end
 
--- Function to handle the Muscle King Farm functionality
+-- Muscle King Farm Functionality
 local function MuscleKingFarm()
     spawn(function()
         while MuscleKingFarmToggle do
             local player = game.Players.LocalPlayer
-            -- Teleport the player to the specified location
             player.Character.HumanoidRootPart.CFrame = CFrame.new(-8546.25879, 23.045435, -5636.78418)
-
-            -- Equip the "Pushups" tool
             local pushupsTool = player.Backpack:FindFirstChild("Pushups") or player.Character:FindFirstChild("Pushups")
             if pushupsTool then
                 player.Character.Humanoid:EquipTool(pushupsTool)
-                pushupsTool:Activate()  -- Use the Pushups tool by activating it
+                pushupsTool:Activate()
             end
-            
-            wait(0.1)  -- Adjust frequency of tool activation to your needs
+            wait(0.1)
         end
     end)
 end
 
-
--- Add Auto Weight toggle in Auto Farm Tab
+-- Add Auto Weight Toggle
 AutoFarm:AddSwitch("Auto Weight", function(value)
-    AutoWeightToggle = value  -- Update the AutoWeight toggle state
+    AutoWeightToggle = value
     if AutoWeightToggle then
-        AutoWeight()  -- Start the Auto Weight loop when the toggle is enabled
+        AutoWeight()
     end
 end)
 
--- Add Auto Pushups toggle in Auto Farm Tab
-AutoFarm:AddSwitch("Auto Pushups (Second Version)", function(value)
-    AutoPushupsToggle = value  -- Update the AutoPushups toggle state
+-- Add Auto Pushups Toggle
+AutoFarm:AddSwitch("Auto Pushups", function(value)
+    AutoPushupsToggle = value
     if AutoPushupsToggle then
-        AutoPushups()  -- Start the Auto Pushups loop when the toggle is enabled
+        AutoPushups()
     end
 end)
 
--- Add Situps toggle in Auto Farm Tab
-AutoFarm:AddSwitch("Situps (Second Version)", function(value)
-    SitupsToggle = value  -- Update the Situps toggle state
+-- Add Situps Toggle
+AutoFarm:AddSwitch("Situps", function(value)
+    SitupsToggle = value
     if SitupsToggle then
-        AutoSitups()  -- Start the Auto Situps loop when the toggle is enabled
+        AutoSitups()
     end
 end)
 
--- Add Muscle King Farm toggle in Auto Farm Tab
+-- Add Muscle King Farm Toggle
 AutoFarm:AddSwitch("Muscle King Farm", function(value)
-    MuscleKingFarmToggle = value  -- Update the MuscleKingFarm toggle state
+    MuscleKingFarmToggle = value
     if MuscleKingFarmToggle then
-        MuscleKingFarm()  -- Start the Muscle King Farm loop when the toggle is enabled
+        MuscleKingFarm()
     end
 end)
 
-
-
-
-
-
-
-
+-- Tab for Rock locations
 local Tab = Window:AddTab("Rock")
-
 Tab:AddButton("Tiny Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17.6410236, -1.30998898, 2106.48926, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17.6410236, -1.30998898, 2106.48926)
 end)
 
 Tab:AddButton("Frozen Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2551.75854, -0.359962642, -243.308777, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2551.75854, -0.359962642, -243.308777)
 end)
 
 Tab:AddButton("Mystic Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2186.14111, -0.359961987, 1250.59802, 0.996191859, 0, -0.0871884301, 0, 1, 0, 0, 0, -1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2186.14111, -0.359961987, 1250.59802)
 end)
 
 Tab:AddButton("Inferno Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7262.18701, -0.359961987, -1259.24426, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7262.18701, -0.359961987, -1259.24426)
 end)
 
 Tab:AddButton("Legend Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4140.41797, 987.453186, -4089.34937, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4140.41797, 987.453186, -4089.34937)
 end)
 
 Tab:AddButton("Muscle King Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8971.56641, 27.4031715, -6061.27734, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8971.56641, 27.4031715, -6061.27734)
 end)
 
-
-
-
-
-
-
-
+-- Tab for Teleport locations
 local Tab = Window:AddTab("Teleport")
-
 Tab:AddButton("Beach", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-11, 5, -178)
 end)
@@ -367,6 +329,7 @@ end)
 Tab:AddButton("Mythical", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2251, 5, 1073)
 end)
+
 
 local Tab = Window:AddTab("Misc")
 
