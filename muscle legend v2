@@ -320,7 +320,7 @@ TeleportTab:AddButton("Mythical", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2251, 5, 1073)
 end)
 
---View Stats tab
+-- View Stats tab
 local ViewStatsTab = Window:AddTab("ViewStats")
 
 -- Function to get all player names in the server
@@ -332,8 +332,8 @@ local function getAllPlayers()
     return playerNames
 end
 
--- Create the dropdown
-ViewStatsTab:AddDropdown("Select Player", function(text)
+-- Create the dropdown and store it in a variable
+local dropdown = ViewStatsTab:AddDropdown("Select Player", function(text)
     local player = game.Players:FindFirstChild(text) -- Find the selected player
 
     if player and player:FindFirstChild("Durability") then
@@ -344,14 +344,6 @@ ViewStatsTab:AddDropdown("Select Player", function(text)
         print("Player: " .. player.Name .. " does not have a Durability value.")
     end
 end)
-
--- Add options to the dropdown
-local playersList = getAllPlayers()
-
--- Add each player to the dropdown
-for _, playerName in ipairs(playersList) do
-    dropdown:Add(playerName)
-end
 
 -- Function to refresh the dropdown every second
 local function refreshDropdown()
@@ -365,6 +357,15 @@ end
 
 -- Start the refresh loop in a separate thread
 spawn(refreshDropdown)
+
+-- Add initial options to the dropdown
+local playersList = getAllPlayers()
+
+-- Add each player to the dropdown
+for _, playerName in ipairs(playersList) do
+    dropdown:Add(playerName)
+end
+
 
 
 
