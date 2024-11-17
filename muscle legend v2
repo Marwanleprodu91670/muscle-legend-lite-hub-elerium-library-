@@ -348,6 +348,16 @@ end)
 -- Function to refresh the dropdown
 local function refreshDropdown()
     local playersList = getAllPlayers()
+    
+    -- Debugging: print the list of players
+    print("Players List: ", table.concat(playersList, ", "))
+    
+    -- Check if playersList is empty
+    if #playersList == 0 then
+        print("No players found!")
+    end
+    
+    -- Update the dropdown options with the current list of players
     dropdown:SetOptions(playersList)  -- Reset the dropdown options
 end
 
@@ -358,6 +368,7 @@ end)
 
 -- Initial population of the dropdown options
 refreshDropdown()
+
 
 
 
