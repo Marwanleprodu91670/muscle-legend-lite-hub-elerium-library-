@@ -123,33 +123,31 @@ KillTab:AddSwitch("Auto Kill", function(State)
 end)
 
 --Rebirth tab
--- Variables for Auto Rebirth
-local AutoRebirthToggle = false
-local StopRebirthPoint = nil
-local CurrentRebirths = 0 -- Track current rebirths locally (may vary if not synced with server)
+-- Rebirth Tab
+local RebirthTab = Window:AddTab("Rebirth")
 
--- Function to trigger a rebirth
+-- Variable to track Auto Rebirth toggle state
+local AutoRebirthToggle = false
+
+-- Function to trigger the rebirth event
 local function doRebirth()
     local rebirthEvent = game.ReplicatedStorage.rEvents:FindFirstChild("rebirthRemote")
     if rebirthEvent then
         rebirthEvent:FireServer()
+    else
+        warn("Rebirth event not found!")
     end
 end
 
--- Function to handle auto rebirth
+-- Function for the Auto Rebirth loop
 local function autoRebirthLoop()
     while AutoRebirthToggle do
-        if StopRebirthPoint and CurrentRebirths >= StopRebirthPoint then
-            break -- Stop the loop if the stop point is reached
-        end
         doRebirth()
-        wait(0.1) -- Adjust delay to avoid overwhelming the server
+        wait(0.1) -- Adjust the delay if needed
     end
 end
 
--- Add Auto Rebirth Toggle to Tab
-local RebirthTab = Window:AddTab("Rebirth")
-
+-- Add Auto Rebirth Toggle to the Rebirth Tab
 RebirthTab:AddSwitch("Auto Rebirth", function(State)
     AutoRebirthToggle = State
     if AutoRebirthToggle then
@@ -157,21 +155,6 @@ RebirthTab:AddSwitch("Auto Rebirth", function(State)
     end
 end)
 
--- Add Textbox for Stop Rebirth Point
-RebirthTab:AddTextBox("Set Stop Rebirth Point", function(Text)
-    local number = tonumber(Text)
-    if number then
-        StopRebirthPoint = number
-    else
-        warn("Invalid input: Please enter a valid number.")
-    end
-end)
-
--- Update Current Rebirths (Example: update from server)
--- This assumes there is a leaderboard or value that tracks rebirths.
-game.Players.LocalPlayer.leaderstats.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
-    CurrentRebirths = game.Players.LocalPlayer.leaderstats.Rebirths.Value
-end)
 
 
 
