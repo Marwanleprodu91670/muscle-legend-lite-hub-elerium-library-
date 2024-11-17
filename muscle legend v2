@@ -37,7 +37,6 @@ end, { Min = 0, Max = 1000, Default = defaultHipHeight })
 
 -- TextBox and Switches
 Tab:AddTextBox("Size", function(Text) end)
-
 Tab:AddSwitch("Set Size", function(State) end)
 
 -- Invisible Baseplate function
@@ -138,12 +137,26 @@ Tab:AddSwitch("Auto Kill", function(State)
     end
 end)
 
--- Tab for Kill V2 (empty functions for now)
-local Tab = Window:AddTab("Kill V2")
+-- Tab for Miscellaneous functions (Added Back)
+local Tab = Window:AddTab("Misc")
 
-Tab:AddTextBox("Instant Kill Player", function(Text) end)
-Tab:AddSwitch("Instant Kill Players", function(State) end)
-Tab:AddSwitch("Auto Kill Good/Bad Karma", function(State) end)
+-- Button for Clear Workspace
+Tab:AddButton("Clear Workspace", function()
+    for _, obj in pairs(game.Workspace:GetChildren()) do
+        if obj:IsA("Part") then
+            obj:Destroy()
+        end
+    end
+end)
+
+-- Button for Toggle Player Visibility
+Tab:AddSwitch("Hide Players", function(State)
+    for _, player in pairs(game.Players:GetChildren()) do
+        if player.Character then
+            player.Character:FindFirstChild("HumanoidRootPart").Transparency = State and 1 or 0
+        end
+    end
+end)
 
 -- Tab for Rebirthing and Stats (empty for now)
 local Tab = Window:AddTab("LookStats")
@@ -273,30 +286,14 @@ end)
 -- Tab for Rock locations
 local Tab = Window:AddTab("Rock")
 Tab:AddButton("Tiny Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17.6410236, -1.30998898, 2106.48926)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1821.39197, -0.359962642, -202.267746)
 end)
 
 Tab:AddButton("Frozen Rock", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2551.75854, -0.359962642, -243.308777)
 end)
 
-Tab:AddButton("Mystic Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2186.14111, -0.359961987, 1250.59802)
-end)
-
-Tab:AddButton("Inferno Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7262.18701, -0.359961987, -1259.24426)
-end)
-
-Tab:AddButton("Legend Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4140.41797, 987.453186, -4089.34937)
-end)
-
-Tab:AddButton("Muscle King Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8971.56641, 27.4031715, -6061.27734)
-end)
-
--- Tab for Teleport locations
+-- Tab for Teleports (Restored)
 local Tab = Window:AddTab("Teleport")
 Tab:AddButton("Beach", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-11, 5, -178)
@@ -329,6 +326,15 @@ end)
 Tab:AddButton("Mythical", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2251, 5, 1073)
 end)
+
+-- Tab for Credits (Restored)
+local Tab = Window:AddTab("Credits")
+Tab:AddLabel("Script by Adopt and 𝓚_𝓡
+")
+Tab:AddLabel("discord: curve0610/kr.1220
+")
+
+
 
 
 local Tab = Window:AddTab("Misc")
