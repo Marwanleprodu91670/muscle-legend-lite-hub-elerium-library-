@@ -49,128 +49,83 @@ end
 addInvisibleBaseplate()
 
 local Tab = Window:AddTab("Kill")
-Tab:AddSwitch("Auto Punch", function(State)
-end)
-
-Tab:AddSwitch("Auto Punch (Movement)", function(State)
-end)
 
 Tab:AddButton("Speed Punch", function()
-    
-        local player = game.Players.LocalPlayer
-        local punch = player.Backpack:FindFirstChild("Punch")
-        local character = game.Workspace:FindFirstChild(player.Name)
-        local punch1
+    local player = game.Players.LocalPlayer
+    local punch = player.Backpack:FindFirstChild("Punch")
+    local character = game.Workspace:FindFirstChild(player.Name)
+    local punch1
 
-        if character then
-            punch1 = character:FindFirstChild("Punch")
-        end
+    if character then
+        punch1 = character:FindFirstChild("Punch")
+    end
 
-        local attackTime = 0 -- Fast punch time
+    local attackTime = 0
 
-        if punch and punch:FindFirstChild("attackTime") then
-            punch.attackTime.Value = attackTime
-        elseif punch1 and punch1:FindFirstChild("attackTime") then
-            punch1.attackTime.Value = attackTime
-        end
-    end)
+    if punch and punch:FindFirstChild("attackTime") then
+        punch.attackTime.Value = attackTime
+    elseif punch1 and punch1:FindFirstChild("attackTime") then
+        punch1.attackTime.Value = attackTime
+    end
+end)
 
 _G.autoKillActive = false
-_G.whitelistPlayer = nil
+_G.autoPunchActive = false
 
-local function makeInvisible(character)
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Transparency = 1
-        elseif part:IsA("Decal") then
-            part.Transparency = 1
+Tab:AddSwitch("Auto Punch", function(State)
+    _G.autoPunchActive = State
+
+    if _G.autoPunchActive then
+        local function autoPunchLoop()
+            while _G.autoPunchActive do
+                local player = game.Players.LocalPlayer
+                local tool = player.Backpack:FindFirstChild("Auto Punch")
+                if tool then
+                    tool.Parent = player.Character
+                    tool:Activate()
+                end
+                wait(0.01)
+            end
+        end
+        coroutine.wrap(autoPunchLoop)()
+    end
+end)
+
+local function teleportHeadsToRightHand()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or game.Workspace:FindFirstChild(player.Name)
+    if not character then return end
+
+    local rightHand = character:FindFirstChild("RightHand")
+    if not rightHand then return end
+
+    for _, otherPlayer in pairs(game.Players:GetChildren()) do
+        if otherPlayer.Name ~= player.Name then
+            local otherCharacter = game.Workspace:FindFirstChild(otherPlayer.Name)
+            if otherCharacter then
+                local head = otherCharacter:FindFirstChild("Head")
+                if head then
+                    head.CFrame = rightHand.CFrame
+                end
+            end
         end
     end
 end
-
-local function makeVisible(character)
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Transparency = 0
-        elseif part:IsA("Decal") then
-            part.Transparency = 0
-        end
-    end
-end
-
-Tab:AddTextBox("Whitelist Player", function(Text)
-    _G.whitelistPlayer = Text
-end)
-
-Tab:AddButton("Clear", function()
-
-end)
 
 Tab:AddSwitch("Auto Kill", function(State)
     _G.autoKillActive = State
 
     if _G.autoKillActive then
-        local function autoKill()
+        local function autoKillLoop()
             while _G.autoKillActive do
+                teleportHeadsToRightHand()
                 wait(0.1)
-                local player = game.Players.LocalPlayer
-                if player.muscleEvent then
-                    player.muscleEvent:FireServer("punch", "rightHand")
-                    player.muscleEvent:FireServer("punch", "leftHand")
-
-                    for _, otherPlayer in pairs(game.Players:GetChildren()) do
-                        if otherPlayer.Name ~= player.Name and (not _G.whitelistPlayer or otherPlayer.Name ~= _G.whitelistPlayer) then
-                            local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-
-                            if character then
-                                makeInvisible(character)
-
-                                local leftHand = player.Character and player.Character:FindFirstChild("LeftHand")
-                                if leftHand then
-                                    local head = character:FindFirstChild("Head")
-                                    if head then
-                                        head.CFrame = leftHand.CFrame
-                                    end
-
-                                    for _, descendant in pairs(character:GetDescendants()) do
-                                        if descendant:IsA("BasePart") and descendant.Name == "Handle" then
-                                            descendant.CFrame = leftHand.CFrame
-                                        end
-                                    end
-
-                                    local sweatPart = character:FindFirstChild("sweatPart")
-                                    if sweatPart then
-                                        sweatPart.CFrame = leftHand.CFrame
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
             end
         end
-
-        coroutine.wrap(autoKill)()
-    else
-        local player = game.Players.LocalPlayer
-        local localCharacter = game.Workspace:FindFirstChild(player.Name)
-        if localCharacter then
-            makeVisible(localCharacter)
-        end
+        coroutine.wrap(autoKillLoop)()
     end
 end)
 
-Tab:AddSwitch("Auto Kill Players", function(State)
-
-end)
-
-Tab:AddTextBox("Auto Kill Player", function(Text)
-
-end)
-
-Tab:AddButton("Clear", function()
-
-end)
 
 local Tab = Window:AddTab("Kill V2")
 
@@ -191,61 +146,112 @@ local Tab = Window:AddTab("LookStats")
 
 local Tab = Window:AddTab("Rebirthing")
 
-local Tab = Window:AddTab("Farm")
-
-_G.autoWeightActive = false
-_G.weightValue = 0
-_G.isAutoStrength = false
-
-local function setWeight(value)
-    local player = game.Players.LocalPlayer
-    if player and player.Character then
-        player.Character.Humanoid.Weight = value
-    end
-end
+local Tab = Window:AddTab("Auto Farm")
 
 Tab:AddSwitch("Auto Weight", function(State)
-    _G.autoWeightActive = State
-
-    local player = game.Players.LocalPlayer
-    local backpack = player:FindFirstChild("Backpack")
-    
-    if _G.autoWeightActive then
-        local function autoWeight()
-            while _G.autoWeightActive do
-                wait(0.1)
-
-                if backpack then
-                    local Weight = backpack:FindFirstChild("Weight")
-                    if Weight then
-                        player.Character.Humanoid:EquipTool(Weight)
-                    end
-                end
-
-                while _G.autoWeightActive do
-                    local args = {
-                        [1] = "rep"
-                    }
-                    game:GetService("Players").LocalPlayer.muscleEvent:FireServer(unpack(args))
-                    wait(0.001)
-                end
-
-                _G.weightValue = _G.weightValue + 1
-                setWeight(_G.weightValue)
+    if State then
+        getgenv().AutoWeight = true
+        while getgenv().AutoWeight do
+            local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Weight")
+            if tool then
+                tool.Parent = game.Players.LocalPlayer.Character
+                tool:Activate()
             end
+            wait(0.1)
         end
-
-        coroutine.wrap(autoWeight)()
     else
-        setWeight(0)
-        local equippedTool = player.Character:FindFirstChildOfClass("Tool")
-        if equippedTool and equippedTool.Name == "Weight" then
-            equippedTool.Parent = backpack
-        end
+        getgenv().AutoWeight = false
     end
 end)
 
+Tab:AddSwitch("Auto Situps", function(State)
+    if State then
+        getgenv().AutoSitups = true
+        while getgenv().AutoSitups do
+            local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Situps")
+            if tool then
+                tool.Parent = game.Players.LocalPlayer.Character
+                tool:Activate()
+            end
+            wait(0.1)
+        end
+    else
+        getgenv().AutoSitups = false
+    end
+end)
+
+Tab:AddSwitch("Auto Pushups", function(State)
+    if State then
+        getgenv().AutoPushups = true
+        while getgenv().AutoPushups do
+            local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Pushups")
+            if tool then
+                tool.Parent = game.Players.LocalPlayer.Character
+                tool:Activate()
+            end
+            wait(0.1)
+        end
+    else
+        getgenv().AutoPushups = false
+    end
+end)
+
+Tab:AddSwitch("Auto Handstands", function(State)
+    if State then
+        getgenv().AutoHandstands = true
+        while getgenv().AutoHandstands do
+            local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Handstands")
+            if tool then
+                tool.Parent = game.Players.LocalPlayer.Character
+                tool:Activate()
+            end
+            wait(0.1)
+        end
+    else
+        getgenv().AutoHandstands = false
+    end
+end)
+
+
+
+
+
+
+
+
+
 local Tab = Window:AddTab("Rock")
+
+Tab:AddButton("Tiny Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17.6410236, -1.30998898, 2106.48926, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+end)
+
+Tab:AddButton("Frozen Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2551.75854, -0.359962642, -243.308777, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+end)
+
+Tab:AddButton("Mystic Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2186.14111, -0.359961987, 1250.59802, 0.996191859, 0, -0.0871884301, 0, 1, 0, 0, 0, -1)
+end)
+
+Tab:AddButton("Inferno Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7262.18701, -0.359961987, -1259.24426, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+end)
+
+Tab:AddButton("Legend Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4140.41797, 987.453186, -4089.34937, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+end)
+
+Tab:AddButton("Muscle King Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8971.56641, 27.4031715, -6061.27734, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+end)
+
+
+
+
+
+
+
 
 local Tab = Window:AddTab("Teleport")
 
