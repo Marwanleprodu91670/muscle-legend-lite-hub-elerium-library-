@@ -48,7 +48,7 @@ end
 
 addInvisibleBaseplate()
 
-local Tab = Window:AddTab("Kill")
+llocal Tab = Window:AddTab("Kill")
 
 Tab:AddButton("Speed Punch", function()
     local player = game.Players.LocalPlayer
@@ -79,9 +79,11 @@ Tab:AddSwitch("Auto Punch", function(State)
         local function autoPunchLoop()
             while _G.autoPunchActive do
                 local player = game.Players.LocalPlayer
-                local tool = player.Backpack:FindFirstChild("Auto Punch")
-                if tool then
+                local tool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+                if tool and tool.Parent ~= player.Character then
                     tool.Parent = player.Character
+                end
+                if tool then
                     tool:Activate()
                 end
                 wait(0.01)
@@ -125,6 +127,7 @@ Tab:AddSwitch("Auto Kill", function(State)
         coroutine.wrap(autoKillLoop)()
     end
 end)
+
 
 
 local Tab = Window:AddTab("Kill V2")
