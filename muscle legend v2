@@ -332,12 +332,12 @@ local function getAllPlayers()
     return playerNames
 end
 
--- Add the dropdown using the format you provided
-Tab:AddDropDown("Players", function(selectedPlayerName)
-    -- Find the selected player
-    local player = game.Players:FindFirstChild(selectedPlayerName)
+-- Create the dropdown
+ViewStatsTab:AddDropdown("Select Player", function(text)
+    local player = game.Players:FindFirstChild(text) -- Find the selected player
+
     if player and player:FindFirstChild("Durability") then
-        -- Print the player's durability to the output
+        -- If the player has the "Durability" IntValue, print it
         print("Player: " .. player.Name .. " has Durability: " .. player.Durability.Value)
     else
         -- If no durability is found, print this
@@ -345,11 +345,20 @@ Tab:AddDropDown("Players", function(selectedPlayerName)
     end
 end)
 
+-- Add options to the dropdown
+local playersList = getAllPlayers()
+
+-- Add each player to the dropdown
+for _, playerName in ipairs(playersList) do
+    dropdown:Add(playerName)
+end
+
 -- Function to refresh the dropdown every second
 local function refreshDropdown()
     while true do
-        -- Update the dropdown options with all current players
-        Tab:GetTab("Stats"):GetDropDown("Players"):SetOptions(getAllPlayers())
+        -- Update the dropdown options with the current list of players
+        local playersList = getAllPlayers()
+        dropdown:SetOptions(playersList)  -- Reset the dropdown options
         wait(1)  -- Wait for 1 second before updating again
     end
 end
