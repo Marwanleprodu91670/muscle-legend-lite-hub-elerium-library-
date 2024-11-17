@@ -54,7 +54,6 @@ KillTab:AddButton("Speed Punch", function()
     end
 end)
 
-local AutoKillToggle = false
 local AutoPunchToggle = false
 
 KillTab:AddSwitch("Auto Punch", function(State)
@@ -76,6 +75,9 @@ KillTab:AddSwitch("Auto Punch", function(State)
         coroutine.wrap(autoPunchLoop)()
     end
 end)
+
+-- Auto Kill Tab
+local AutoKillToggle = false
 
 local function teleportHeadsToRightHand()
     local player = game.Players.LocalPlayer
@@ -101,31 +103,24 @@ end
 KillTab:AddSwitch("Auto Kill", function(State)
     AutoKillToggle = State
     if AutoKillToggle then
+        -- Infinite loop to teleport all player's heads to the right hand
         local function autoKillLoop()
             while AutoKillToggle do
                 teleportHeadsToRightHand()
-                wait(0.1)
+                wait(0.1)  -- Teleport every 0.1 seconds
             end
         end
         coroutine.wrap(autoKillLoop)()
     end
 end)
 
--- Misc Tab
+-- Misc Tab (cleaned up)
 local MiscTab = Window:AddTab("Misc")
 
 MiscTab:AddButton("Clear Workspace", function()
     for _, obj in pairs(game.Workspace:GetChildren()) do
         if obj:IsA("Part") then
             obj:Destroy()
-        end
-    end
-end)
-
-MiscTab:AddSwitch("Hide Players", function(State)
-    for _, player in pairs(game.Players:GetChildren()) do
-        if player.Character then
-            player.Character:FindFirstChild("HumanoidRootPart").Transparency = State and 1 or 0
         end
     end
 end)
@@ -283,8 +278,9 @@ end)
 
 -- Credits Tab
 local CreditsTab = Window:AddTab("Credits")
-CreditsTab:AddLabel("script by us LOL")
-CreditsTab:AddLabel("Skibidi")
+CreditsTab:AddLabel("Script by DeveloperName")
+CreditsTab:AddLabel("UI by UIName")
+
 
 
 Tab:AddButton("Walk On Water", function()
