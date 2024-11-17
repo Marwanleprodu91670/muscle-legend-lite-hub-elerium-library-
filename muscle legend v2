@@ -1,34 +1,35 @@
 local Library = loadstring(game:HttpGet("https://bitbucket.org/cat__/uis/raw/Elerium/Module"))()
-local Window = Library:AddWindow("Muscle Legends V2", {
-    MinSize = Vector2.new(622, 650)
-})
+local Window = Library:AddWindow("Muscle Legends V2", { MinSize = Vector2.new(622, 650) })
 
+-- Default values for sliders
 local defaultWalkSpeed = 16
 local defaultJumpPower = 50
 local defaultHipHeight = 2
 
-local Tab = Window:AddTab("Main")
-Tab:AddSlider("WalkSpeed", function(Value)
+-- Main Tab
+local MainTab = Window:AddTab("Main")
+MainTab:AddSlider("WalkSpeed", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
         player.Character.Humanoid.WalkSpeed = Value
     end
 end, { Min = 16, Max = 2000, Default = defaultWalkSpeed })
 
-Tab:AddSlider("JumpPower", function(Value)
+MainTab:AddSlider("JumpPower", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
         player.Character.Humanoid.JumpPower = Value
     end
 end, { Min = 50, Max = 500, Default = defaultJumpPower })
 
-Tab:AddSlider("HipHeight", function(Value)
+MainTab:AddSlider("HipHeight", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
         player.Character.Humanoid.HipHeight = Value
     end
 end, { Min = 0, Max = 1000, Default = defaultHipHeight })
 
+-- Add invisible baseplate
 local function addInvisibleBaseplate()
     local baseplate = Instance.new("Part")
     baseplate.Size = Vector3.new(math.huge, 1, math.huge)
@@ -41,35 +42,26 @@ end
 
 addInvisibleBaseplate()
 
-local Tab = Window:AddTab("Kill")
-Tab:AddButton("Speed Punch", function()
+-- Kill Tab
+local KillTab = Window:AddTab("Kill")
+
+KillTab:AddButton("Speed Punch", function()
     local player = game.Players.LocalPlayer
-    local punch = player.Backpack:FindFirstChild("Punch")
-    local character = game.Workspace:FindFirstChild(player.Name)
-    local punch1
-
-    if character then
-        punch1 = character:FindFirstChild("Punch")
-    end
-
+    local punch = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
     local attackTime = 0
-
     if punch and punch:FindFirstChild("attackTime") then
         punch.attackTime.Value = attackTime
-    elseif punch1 and punch1:FindFirstChild("attackTime") then
-        punch1.attackTime.Value = attackTime
     end
 end)
 
-_G.autoKillActive = false
-_G.autoPunchActive = false
+local AutoKillToggle = false
+local AutoPunchToggle = false
 
-Tab:AddSwitch("Auto Punch", function(State)
-    _G.autoPunchActive = State
-
-    if _G.autoPunchActive then
+KillTab:AddSwitch("Auto Punch", function(State)
+    AutoPunchToggle = State
+    if AutoPunchToggle then
         local function autoPunchLoop()
-            while _G.autoPunchActive do
+            while AutoPunchToggle do
                 local player = game.Players.LocalPlayer
                 local tool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
                 if tool and tool.Parent ~= player.Character then
@@ -106,12 +98,11 @@ local function teleportHeadsToRightHand()
     end
 end
 
-Tab:AddSwitch("Auto Kill", function(State)
-    _G.autoKillActive = State
-
-    if _G.autoKillActive then
+KillTab:AddSwitch("Auto Kill", function(State)
+    AutoKillToggle = State
+    if AutoKillToggle then
         local function autoKillLoop()
-            while _G.autoKillActive do
+            while AutoKillToggle do
                 teleportHeadsToRightHand()
                 wait(0.1)
             end
@@ -120,8 +111,10 @@ Tab:AddSwitch("Auto Kill", function(State)
     end
 end)
 
-local Tab = Window:AddTab("Misc")
-Tab:AddButton("Clear Workspace", function()
+-- Misc Tab
+local MiscTab = Window:AddTab("Misc")
+
+MiscTab:AddButton("Clear Workspace", function()
     for _, obj in pairs(game.Workspace:GetChildren()) do
         if obj:IsA("Part") then
             obj:Destroy()
@@ -129,7 +122,7 @@ Tab:AddButton("Clear Workspace", function()
     end
 end)
 
-Tab:AddSwitch("Hide Players", function(State)
+MiscTab:AddSwitch("Hide Players", function(State)
     for _, player in pairs(game.Players:GetChildren()) do
         if player.Character then
             player.Character:FindFirstChild("HumanoidRootPart").Transparency = State and 1 or 0
@@ -137,13 +130,15 @@ Tab:AddSwitch("Hide Players", function(State)
     end
 end)
 
-local Tab = Window:AddTab("Auto Farm")
+-- AutoFarm Tab
+local AutoFarmTab = Window:AddTab("Auto Farm")
 
 local AutoWeightToggle = false
 local AutoPushupsToggle = false
 local SitupsToggle = false
 local MuscleKingFarmToggle = false
 
+-- Auto Punch
 local function AutoPunch()
     spawn(function()
         while AutoPunchToggle do
@@ -159,6 +154,7 @@ local function AutoPunch()
     end)
 end
 
+-- Auto Weight
 local function AutoWeight()
     spawn(function()
         while AutoWeightToggle do
@@ -174,6 +170,7 @@ local function AutoWeight()
     end)
 end
 
+-- Auto Pushups
 local function AutoPushups()
     spawn(function()
         while AutoPushupsToggle do
@@ -189,6 +186,7 @@ local function AutoPushups()
     end)
 end
 
+-- Auto Situps
 local function AutoSitups()
     spawn(function()
         while SitupsToggle do
@@ -204,6 +202,7 @@ local function AutoSitups()
     end)
 end
 
+-- Muscle King Farm
 local function MuscleKingFarm()
     spawn(function()
         while MuscleKingFarmToggle do
@@ -219,87 +218,74 @@ local function MuscleKingFarm()
     end)
 end
 
-AutoFarm:AddSwitch("Auto Weight", function(value)
+AutoFarmTab:AddSwitch("Auto Weight", function(value)
     AutoWeightToggle = value
     if AutoWeightToggle then
         AutoWeight()
     end
 end)
 
-AutoFarm:AddSwitch("Auto Pushups", function(value)
+AutoFarmTab:AddSwitch("Auto Pushups", function(value)
     AutoPushupsToggle = value
     if AutoPushupsToggle then
         AutoPushups()
     end
 end)
 
-AutoFarm:AddSwitch("Situps", function(value)
+AutoFarmTab:AddSwitch("Situps", function(value)
     SitupsToggle = value
     if SitupsToggle then
         AutoSitups()
     end
 end)
 
-AutoFarm:AddSwitch("Muscle King Farm", function(value)
+AutoFarmTab:AddSwitch("Muscle King Farm", function(value)
     MuscleKingFarmToggle = value
     if MuscleKingFarmToggle then
         MuscleKingFarm()
     end
 end)
 
-local Tab = Window:AddTab("Rock")
-Tab:AddButton("Tiny Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1821.39197, -0.359962642, -202.267746)
-end)
+-- Teleport Tab
+local TeleportTab = Window:AddTab("Teleport")
 
-Tab:AddButton("Frozen Rock", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2551.75854, -0.359962642, -243.308777)
-end)
-
-local Tab = Window:AddTab("Teleport")
-Tab:AddButton("Beach", function()
+TeleportTab:AddButton("Beach", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-11, 5, -178)
 end)
 
-Tab:AddButton("Legends", function()
+TeleportTab:AddButton("Legends", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4603, 989, -3898)
 end)
 
-Tab:AddButton("Muscle", function()
+TeleportTab:AddButton("Muscle", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8626, 15, -5730)
 end)
 
-Tab:AddButton("Tiny", function()
+TeleportTab:AddButton("Tiny", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-38, 5, 1884)
 end)
 
-Tab:AddButton("Secret", function()
+TeleportTab:AddButton("Secret", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2596, -1, 5738)
 end)
 
-Tab:AddButton("Inferno", function()
+TeleportTab:AddButton("Inferno", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6759, 5, -1285)
 end)
 
-Tab:AddButton("Frost", function()
+TeleportTab:AddButton("Frost", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2623, 5, -409)
 end)
 
-Tab:AddButton("Mythical", function()
+TeleportTab:AddButton("Mythical", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2251, 5, 1073)
 end)
 
-local Tab = Window:AddTab("Credits")
-Tab:AddLabel("Script by Adopt and 𝓚_𝓡
-")
-Tab:AddLabel("discord: curve0610/kr.1220
-")
+-- Credits Tab
+local CreditsTab = Window:AddTab("Credits")
+CreditsTab:AddLabel("script by us LOL")
+CreditsTab:AddLabel("Skibidi")
 
-
-
-
-
-local Tab = Window:AddTab("Misc")
 
 Tab:AddButton("Walk On Water", function()
     local WalkPart = Instance.new("Part")
