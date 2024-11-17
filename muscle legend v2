@@ -323,55 +323,65 @@ end)
 -- View Stats tab
 local ViewStatsTab = Window:AddTab("ViewStats")
 
--- Store the labels in a table for easier access
-local labels = {}
-
--- Add a text box to enter the username
-local playerUsernameTextBox = ViewStatsTab:AddTextBox("Write Player Username", function(Text)
-    -- Get the player by the entered username
-    local player = game.Players:FindFirstChild(Text)
-
+-- Create a dropdown for player selection
+local dropdown = features:AddDropdown("select", function(playerName)
+    -- Find the player object based on the selected username
+    local player = game.Players:FindFirstChild(playerName)
+    
     if player then
-        -- Track and update Strength
-        local strengthValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Strength")
-        if strengthValue then
-            labels[1]:SetText("Strength: " .. strengthValue.Value)
-        else
-            labels[1]:SetText("Strength: N/A")
+        -- Get the player's character and their stats
+        local character = player.Character
+        if character then
+            -- Fetch the player's IntValues for Strength, Durability, and Agility
+            local strength = character:FindFirstChild("Strength")
+            local durability = character:FindFirstChild("Durability")
+            local agility = character:FindFirstChild("Agility")
+            
+            -- If the values exist, update the labels with the stats
+            if strength then
+                ViewStatsTab:FindFirstChild("StrengthLabel").Text = "Strength: " .. strength.Value
+            end
+            if durability then
+                ViewStatsTab:FindFirstChild("DurabilityLabel").Text = "Durability: " .. durability.Value
+            end
+            if agility then
+                ViewStatsTab:FindFirstChild("AgilityLabel").Text = "Agility: " .. agility.Value
+            end
         end
-
-        -- Track and update Durability
-        local durabilityValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Durability")
-        if durabilityValue then
-            labels[2]:SetText("Durability: " .. durabilityValue.Value)
-        else
-            labels[2]:SetText("Durability: N/A")
-        end
-
-        -- Track and update Agility
-        local agilityValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Agility")
-        if agilityValue then
-            labels[3]:SetText("Agility: " .. agilityValue.Value)
-        else
-            labels[3]:SetText("Agility: N/A")
-        end
-    else
-        -- If player is not found, reset labels to show an error message
-        labels[1]:SetText("Strength: Player not found")
-        labels[2]:SetText("Durability: Player not found")
-        labels[3]:SetText("Agility: Player not found")
     end
 end)
 
--- Add labels for Strength, Durability, and Agility
-ViewStatsTab:AddLabel("Strength:")  -- Label 1
-table.insert(labels, ViewStatsTab:AddLabel(""))  -- This will be updated with strength value
+-- Populate the dropdown with all players in the server
+for _, player in ipairs(game.Players:GetPlayers()) do
+    dropdown:Add(player.Name)
+end
 
-ViewStatsTab:AddLabel("Durability:")  -- Label 2
-table.insert(labels, ViewStatsTab:AddLabel(""))  -- This will be updated with durability value
+-- Add labels to the ViewStatsTab
+local strengthLabel = ViewStatsTab:AddLabel("Strength:")
+strengthLabel.Name = "StrengthLabel"  -- Name it for later reference
 
-ViewStatsTab:AddLabel("Agility:")  -- Label 3
-table.insert(labels, ViewStatsTab:AddLabel(""))  -- This will be updated with agility value
+ViewStatsTab:AddLabel("")  -- Empty space or line break
+
+local durabilityLabel = ViewStatsTab:AddLabel("Durability:")
+durabilityLabel.Name = "DurabilityLabel"  -- Name it for later reference
+
+ViewStatsTab:AddLabel("")  -- Empty space or line break
+
+local agilityLabel = ViewStatsTab:AddLabel("Agility:")
+agilityLabel.Name = "AgilityLabel"  -- Name it for later reference
+
+ViewStatsTab:AddLabel("")  -- Empty space or line break
+
+-- Update the dropdown when new players join the game
+game.Players.PlayerAdded:Connect(function(player)
+    dropdown:Add(player.Name)
+end)
+
+-- Remove players from dropdown when they leave the game
+game.Players.PlayerRemoving:Connect(function(player)
+    dropdown:Remove(player.Name)
+end)
+
 
 
 
