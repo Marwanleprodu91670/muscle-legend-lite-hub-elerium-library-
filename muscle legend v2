@@ -3,15 +3,11 @@ local Window = Library:AddWindow("Muscle Legends V2", {
     MinSize = Vector2.new(622, 650)
 })
 
--- Default values for sliders
 local defaultWalkSpeed = 16
 local defaultJumpPower = 50
 local defaultHipHeight = 2
 
--- Tab for Main controls
 local Tab = Window:AddTab("Main")
-
--- WalkSpeed Slider
 Tab:AddSlider("WalkSpeed", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
@@ -19,7 +15,6 @@ Tab:AddSlider("WalkSpeed", function(Value)
     end
 end, { Min = 16, Max = 2000, Default = defaultWalkSpeed })
 
--- JumpPower Slider
 Tab:AddSlider("JumpPower", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
@@ -27,7 +22,6 @@ Tab:AddSlider("JumpPower", function(Value)
     end
 end, { Min = 50, Max = 500, Default = defaultJumpPower })
 
--- HipHeight Slider
 Tab:AddSlider("HipHeight", function(Value)
     local player = game.Players.LocalPlayer
     if player and player.Character then
@@ -35,11 +29,6 @@ Tab:AddSlider("HipHeight", function(Value)
     end
 end, { Min = 0, Max = 1000, Default = defaultHipHeight })
 
--- TextBox and Switches
-Tab:AddTextBox("Size", function(Text) end)
-Tab:AddSwitch("Set Size", function(State) end)
-
--- Invisible Baseplate function
 local function addInvisibleBaseplate()
     local baseplate = Instance.new("Part")
     baseplate.Size = Vector3.new(math.huge, 1, math.huge)
@@ -52,10 +41,7 @@ end
 
 addInvisibleBaseplate()
 
--- Tab for Kill Functions
 local Tab = Window:AddTab("Kill")
-
--- Speed Punch Button
 Tab:AddButton("Speed Punch", function()
     local player = game.Players.LocalPlayer
     local punch = player.Backpack:FindFirstChild("Punch")
@@ -78,7 +64,6 @@ end)
 _G.autoKillActive = false
 _G.autoPunchActive = false
 
--- Auto Punch Toggle
 Tab:AddSwitch("Auto Punch", function(State)
     _G.autoPunchActive = State
 
@@ -100,7 +85,6 @@ Tab:AddSwitch("Auto Punch", function(State)
     end
 end)
 
--- Function for teleporting heads to right hand
 local function teleportHeadsToRightHand()
     local player = game.Players.LocalPlayer
     local character = player.Character or game.Workspace:FindFirstChild(player.Name)
@@ -122,7 +106,6 @@ local function teleportHeadsToRightHand()
     end
 end
 
--- Auto Kill Toggle
 Tab:AddSwitch("Auto Kill", function(State)
     _G.autoKillActive = State
 
@@ -137,10 +120,7 @@ Tab:AddSwitch("Auto Kill", function(State)
     end
 end)
 
--- Tab for Miscellaneous functions (Added Back)
 local Tab = Window:AddTab("Misc")
-
--- Button for Clear Workspace
 Tab:AddButton("Clear Workspace", function()
     for _, obj in pairs(game.Workspace:GetChildren()) do
         if obj:IsA("Part") then
@@ -149,7 +129,6 @@ Tab:AddButton("Clear Workspace", function()
     end
 end)
 
--- Button for Toggle Player Visibility
 Tab:AddSwitch("Hide Players", function(State)
     for _, player in pairs(game.Players:GetChildren()) do
         if player.Character then
@@ -158,20 +137,13 @@ Tab:AddSwitch("Hide Players", function(State)
     end
 end)
 
--- Tab for Rebirthing and Stats (empty for now)
-local Tab = Window:AddTab("LookStats")
-local Tab = Window:AddTab("Rebirthing")
-
--- Tab for Auto Farm (Functional Tools)
 local Tab = Window:AddTab("Auto Farm")
 
--- Variables for tools and toggles
 local AutoWeightToggle = false
 local AutoPushupsToggle = false
 local SitupsToggle = false
 local MuscleKingFarmToggle = false
 
--- Auto Punch Functionality
 local function AutoPunch()
     spawn(function()
         while AutoPunchToggle do
@@ -187,7 +159,6 @@ local function AutoPunch()
     end)
 end
 
--- Auto Weight Functionality
 local function AutoWeight()
     spawn(function()
         while AutoWeightToggle do
@@ -203,7 +174,6 @@ local function AutoWeight()
     end)
 end
 
--- Auto Pushups Functionality
 local function AutoPushups()
     spawn(function()
         while AutoPushupsToggle do
@@ -219,7 +189,6 @@ local function AutoPushups()
     end)
 end
 
--- Auto Situps Functionality
 local function AutoSitups()
     spawn(function()
         while SitupsToggle do
@@ -235,7 +204,6 @@ local function AutoSitups()
     end)
 end
 
--- Muscle King Farm Functionality
 local function MuscleKingFarm()
     spawn(function()
         while MuscleKingFarmToggle do
@@ -251,7 +219,6 @@ local function MuscleKingFarm()
     end)
 end
 
--- Add Auto Weight Toggle
 AutoFarm:AddSwitch("Auto Weight", function(value)
     AutoWeightToggle = value
     if AutoWeightToggle then
@@ -259,7 +226,6 @@ AutoFarm:AddSwitch("Auto Weight", function(value)
     end
 end)
 
--- Add Auto Pushups Toggle
 AutoFarm:AddSwitch("Auto Pushups", function(value)
     AutoPushupsToggle = value
     if AutoPushupsToggle then
@@ -267,7 +233,6 @@ AutoFarm:AddSwitch("Auto Pushups", function(value)
     end
 end)
 
--- Add Situps Toggle
 AutoFarm:AddSwitch("Situps", function(value)
     SitupsToggle = value
     if SitupsToggle then
@@ -275,7 +240,6 @@ AutoFarm:AddSwitch("Situps", function(value)
     end
 end)
 
--- Add Muscle King Farm Toggle
 AutoFarm:AddSwitch("Muscle King Farm", function(value)
     MuscleKingFarmToggle = value
     if MuscleKingFarmToggle then
@@ -283,7 +247,6 @@ AutoFarm:AddSwitch("Muscle King Farm", function(value)
     end
 end)
 
--- Tab for Rock locations
 local Tab = Window:AddTab("Rock")
 Tab:AddButton("Tiny Rock", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1821.39197, -0.359962642, -202.267746)
@@ -293,7 +256,6 @@ Tab:AddButton("Frozen Rock", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2551.75854, -0.359962642, -243.308777)
 end)
 
--- Tab for Teleports (Restored)
 local Tab = Window:AddTab("Teleport")
 Tab:AddButton("Beach", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-11, 5, -178)
@@ -327,12 +289,12 @@ Tab:AddButton("Mythical", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2251, 5, 1073)
 end)
 
--- Tab for Credits (Restored)
 local Tab = Window:AddTab("Credits")
 Tab:AddLabel("Script by Adopt and 𝓚_𝓡
 ")
 Tab:AddLabel("discord: curve0610/kr.1220
 ")
+
 
 
 
