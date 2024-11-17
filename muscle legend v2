@@ -325,35 +325,42 @@ local ViewStatsTab = Window:AddTab("ViewStats")
 
 -- Add a text box to enter the username
 local playerUsernameTextBox = ViewStatsTab:AddTextBox("Write Player Username", function(Text)
-    -- Get the player by the entered username
+    -- Check if the player with that username exists
     local player = game.Players:FindFirstChild(Text)
     
+    -- Check if player exists
     if player then
-        -- Track and update Strength
+        -- Try to find and update Strength
         local strengthValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Strength")
         if strengthValue then
+            -- Update the label for Strength
             ViewStatsTab:GetLabel(2):SetText("Strength: " .. strengthValue.Value)
         else
+            -- If no Strength value found, show N/A
             ViewStatsTab:GetLabel(2):SetText("Strength: N/A")
         end
 
-        -- Track and update Durability
+        -- Try to find and update Durability
         local durabilityValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Durability")
         if durabilityValue then
+            -- Update the label for Durability
             ViewStatsTab:GetLabel(4):SetText("Durability: " .. durabilityValue.Value)
         else
+            -- If no Durability value found, show N/A
             ViewStatsTab:GetLabel(4):SetText("Durability: N/A")
         end
 
-        -- Track and update Agility
+        -- Try to find and update Agility
         local agilityValue = player:FindFirstChild("HintValue") and player.HintValue:FindFirstChild("Agility")
         if agilityValue then
+            -- Update the label for Agility
             ViewStatsTab:GetLabel(6):SetText("Agility: " .. agilityValue.Value)
         else
+            -- If no Agility value found, show N/A
             ViewStatsTab:GetLabel(6):SetText("Agility: N/A")
         end
     else
-        -- If player is not found, clear labels
+        -- If player is not found, reset labels to show an error message
         ViewStatsTab:GetLabel(2):SetText("Strength: Player not found")
         ViewStatsTab:GetLabel(4):SetText("Durability: Player not found")
         ViewStatsTab:GetLabel(6):SetText("Agility: Player not found")
