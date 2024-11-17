@@ -1,5 +1,5 @@
 local Library = loadstring(game:HttpGet("https://bitbucket.org/cat__/uis/raw/Elerium/Module"))()
-local Window = Library:AddWindow("Muscle Legends V2", { MinSize = Vector2.new(622, 650) })
+local Window = Library:AddWindow("Muscle Legends V8", { MinSize = Vector2.new(622, 650) })
 
 -- Default values for sliders
 local defaultWalkSpeed = 16
@@ -412,12 +412,12 @@ end)
 
 
 
-
--- Credits Tab
-local CreditsTab = Window:AddTab("Credits")
-CreditsTab:AddLabel("Script by DeveloperName")
-CreditsTab:AddLabel("UI by UIName")
-
+--Credit tab
+local Tab = Window:AddTab("Credits")
+Tab:AddLabel("Script by Adopt and 𝓚_𝓡
+")
+Tab:AddLabel("discord: curve0610/kr.1220
+")
 
 
 
