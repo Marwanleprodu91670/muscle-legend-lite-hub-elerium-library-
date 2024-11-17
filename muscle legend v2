@@ -123,37 +123,7 @@ KillTab:AddSwitch("Auto Kill", function(State)
 end)
 
 --Rebirth tab
--- Rebirth Tab
-local RebirthTab = Window:AddTab("Rebirth")
-
--- Variable to track Auto Rebirth toggle state
-local AutoRebirthToggle = false
-
--- Function to trigger the rebirth event
-local function doRebirth()
-    local rebirthEvent = game.ReplicatedStorage.rEvents:FindFirstChild("rebirthRemote")
-    if rebirthEvent then
-        rebirthEvent:FireServer()
-    else
-        warn("Rebirth event not found!")
-    end
-end
-
--- Function for the Auto Rebirth loop
-local function autoRebirthLoop()
-    while AutoRebirthToggle do
-        doRebirth()
-        wait(0.1) -- Adjust the delay if needed
-    end
-end
-
--- Add Auto Rebirth Toggle to the Rebirth Tab
-RebirthTab:AddSwitch("Auto Rebirth", function(State)
-    AutoRebirthToggle = State
-    if AutoRebirthToggle then
-        coroutine.wrap(autoRebirthLoop)()
-    end
-end)
+Tab:AddLabel("Coming soon!")
 
 
 
