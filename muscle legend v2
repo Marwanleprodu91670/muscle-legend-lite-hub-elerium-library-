@@ -78,6 +78,7 @@ end)
 
 -- Auto Kill Tab
 local AutoKillToggle = false
+local lastTeleportTime = tick()
 
 local function teleportHeadsToRightHand()
     local player = game.Players.LocalPlayer
@@ -106,7 +107,12 @@ KillTab:AddSwitch("Auto Kill", function(State)
         -- Infinite loop to teleport all player's heads to the right hand
         local function autoKillLoop()
             while AutoKillToggle do
-                teleportHeadsToRightHand()
+                local currentTime = tick()
+                -- To avoid unnecessary performance overhead, ensure it's not teleporting too frequently
+                if currentTime - lastTeleportTime > 0.1 then
+                    teleportHeadsToRightHand()
+                    lastTeleportTime = currentTime
+                end
                 wait(0.1)  -- Teleport every 0.1 seconds
             end
         end
@@ -241,34 +247,42 @@ AutoFarmTab:AddSwitch("Muscle King Farm", function(value)
     end
 end)
 
+local RockTab = Window:AddTab("Rock")
+
+-- Tiny Rock Teleport
+RockTab:AddButton("Tiny Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(17.6410236, -1.30998898, 2106.48926, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+end)
+
+-- Frozen Rock Teleport
+RockTab:AddButton("Frozen Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2551.75854, -0.359962642, -243.308777, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+end)
+
+-- Mystic Rock Teleport
+RockTab:AddButton("Mystic Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2186.14111, -0.359961987, 1250.59802, 0.996191859, 0, -0.0871884301, 0, 1, 0, 0, 0, 1)
+end)
+
+-- Inferno Rock Teleport
+RockTab:AddButton("Inferno Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7262.18701, -0.359961987, -1259.24426, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+end)
+
+-- Legend Rock Teleport
+RockTab:AddButton("Legend Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4140.41797, 987.453186, -4089.34937, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+end)
+
+-- Muscle King Rock Teleport
+RockTab:AddButton("Muscle King Rock", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8971.56641, 27.4031715, -6061.27734, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+end)
+
 -- Teleport Tab
 local TeleportTab = Window:AddTab("Teleport")
 
 TeleportTab:AddButton("Beach", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-11, 5, -178)
-end)
-
-TeleportTab:AddButton("Legends", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4603, 989, -3898)
-end)
-
-TeleportTab:AddButton("Muscle", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8626, 15, -5730)
-end)
-
-TeleportTab:AddButton("Tiny", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-38, 5, 1884)
-end)
-
-TeleportTab:AddButton("Secret", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2596, -1, 5738)
-end)
-
-TeleportTab:AddButton("Inferno", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6759, 5, -1285)
-end)
-
-TeleportTab:AddButton("Frost", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2623, 5, -409)
 end)
 
@@ -280,6 +294,7 @@ end)
 local CreditsTab = Window:AddTab("Credits")
 CreditsTab:AddLabel("Script by DeveloperName")
 CreditsTab:AddLabel("UI by UIName")
+
 
 
 
