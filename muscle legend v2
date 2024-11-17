@@ -345,26 +345,20 @@ local dropdown = ViewStatsTab:AddDropdown("Select Player", function(text)
     end
 end)
 
--- Function to refresh the dropdown every second
+-- Function to refresh the dropdown
 local function refreshDropdown()
-    while true do
-        -- Update the dropdown options with the current list of players
-        local playersList = getAllPlayers()
-        dropdown:SetOptions(playersList)  -- Reset the dropdown options
-        wait(1)  -- Wait for 1 second before updating again
-    end
+    local playersList = getAllPlayers()
+    dropdown:SetOptions(playersList)  -- Reset the dropdown options
 end
 
--- Start the refresh loop in a separate thread
-spawn(refreshDropdown)
+-- Refresh the dropdown every 1 second
+game:GetService("RunService").Heartbeat:Connect(function()
+    refreshDropdown()
+end)
 
--- Add initial options to the dropdown
-local playersList = getAllPlayers()
+-- Initial population of the dropdown options
+refreshDropdown()
 
--- Add each player to the dropdown
-for _, playerName in ipairs(playersList) do
-    dropdown:Add(playerName)
-end
 
 
 
