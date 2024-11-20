@@ -2,11 +2,10 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md"))()
 
 -- Create the main UI window
-local window = library:AddWindow("Lite Hub Muscle Legends BETA", {
-    main_color = Color3.fromRGB(41, 74, 122),
-    min_size = Vector2.new(450, 340),
-    toggle_key = Enum.KeyCode.RightShift,
-    can_resize = true,
+local window = library:AddWindow("Elerium Test", {
+	main_color = Color3.fromRGB(255, 255, 255), -- Color
+	min_size = Vector2.new(450, 346), -- Size of the gui
+	can_resize = false, -- true or false
 })
 
 -- Variables
@@ -17,6 +16,7 @@ local targetPlayerName = "" -- Stores the target player name
 -- Helper Function: Equip and activate a tool
 local function equipAndActivateTool(toolName)
     local player = game.Players.LocalPlayer
+    if not player.Character or not player.Backpack then return end
     local tool = player.Backpack:FindFirstChild(toolName) or player.Character:FindFirstChild(toolName)
     if tool then
         player.Character.Humanoid:EquipTool(tool)
@@ -59,8 +59,10 @@ local function MuscleKingFarm()
     spawn(function()
         while MuscleKingFarmToggle do
             local player = game.Players.LocalPlayer
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(-8546.25879, 23.045435, -5636.78418)
-            equipAndActivateTool("Pushups")
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = CFrame.new(-8546.25879, 23.045435, -5636.78418)
+                equipAndActivateTool("Pushups")
+            end
             wait(0.1)
         end
     end)
@@ -76,17 +78,19 @@ local function AutoPunch()
     end)
 end
 
--- Function: Auto Kill (teleports heads to your right hand)
+-- Function: Auto Kill
 local function AutoKill()
     spawn(function()
         while AutoKillToggle do
             local player = game.Players.LocalPlayer
-            local rightHand = player.Character:FindFirstChild("RightHand")
+            local rightHand = player.Character and player.Character:FindFirstChild("RightHand")
             if rightHand then
                 for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
-                    local targetHead = targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head")
-                    if targetHead then
-                        targetHead.CFrame = rightHand.CFrame
+                    if targetPlayer ~= player and targetPlayer.Character then
+                        local targetHead = targetPlayer.Character:FindFirstChild("Head")
+                        if targetHead then
+                            targetHead.CFrame = rightHand.CFrame
+                        end
                     end
                 end
             end
@@ -98,8 +102,8 @@ end
 -- Tabs and Features
 local AutoFarm = window:AddTab("Auto Farm")
 AutoFarm:AddSwitch("Auto Weight", function(value) AutoWeightToggle = value if value then AutoWeight() end end)
-AutoFarm:AddSwitch("Auto Pushups (Second Version)", function(value) AutoPushupsToggle = value if value then AutoPushups() end end)
-AutoFarm:AddSwitch("Situps (Second Version)", function(value) SitupsToggle = value if value then AutoSitups() end end)
+AutoFarm:AddSwitch("Auto Pushups", function(value) AutoPushupsToggle = value if value then AutoPushups() end end)
+AutoFarm:AddSwitch("Auto Situps", function(value) SitupsToggle = value if value then AutoSitups() end end)
 AutoFarm:AddSwitch("Muscle King Farm", function(value) MuscleKingFarmToggle = value if value then MuscleKingFarm() end end)
 
 local Kill = window:AddTab("Kill")
@@ -132,20 +136,22 @@ settingsTab:AddButton("Anti Kick", function()
     end)
 end)
 
+-- Spy Tab
 local spyTab = window:AddTab("Spy")
 spyTab:AddSwitch("Spy Player", function(bool)
-    if bool then
+    local player = game.Players.LocalPlayer
+    if bool and targetPlayerName ~= "" then
         local target = game.Players:FindFirstChild(targetPlayerName)
         if target and target.Character then
             game.Workspace.CurrentCamera.CameraSubject = target.Character.Humanoid
         end
     else
-        game.Workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+        game.Workspace.CurrentCamera.CameraSubject = player.Character.Humanoid
     end
 end)
-
 spyTab:AddTextBox("Write Player Username", function(text) targetPlayerName = text end)
 
+-- Teleport Tab
 local teleportTab = window:AddTab("Teleport")
 teleportTab:AddLabel("Islands:")
 local islandPositions = {
@@ -165,36 +171,27 @@ for name, pos in pairs(islandPositions) do
     end)
 end
 
--- Create a new tab in the UI
+-- Stats Tab
 local Stats = window:AddTab("Stats")
 
 -- Create the dropdown menu
 local playerDropdown = Stats:AddDropdown("Select Player", function(selectedPlayerName)
-    -- Update tracking for the selected player
     updatePlayerStats(selectedPlayerName)
 end)
 
 -- Create labels for displaying stats
 local strengthLabel = Stats:AddLabel("Strength: 0")
-Stats:AddLabel("")
 local durabilityLabel = Stats:AddLabel("Durability: 0")
-Stats:AddLabel("")
 local agilityLabel = Stats:AddLabel("Agility: 0")
-Stats:AddLabel("")
 local pet1Label = Stats:AddLabel("Pet1: None")
-Stats:AddLabel("")
 local pet2Label = Stats:AddLabel("Pet2: None")
-Stats:AddLabel("")
 local pet3Label = Stats:AddLabel("Pet3: None")
-Stats:AddLabel("")
 local pet4Label = Stats:AddLabel("Pet4: None")
-Stats:AddLabel("")
 
 -- Function to update stats of the selected player
 local function updatePlayerStats(playerName)
     local player = game.Players:FindFirstChild(playerName)
     if not player then
-        -- Clear the labels if the player is no longer available
         strengthLabel:SetText("Strength: N/A")
         durabilityLabel:SetText("Durability: N/A")
         agilityLabel:SetText("Agility: N/A")
@@ -205,46 +202,22 @@ local function updatePlayerStats(playerName)
         return
     end
 
-    -- Fetch and display the stats
     local statsFolder = player:FindFirstChild("Stats")
     if statsFolder then
-        -- Update strength
         local strength = statsFolder:FindFirstChild("Strength")
-        if strength and strength:IsA("IntValue") then
-            strengthLabel:SetText("Strength: " .. strength.Value)
-        else
-            strengthLabel:SetText("Strength: N/A")
-        end
+        strengthLabel:SetText("Strength: " .. (strength and strength.Value or "N/A"))
 
-        -- Update durability
         local durability = statsFolder:FindFirstChild("Durability")
-        if durability and durability:IsA("IntValue") then
-            durabilityLabel:SetText("Durability: " .. durability.Value)
-        else
-            durabilityLabel:SetText("Durability: N/A")
-        end
+        durabilityLabel:SetText("Durability: " .. (durability and durability.Value or "N/A"))
 
-        -- Update agility
         local agility = statsFolder:FindFirstChild("Agility")
-        if agility and agility:IsA("IntValue") then
-            agilityLabel:SetText("Agility: " .. agility.Value)
-        else
-            agilityLabel:SetText("Agility: N/A")
-        end
+        agilityLabel:SetText("Agility: " .. (agility and agility.Value or "N/A"))
     end
 
-    -- Update pets
-    local pet1 = player:FindFirstChild("pet1")
-    pet1Label:SetText("Pet1: " .. (pet1 and pet1.Value or "None"))
-
-    local pet2 = player:FindFirstChild("pet2")
-    pet2Label:SetText("Pet2: " .. (pet2 and pet2.Value or "None"))
-
-    local pet3 = player:FindFirstChild("pet3")
-    pet3Label:SetText("Pet3: " .. (pet3 and pet3.Value or "None"))
-
-    local pet4 = player:FindFirstChild("pet4")
-    pet4Label:SetText("Pet4: " .. (pet4 and pet4.Value or "None"))
+    pet1Label:SetText("Pet1: " .. (player:FindFirstChild("pet1") and player.pet1.Value or "None"))
+    pet2Label:SetText("Pet2: " .. (player:FindFirstChild("pet2") and player.pet2.Value or "None"))
+    pet3Label:SetText("Pet3: " .. (player:FindFirstChild("pet3") and player.pet3.Value or "None"))
+    pet4Label:SetText("Pet4: " .. (player:FindFirstChild("pet4") and player.pet4.Value or "None"))
 end
 
 -- Function to refresh the dropdown with all players
@@ -255,17 +228,15 @@ local function refreshDropdown()
     end
 end
 
--- Automatically refresh the dropdown every second
+-- Auto-refresh dropdown
 spawn(function()
-    while true do
+    while wait(1) do
         refreshDropdown()
-        wait(1)
     end
 end)
 
--- Track player stats when a player is selected
-playerDropdown:SetValue(game.Players.LocalPlayer.Name) -- Set initial value to the local player
+-- Set initial player dropdown value
+playerDropdown:SetValue(game.Players.LocalPlayer.Name)
 
-
--- Ensure window is shown
+-- Show the window
 window:Show()
