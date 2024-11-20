@@ -1,5 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/muscle-legend-lite-hub-elerium-library-/refs/heads/main/library"))()
-local Window = Library:AddWindow("Muscle Legends V8", { MinSize = Vector2.new(622, 650) })
+local Window = Library:AddWindow("Muscle Legends V8", { MinSize = Vector2.new(450, 650) })
 
 -- Default values for sliders
 local defaultWalkSpeed = 16
@@ -79,14 +79,14 @@ end)
 local AutoKillToggle = false
 local lastTeleportTime = tick()
 
--- Teleport heads to right hand
-local function teleportHeadsToRightHand()
+-- Teleport heads to left hand
+local function teleportHeadsToLeftHand()
     local player = game.Players.LocalPlayer
     local character = player.Character or game.Workspace:FindFirstChild(player.Name)
     if not character then return end
 
-    local rightHand = character:FindFirstChild("RightHand")
-    if not rightHand then return end
+    local leftHand = character:FindFirstChild("LeftHand")
+    if not leftHand then return end
 
     -- Loop through all players and teleport their heads
     for _, otherPlayer in pairs(game.Players:GetChildren()) do
@@ -95,7 +95,7 @@ local function teleportHeadsToRightHand()
             if otherCharacter then
                 local head = otherCharacter:FindFirstChild("Head")
                 if head then
-                    head.CFrame = rightHand.CFrame
+                    head.CFrame = leftHand.CFrame
                 end
             end
         end
@@ -105,13 +105,13 @@ end
 KillTab:AddSwitch("Auto Kill", function(State)
     AutoKillToggle = State
     if AutoKillToggle then
-        -- Infinite loop to teleport all player's heads to the right hand
+        -- Infinite loop to teleport all player's heads to the left hand
         local function autoKillLoop()
             while AutoKillToggle do
                 local currentTime = tick()
                 -- To avoid unnecessary performance overhead, ensure it's not teleporting too frequently
                 if currentTime - lastTeleportTime > 0.1 then
-                    teleportHeadsToRightHand()
+                    teleportHeadsToLeftHand()
                     lastTeleportTime = currentTime
                 end
                 wait(0.1)  -- Teleport every 0.1 seconds
@@ -120,6 +120,7 @@ KillTab:AddSwitch("Auto Kill", function(State)
         coroutine.wrap(autoKillLoop)()  -- Run the loop in a coroutine to keep it non-blocking
     end
 end)
+
 
 -- Rebirth tab
 local RebirthTab = Window:AddTab("Rebirth")
