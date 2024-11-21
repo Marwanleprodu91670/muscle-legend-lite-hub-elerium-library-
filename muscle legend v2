@@ -76,45 +76,122 @@ KillTab:AddSwitch("Auto Punch", function(State)
 end)
 
 -- Auto Kill Toggle
--- Auto Kill Toggle
-local autoKillEnabled = false -- This will track whether Auto Kill is toggled
+local autoKillEnabled = false
+local whitelistEnabled = false
+local killTargetEnabled = false
+local selectedWhitelistPlayer = nil
+local selectedTargetPlayer = nil
 
--- Function to perform the Auto Kill logic
+-- Function to Auto Kill Players
 local function autoKillPlayers()
     spawn(function()
         while autoKillEnabled do
-            -- Get the local player and their character
+            -- Get the player and their character
             local player = game.Players.LocalPlayer
             local character = player.Character or player.CharacterAdded:Wait()
-
-            -- Ensure the character exists and has a RightHand
             local rightHand = character:FindFirstChild("RightHand")
+
+            -- Check if the right hand exists
             if rightHand then
-                -- Loop through all players in the game
                 for _, target in pairs(game.Players:GetPlayers()) do
-                    -- Ensure the target is valid, has a character, and is not the local player
+                    -- Ensure target is valid and not the local player
                     if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
-                        -- Teleport the target's head to the local player's RightHand position
-                        target.Character.Head.CFrame = rightHand.CFrame
+                        -- Apply whitelist condition
+                        if not (whitelistEnabled and target.Name == selectedWhitelistPlayer) then
+                            -- Teleport target's head to right hand's position
+                            target.Character.Head.CFrame = rightHand.CFrame
+                        end
                     end
                 end
             end
+            wait(0.1) -- Prevent high CPU usage
+        end
+    end)
+end
 
-            -- Small delay for smoother execution
+-- Function to Kill Specific Target
+local function killTarget()
+    spawn(function()
+        while killTargetEnabled do
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local rightHand = character:FindFirstChild("RightHand")
+
+            if rightHand and selectedTargetPlayer then
+                local targetPlayer = game.Players:FindFirstChild(selectedTargetPlayer)
+                if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head") then
+                    targetPlayer.Character.Head.CFrame = rightHand.CFrame
+                end
+            end
             wait(0.1)
         end
     end)
 end
 
--- Add a toggle switch for Auto Kill
-KillTab:AddSwitch("Auto Kill", function(state)
-    autoKillEnabled = state
-    if autoKillEnabled then
-        autoKillPlayers() -- Start the Auto Kill logic if enabled
+-- Function to Refresh Player List
+local function RefreshPlayerList()
+    local players = {}
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Name ~= game.Players.LocalPlayer.Name then
+            table.insert(players, player.Name)
+        end
     end
-end)
+    return players
+end
 
+-- Add a toggle switch for Auto Kill
+KillTab:AddSwitch("Auto Kill", {
+    Default = false,
+    Callback = function(value)
+        autoKillEnabled = value
+        if value then
+            autoKillPlayers()
+        end
+    end
+})
 
+-- Add a toggle switch for Whitelist
+KillTab:AddSwitch("Whitelist", {
+    Default = false,
+    Callback = function(value)
+        whitelistEnabled = value
+    end
+})
+
+-- Dropdown for selecting a player for Whitelist
+KillTab:AddDropdown({
+    Name = "Select Whitelist Player",
+    Default = "",
+    Options = RefreshPlayerList(),
+    Callback = function(value)
+        selectedWhitelistPlayer = value
+        print("Selected whitelist player:", value)
+    end
+})
+
+-- Add a label for Target
+KillTab:AddLabel("Target")
+
+-- Add a toggle switch for Kill Target
+KillTab:AddSwitch("Kill Target", {
+    Default = false,
+    Callback = function(value)
+        killTargetEnabled = value
+        if value then
+            killTarget()
+        end
+    end
+})
+
+-- Dropdown for selecting a Target Player
+KillTab:AddDropdown({
+    Name = "Select Target Player",
+    Default = "",
+    Options = RefreshPlayerList(),
+    Callback = function(value)
+        selectedTargetPlayer = value
+    end
+})
 
 
 -- Rebirth tab
