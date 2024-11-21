@@ -76,6 +76,7 @@ KillTab:AddSwitch("Auto Punch", function(State)
 end)
 
 -- Auto Kill Toggle
+-- Auto Kill Toggle
 local autoKillEnabled = false -- This will track whether Auto Kill is toggled
 
 -- Function to perform the Auto Kill logic
@@ -112,6 +113,7 @@ KillTab:AddSwitch("Auto Kill", function(state)
         autoKillPlayers() -- Start the Auto Kill logic if enabled
     end
 end)
+
 
 
 
