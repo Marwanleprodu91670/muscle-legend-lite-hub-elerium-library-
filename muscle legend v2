@@ -79,8 +79,8 @@ end)
 local autoKillEnabled = false
 local whitelistEnabled = false
 local killTargetEnabled = false
-local selectedWhitelistPlayer = nil
-local selectedTargetPlayer = nil
+local whitelistPlayer = nil
+local targetPlayer = nil
 
 -- Function to Auto Kill Players
 local function autoKillPlayers()
@@ -97,7 +97,7 @@ local function autoKillPlayers()
                     -- Ensure target is valid and not the local player
                     if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
                         -- Apply whitelist condition
-                        if not (whitelistEnabled and target.Name == selectedWhitelistPlayer) then
+                        if not (whitelistEnabled and target.Name == whitelistPlayer) then
                             -- Teleport target's head to right hand's position
                             target.Character.Head.CFrame = rightHand.CFrame
                         end
@@ -117,26 +117,15 @@ local function killTarget()
             local character = player.Character or player.CharacterAdded:Wait()
             local rightHand = character:FindFirstChild("RightHand")
 
-            if rightHand and selectedTargetPlayer then
-                local targetPlayer = game.Players:FindFirstChild(selectedTargetPlayer)
-                if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head") then
-                    targetPlayer.Character.Head.CFrame = rightHand.CFrame
+            if rightHand and targetPlayer then
+                local target = game.Players:FindFirstChild(targetPlayer)
+                if target and target.Character and target.Character:FindFirstChild("Head") then
+                    target.Character.Head.CFrame = rightHand.CFrame
                 end
             end
             wait(0.1)
         end
     end)
-end
-
--- Function to Refresh Player List
-local function RefreshPlayerList()
-    local players = {}
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player.Name ~= game.Players.LocalPlayer.Name then
-            table.insert(players, player.Name)
-        end
-    end
-    return players
 end
 
 -- Add a toggle switch for Auto Kill
@@ -158,19 +147,17 @@ KillTab:AddSwitch("Whitelist", {
     end
 })
 
--- Dropdown for selecting a player for Whitelist
-KillTab:AddDropdown({
-    Name = "Select Whitelist Player",
-    Default = "",
-    Options = RefreshPlayerList(),
-    Callback = function(value)
-        selectedWhitelistPlayer = value
-        print("Selected whitelist player:", value)
-    end
-})
+-- Textbox for Whitelist Player
+KillTab:AddTextBox("Select Player To Whitelist", function(text)
+    whitelistPlayer = text -- Set the whitelist player
+    print("Whitelisted player:", text)
+end)
 
--- Add a label for Target
-KillTab:AddLabel("Target")
+-- Textbox for Target Player
+KillTab:AddTextBox("Select Player To Target", function(text)
+    targetPlayer = text -- Set the target player
+    print("Target player:", text)
+end)
 
 -- Add a toggle switch for Kill Target
 KillTab:AddSwitch("Kill Target", {
@@ -183,15 +170,6 @@ KillTab:AddSwitch("Kill Target", {
     end
 })
 
--- Dropdown for selecting a Target Player
-KillTab:AddDropdown({
-    Name = "Select Target Player",
-    Default = "",
-    Options = RefreshPlayerList(),
-    Callback = function(value)
-        selectedTargetPlayer = value
-    end
-})
 
 
 -- Rebirth tab
