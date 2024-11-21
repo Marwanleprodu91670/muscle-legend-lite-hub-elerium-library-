@@ -75,106 +75,63 @@ KillTab:AddSwitch("Auto Punch", function(State)
     end
 end)
 
--- Auto Kill Toggle
-local autoKillEnabled = false
-local whitelistEnabled = false
-local killTargetEnabled = false
-local whitelistPlayer = nil
-local targetPlayer = nil
 
--- Function to Auto Kill Players
-local function autoKillPlayers()
+
+-- Rebirth Tab
+local rebirthAmount = 0 -- Store the desired rebirth amount
+local currentRebirths = 0 -- Track the number of rebirths performed
+local autoRebirthEnabled = false -- State of the Auto Rebirth toggle
+
+-- Function to handle rebirthing
+local function autoRebirth()
     spawn(function()
-        while autoKillEnabled do
-            -- Get the player and their character
-            local player = game.Players.LocalPlayer
-            local character = player.Character or player.CharacterAdded:Wait()
-            local rightHand = character:FindFirstChild("RightHand")
-
-            -- Check if the right hand exists
-            if rightHand then
-                for _, target in pairs(game.Players:GetPlayers()) do
-                    -- Ensure target is valid and not the local player
-                    if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
-                        -- Apply whitelist condition
-                        if not (whitelistEnabled and target.Name == whitelistPlayer) then
-                            -- Teleport target's head to right hand's position
-                            target.Character.Head.CFrame = rightHand.CFrame
-                        end
-                    end
+        while autoRebirthEnabled do
+            -- Check if the rebirthRemote exists
+            local rebirthevent = game.ReplicatedStorage.rEvents:FindFirstChild("rebirthRemote")
+            if rebirthevent then
+                -- Fire the rebirthRemote if the target hasn't been reached
+                if rebirthAmount == 0 or currentRebirths < rebirthAmount then
+                    rebirthevent:FireServer()
+                    currentRebirths = currentRebirths + 1
+                else
+                    -- Stop rebirthing if the target is reached
+                    autoRebirthEnabled = false
+                    print("Reached the desired rebirth amount.")
                 end
             end
-            wait(0.1) -- Prevent high CPU usage
+            wait(0.1) -- Adjust delay as needed
         end
     end)
 end
 
--- Function to Kill Specific Target
-local function killTarget()
-    spawn(function()
-        while killTargetEnabled do
-            local player = game.Players.LocalPlayer
-            local character = player.Character or player.CharacterAdded:Wait()
-            local rightHand = character:FindFirstChild("RightHand")
-
-            if rightHand and targetPlayer then
-                local target = game.Players:FindFirstChild(targetPlayer)
-                if target and target.Character and target.Character:FindFirstChild("Head") then
-                    target.Character.Head.CFrame = rightHand.CFrame
-                end
-            end
-            wait(0.1)
-        end
-    end)
-end
-
--- Add a toggle switch for Auto Kill
-KillTab:AddSwitch("Auto Kill", {
-    Default = false,
-    Callback = function(value)
-        autoKillEnabled = value
-        if value then
-            autoKillPlayers()
-        end
-    end
-})
-
--- Add a toggle switch for Whitelist
-KillTab:AddSwitch("Whitelist", {
-    Default = false,
-    Callback = function(value)
-        whitelistEnabled = value
-    end
-})
-
--- Textbox for Whitelist Player
-KillTab:AddTextBox("Select Player To Whitelist", function(text)
-    whitelistPlayer = text -- Set the whitelist player
-    print("Whitelisted player:", text)
-end)
-
--- Textbox for Target Player
-KillTab:AddTextBox("Select Player To Target", function(text)
-    targetPlayer = text -- Set the target player
-    print("Target player:", text)
-end)
-
--- Add a toggle switch for Kill Target
-KillTab:AddSwitch("Kill Target", {
-    Default = false,
-    Callback = function(value)
-        killTargetEnabled = value
-        if value then
-            killTarget()
-        end
-    end
-})
-
-
-
--- Rebirth tab
+-- Add a Rebirth Tab
 local RebirthTab = Window:AddTab("Rebirth")
-RebirthTab:AddLabel("Coming soon!")
+
+-- Add the Auto Rebirth Toggle
+RebirthTab:AddSwitch("Auto Rebirth", {
+    Default = false,
+    Callback = function(state)
+        autoRebirthEnabled = state
+        if state then
+            autoRebirth() -- Start rebirthing when enabled
+        end
+    end
+})
+
+-- Add a Textbox for Rebirth Amount
+RebirthTab:AddTextBox("Select Rebirth Amount", function(text)
+    local inputNumber = tonumber(text) -- Convert input text to a number
+    if inputNumber and inputNumber >= 0 then
+        rebirthAmount = inputNumber -- Set the target rebirth amount
+        currentRebirths = 0 -- Reset the counter
+        print("Rebirth amount set to:", rebirthAmount)
+    else
+        print("Invalid input. Please enter a positive number.")
+    end
+end)
+
+
+
 
 -- Misc Tab
 local MiscTab = Window:AddTab("Misc")
@@ -374,65 +331,29 @@ end)
 -- View Stats tab
 local ViewStatsTab = Window:AddTab("ViewStats")
 
--- Create dropdown for player selection
-local dropdown = features:AddDropdown("select", function(playerName)
-    -- Find the player object based on the selected username
-    local player = game.Players:FindFirstChild(playerName)
-    
-    if player then
-        -- Get the player's character and their stats
-        local character = player.Character
-        if character then
-            -- Fetch the player's IntValues for Strength, Durability, and Agility
-            local strength = character:FindFirstChild("Strength")
-            local durability = character:FindFirstChild("Durability")
-            local agility = character:FindFirstChild("Agility")
-            
-            -- If the values exist, update the labels with the stats
-            if strength then
-                ViewStatsTab:FindFirstChild("StrengthLabel").Text = "Strength: " .. strength.Value
-            else
-                ViewStatsTab:FindFirstChild("StrengthLabel").Text = "Strength: N/A"
-            end
-            if durability then
-                ViewStatsTab:FindFirstChild("DurabilityLabel").Text = "Durability: " .. durability.Value
-            else
-                ViewStatsTab:FindFirstChild("DurabilityLabel").Text = "Durability: N/A"
-            end
-            if agility then
-                ViewStatsTab:FindFirstChild("AgilityLabel").Text = "Agility: " .. agility.Value
-            else
-                ViewStatsTab:FindFirstChild("AgilityLabel").Text = "Agility: N/A"
-            end
+ViewStats:AddButton("Print Stats", function()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        print("Player Name: " .. player.Name)
+        
+        -- Check if the player has the IntValues "Strength" and "Durability" in their stats
+        local strength = player:FindFirstChild("Strength")
+        local durability = player:FindFirstChild("Durability")
+        
+        if strength and strength:IsA("IntValue") then
+            print("  Strength: " .. strength.Value)
+        else
+            print("  Strength: Not Found")
+        end
+        
+        if durability and durability:IsA("IntValue") then
+            print("  Durability: " .. durability.Value)
+        else
+            print("  Durability: Not Found")
         end
     end
 end)
 
--- Populate the dropdown with all players in the server
-for _, player in ipairs(game.Players:GetPlayers()) do
-    dropdown:Add(player.Name)
-end
-
--- Add labels to the ViewStatsTab and name them for reference
-local strengthLabel = ViewStatsTab:AddLabel("Strength: N/A")
-strengthLabel.Name = "StrengthLabel"
-
-local durabilityLabel = ViewStatsTab:AddLabel("Durability: N/A")
-durabilityLabel.Name = "DurabilityLabel"
-
-local agilityLabel = ViewStatsTab:AddLabel("Agility: N/A")
-agilityLabel.Name = "AgilityLabel"
-
--- Update the dropdown when new players join the game
-game.Players.PlayerAdded:Connect(function(player)
-    dropdown:Add(player.Name)
-end)
-
--- Remove players from dropdown when they leave the game
-game.Players.PlayerRemoving:Connect(function(player)
-    dropdown:Remove(player.Name)
-end)
-
+ViewStats:AddLabel("Type "/console" in the chat after clicking the button")
 
 
 
