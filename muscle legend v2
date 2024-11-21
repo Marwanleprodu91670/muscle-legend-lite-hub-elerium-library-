@@ -76,50 +76,43 @@ KillTab:AddSwitch("Auto Punch", function(State)
 end)
 
 -- Auto Kill Toggle
-local AutoKillToggle = false
-local lastTeleportTime = tick()
+local autoKillEnabled = false -- This will track whether Auto Kill is toggled
 
--- Teleport heads to left hand
-local function teleportHeadsToLeftHand()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or game.Workspace:FindFirstChild(player.Name)
-    if not character then return end
+-- Function to perform the Auto Kill logic
+local function autoKillPlayers()
+    spawn(function()
+        while autoKillEnabled do
+            -- Get the local player and their character
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
 
-    local leftHand = character:FindFirstChild("LeftHand")
-    if not leftHand then return end
-
-    -- Loop through all players and teleport their heads
-    for _, otherPlayer in pairs(game.Players:GetChildren()) do
-        if otherPlayer.Name ~= player.Name then
-            local otherCharacter = game.Workspace:FindFirstChild(otherPlayer.Name)
-            if otherCharacter then
-                local head = otherCharacter:FindFirstChild("Head")
-                if head then
-                    head.CFrame = leftHand.CFrame
+            -- Ensure the character exists and has a RightHand
+            local rightHand = character:FindFirstChild("RightHand")
+            if rightHand then
+                -- Loop through all players in the game
+                for _, target in pairs(game.Players:GetPlayers()) do
+                    -- Ensure the target is valid, has a character, and is not the local player
+                    if target ~= player and target.Character and target.Character:FindFirstChild("Head") then
+                        -- Teleport the target's head to the local player's RightHand position
+                        target.Character.Head.CFrame = rightHand.CFrame
+                    end
                 end
             end
+
+            -- Small delay for smoother execution
+            wait(0.1)
         end
-    end
+    end)
 end
 
-KillTab:AddSwitch("Auto Kill", function(State)
-    AutoKillToggle = State
-    if AutoKillToggle then
-        -- Infinite loop to teleport all player's heads to the left hand
-        local function autoKillLoop()
-            while AutoKillToggle do
-                local currentTime = tick()
-                -- To avoid unnecessary performance overhead, ensure it's not teleporting too frequently
-                if currentTime - lastTeleportTime > 0.1 then
-                    teleportHeadsToLeftHand()
-                    lastTeleportTime = currentTime
-                end
-                wait(0.1)  -- Teleport every 0.1 seconds
-            end
-        end
-        coroutine.wrap(autoKillLoop)()  -- Run the loop in a coroutine to keep it non-blocking
+-- Add a toggle switch for Auto Kill
+KillTab:AddSwitch("Auto Kill", function(state)
+    autoKillEnabled = state
+    if autoKillEnabled then
+        autoKillPlayers() -- Start the Auto Kill logic if enabled
     end
 end)
+
 
 
 -- Rebirth tab
