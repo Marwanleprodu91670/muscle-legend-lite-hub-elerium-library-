@@ -318,7 +318,163 @@ folder2:AddSwitch("Auto Muscle King Lift", function(bool)
     end
 end)
 
---kill tab will be here for next update ( testing
+local Kill = window:AddTab("Kill")
+local whitelistedPlayers = {}
+local selectedPlayerName = ""
+local timeElapsed = 0
+local AutoPunchToggle = false
+local timeLabel = nil
+
+-- Whitelist TextBox and Clear Button
+Kill:AddTextBox("Whitelist A player", function(text)
+    table.insert(whitelistedPlayers, text)  -- Adds player to whitelist
+end)
+
+Kill:AddButton("Clear Whitelist", function()
+    whitelistedPlayers = {}  -- Clears the whitelist
+end)
+
+-- Auto Punch Logic (Refactored)
+local function handleAutoPunch()
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local punchTool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+    
+    if not punchTool then
+        _G.autoPunchanim = false  -- Stop if the tool is missing
+        return
+    end
+    
+    _G.autoPunchanim = true  -- Start auto punch animation
+    
+    while _G.autoPunchanim do
+        -- Equip punch tool if not already equipped
+        if punchTool.Parent ~= player.Character then
+            punchTool.Parent = player.Character
+        end
+
+        -- Fire punch events for both right and left hand
+        game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+        game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+        
+        -- Teleport heads of non-whitelisted players and make them invisible
+        for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+            if not table.find(whitelistedPlayers, targetPlayer.Name) then
+                local targetHead = targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head")
+                if targetHead then
+                    targetHead.CFrame = player.Character.RightHand.CFrame
+                    targetHead.Transparency = 1  -- Make head invisible
+                end
+            end
+        end
+        
+        wait(0.01)  -- Delay for punch timing
+    end
+end)
+
+Kill:AddLabel("Targeting")
+
+-- Select Player TextBox and Kill Players Toggle
+Kill:AddTextBox("Player Name", function(text)
+    selectedPlayerName = text  -- Store the selected player name
+end)
+
+Kill:AddSwitch("Kill Players", function(bool)
+    if bool then
+        -- Start time tracking for the label
+        timeElapsed = 0
+        timeLabel:SetText("Amount Of Time Killing Player: 00:00")
+
+        -- Start the killing process and update the label
+        task.spawn(function()
+            while bool do
+                -- Handle auto-punching and teleportation
+                local player = game.Players.LocalPlayer
+                local punchTool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+                if punchTool then
+                    -- Equip punch tool if not already equipped
+                    if punchTool.Parent ~= player.Character then
+                        punchTool.Parent = player.Character
+                    end
+                    
+                    -- Fire punch events
+                    game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+                    game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+
+                    -- Teleport selected player's head to my right hand
+                    local targetPlayer = game.Players:FindFirstChild(selectedPlayerName)
+                    if targetPlayer and targetPlayer.Character then
+                        local targetHead = targetPlayer.Character:FindFirstChild("Head")
+                        if targetHead then
+                            targetHead.CFrame = player.Character.RightHand.CFrame
+                            targetHead.Transparency = 1  -- Make head invisible
+                        end
+                    end
+                end
+                
+                -- Update the label every second
+                timeElapsed = timeElapsed + 1
+                local minutes = math.floor(timeElapsed / 60)
+                local seconds = timeElapsed % 60
+                timeLabel:SetText(string.format("Amount Of Time Killing Player: %02d:%02d", minutes, seconds))
+
+                wait(1)  -- Update the time every second
+            end
+        end)
+    else
+        _G.autoPunchanim = false  -- Stop process when toggle is turned off
+        timeLabel:SetText("Amount Of Time Killing Player: 00:00")  -- Reset time label
+    end
+end)
+
+-- Clear Player Button
+Kill:AddButton("Clear Player Name", function()
+    selectedPlayerName = ""  -- Clears the selected player
+end)
+
+-- Time Label Update
+timeLabel = Kill:AddLabel("Amount Of Time Killing Player: 00:00")
+
+Kill:AddLabel("Auto Punching")
+
+-- Speed Punch (Optional Speed Increase for Punch)
+Kill:AddButton("Speed Punch", function()
+    local player = game.Players.LocalPlayer
+    local punch = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+    if punch and punch:FindFirstChild("attackTime") then
+        punch.attackTime.Value = 0  -- Set attack time to zero for faster punching
+    end
+end)
+
+-- Auto Punch Toggle
+Kill:AddSwitch("Auto Punch", function(State)
+    AutoPunchToggle = State
+    if AutoPunchToggle then
+        task.spawn(function()
+            while AutoPunchToggle do
+                local player = game.Players.LocalPlayer
+                local tool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+                if tool and tool.Parent ~= player.Character then
+                    tool.Parent = player.Character
+                end
+                if tool then
+                    tool:Activate()
+                end
+                task.wait(0.01)  -- Trigger every 0.01 seconds
+            end
+        end)
+    end
+end)
+
+-- Auto Punch [No Animation] Toggle
+Kill:AddSwitch("Auto Punch [No Animation]", function(state)
+    if state then
+        handleAutoPunch()  -- Start auto punch logic without animation
+    else
+        _G.autoPunchanim = false  -- Stop the punch loop
+    end
+end)
+
 
 
 
