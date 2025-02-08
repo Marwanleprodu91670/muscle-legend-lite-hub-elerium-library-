@@ -1,7 +1,7 @@
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
-local window = library:AddWindow("Idk what to call it.... | Adopt Script", {
+local window = library:AddWindow("test 1.... | Adopt Script", {
     main_color = Color3.fromRGB(0,0,0), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
@@ -759,7 +759,7 @@ Players.PlayerRemoving:Connect(function(player)
     updateDropdown(dropdown)
 end)
 
--- Update the dropdown on initial load
+-- Update the dropdown once on initial load (only call once)
 updateDropdown(dropdown)
 
 -- Listen for dropdown selection changes
@@ -767,6 +767,7 @@ dropdown.OnChanged = function(selectedText)
     -- Set the selected player based on the dropdown selection
     selectedPlayer = Players:FindFirstChild(selectedText)
 end
+
 
 
 
