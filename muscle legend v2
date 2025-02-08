@@ -687,6 +687,9 @@ Credittab:AddLabel("Script Made By Adopt")
 Credittab:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
 
 local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local RightHand = Character:WaitForChild("RightHand")  -- Adjust if your rig's right hand is named differently
 
 -- Function to update the dropdown with player names
 local function updateDropdown(dropdown)
@@ -699,26 +702,10 @@ local function updateDropdown(dropdown)
     end
 end
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local RightHand = Character:WaitForChild("RightHand")  -- Adjust if your rig's right hand is named differently
-
--- Function to update the dropdown with player names
-local function updateDropdown(dropdown)
-    dropdown:Clear()
-    for _, player in ipairs(Players:GetPlayers()) do
-        dropdown:Add(player.Name)
-    end
-end
-
 -- Create the dropdown in the Credittab
 local dropdown = Credittab:AddDropdown("Select a player for test", function(text)
     -- Do nothing here for now, this is just for selection
 end)
-
--- Update the dropdown initially
-updateDropdown(dropdown)
 
 -- Variable to store the selected player
 local selectedPlayer = nil
@@ -735,13 +722,17 @@ local switch = Credittab:AddSwitch("Kill Players", function(bool)
             playerHead.Transparency = 1
 
             -- Infinite loop to teleport the head to the right hand
-            game:GetService("RunService").Heartbeat:Connect(function()
+            local heartbeatConnection
+            heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
                 if bool and selectedPlayer and selectedPlayer.Character then
                     local playerHead = selectedPlayer.Character:FindFirstChild("Head")
                     if playerHead then
                         -- Teleport the head to the right hand's position
                         playerHead.CFrame = RightHand.CFrame * CFrame.new(0, 0, 0)  -- Adjust the position if needed
                     end
+                else
+                    -- Disconnect the heartbeat loop when toggle is off
+                    heartbeatConnection:Disconnect()
                 end
             end)
         end
@@ -758,27 +749,25 @@ end)
 
 -- Listen for player joins and update the dropdown
 Players.PlayerAdded:Connect(function(player)
-    wait(1)
+    wait(1)  -- Give time for player to fully load
     updateDropdown(dropdown)
 end)
 
 -- Listen for player leaving and update the dropdown
 Players.PlayerRemoving:Connect(function(player)
-    wait(1)
+    wait(1)  -- Give time for player to leave
     updateDropdown(dropdown)
 end)
 
--- Update the dropdown every 5 seconds
-while true do
-    wait(5)
-    updateDropdown(dropdown)
-end)
+-- Update the dropdown on initial load
+updateDropdown(dropdown)
 
 -- Listen for dropdown selection changes
 dropdown.OnChanged = function(selectedText)
     -- Set the selected player based on the dropdown selection
     selectedPlayer = Players:FindFirstChild(selectedText)
 end
+
 
 
 
