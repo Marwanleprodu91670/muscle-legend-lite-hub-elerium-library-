@@ -1,7 +1,7 @@
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
-local window = library:AddWindow("test 1.... | Adopt Script", {
+local window = library:AddWindow("test 2.... | Adopt Script", {
     main_color = Color3.fromRGB(0,0,0), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
@@ -691,82 +691,43 @@ local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local RightHand = Character:WaitForChild("RightHand")  -- Adjust if your rig's right hand is named differently
 
--- Function to update the dropdown with player names
-local function updateDropdown(dropdown)
-    -- Clear the existing options
-    dropdown:Clear()
-
-    -- Add each player's name as an option
-    for _, player in ipairs(Players:GetPlayers()) do
-        dropdown:Add(player.Name)
-    end
-end
-
 -- Create the dropdown in the Credittab
 local dropdown = Credittab:AddDropdown("Select a player for test", function(text)
     -- Do nothing here for now, this is just for selection
 end)
 
--- Variable to store the selected player
-local selectedPlayer = nil
-
--- Function to handle the Kill Players toggle
-local switch = Credittab:AddSwitch("Kill Players", function(bool)
-    if bool and selectedPlayer then
-        -- Get the selected player's character and head
-        local playerCharacter = selectedPlayer.Character
-        local playerHead = playerCharacter and playerCharacter:FindFirstChild("Head")
-        
-        if playerHead then
-            -- Set head to invisible
-            playerHead.Transparency = 1
-
-            -- Infinite loop to teleport the head to the right hand
-            local heartbeatConnection
-            heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
-                if bool and selectedPlayer and selectedPlayer.Character then
-                    local playerHead = selectedPlayer.Character:FindFirstChild("Head")
-                    if playerHead then
-                        -- Teleport the head to the right hand's position
-                        playerHead.CFrame = RightHand.CFrame * CFrame.new(0, 0, 0)  -- Adjust the position if needed
-                    end
-                else
-                    -- Disconnect the heartbeat loop when toggle is off
-                    heartbeatConnection:Disconnect()
-                end
-            end)
-        end
-    else
-        -- If the toggle is off, make sure to restore head visibility
-        if selectedPlayer and selectedPlayer.Character then
-            local playerHead = selectedPlayer.Character:FindFirstChild("Head")
-            if playerHead then
-                playerHead.Transparency = 0
-            end
-        end
+-- Function to populate the dropdown with all current players
+local function populateDropdown()
+    dropdown:Clear()  -- Clear the dropdown first
+    for _, player in ipairs(Players:GetPlayers()) do
+        dropdown:Add(player.Name)  -- Add player names to the dropdown
     end
-end)
+end
+
+-- Populate dropdown initially
+populateDropdown()
 
 -- Listen for player joins and update the dropdown
 Players.PlayerAdded:Connect(function(player)
-    wait(1)  -- Give time for player to fully load
-    updateDropdown(dropdown)
+    -- Add the new player's name to the dropdown
+    dropdown:Add(player.Name)
 end)
 
 -- Listen for player leaving and update the dropdown
 Players.PlayerRemoving:Connect(function(player)
-    wait(1)  -- Give time for player to leave
-    updateDropdown(dropdown)
+    -- Remove the player's name from the dropdown
+    dropdown:Remove(player.Name)
 end)
 
--- Update the dropdown once on initial load (only call once)
-updateDropdown(dropdown)
+-- Variable to store the selected player
+local selectedPlayer = nil
 
 -- Listen for dropdown selection changes
 dropdown.OnChanged = function(selectedText)
     -- Set the selected player based on the dropdown selection
     selectedPlayer = Players:FindFirstChild(selectedText)
 end
+
 
 
 
