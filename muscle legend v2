@@ -1,7 +1,7 @@
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
-local window = library:AddWindow("test 3.... | Adopt Script", {
+local window = library:AddWindow("test 4.... | Adopt Script", {
     main_color = Color3.fromRGB(0,0,0), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
@@ -337,39 +337,41 @@ Kill:AddButton("Clear Whitelist", function()
     print("Whitelist Cleared")
 end)
 
--- Auto Kill Toggle with Punch and Teleportation
-local function handleAutoKill()
+-- Auto Punch Logic (Refactored)
+local function handleAutoPunch()
     local player = game.Players.LocalPlayer
     local playerName = player.Name
-    local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+    local punchTool = player.Backpack:FindFirstChild("Punch") or player.Character:FindFirstChild("Punch")
+    
+    if not punchTool then
+        warn("Punch tool not found")
+        return
+    end
     
     _G.autoPunchanim = true -- Global control variable
     
     while _G.autoPunchanim do
-        if punchTool then
-            if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
-            end
-            
-            -- Fire punch events for both right and left hand
-            game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-            game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-            
-            -- Teleporting target player's head to my right hand and making heads invisible for non-whitelisted players
-            for _, targetPlayer in pairs(game.Players:GetPlayers()) do
-                if not table.find(whitelistedPlayers, targetPlayer.Name) then
-                    -- Teleporting target player's head to my right hand
-                    local targetHead = targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head")
-                    if targetHead then
-                        targetHead.CFrame = player.Character.RightHand.CFrame
-                        targetHead.Transparency = 1  -- Make the head invisible
-                    end
+        -- Equip the punch tool if not already equipped
+        if punchTool.Parent ~= player.Character then
+            punchTool.Parent = player.Character
+        end
+
+        -- Fire punch events for both right and left hand
+        game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+        game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+        
+        -- Teleporting target player's head to my right hand and making heads invisible for non-whitelisted players
+        for _, targetPlayer in pairs(game.Players:GetPlayers()) do
+            if not table.find(whitelistedPlayers, targetPlayer.Name) then
+                -- Teleporting target player's head to my right hand
+                local targetHead = targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head")
+                if targetHead then
+                    targetHead.CFrame = player.Character.RightHand.CFrame
+                    targetHead.Transparency = 1  -- Make the head invisible
                 end
             end
-        else
-            warn("Punch tool not found")
-            _G.autoPunchanim = false -- Optional: Stop the loop if tool is not found
         end
+        
         wait(0.01) -- Adjust the delay as needed for timing between punches
     end
 end)
@@ -391,33 +393,8 @@ Kill:AddSwitch("Kill Players", function(bool)
         task.spawn(function()
             while bool do
                 -- Handle punching and teleportation logic
-                local player = game.Players.LocalPlayer
-                local playerName = player.Name
-                local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+                handleAutoPunch()
 
-                if punchTool then
-                    if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                        punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
-                    end
-
-                    -- Fire punch events for both right and left hand
-                    game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                    game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-
-                    -- Teleporting the head of the selected player to my right hand
-                    local targetPlayer = game.Players:FindFirstChild(selectedPlayerName)
-                    if targetPlayer and targetPlayer.Character then
-                        local targetHead = targetPlayer.Character:FindFirstChild("Head")
-                        if targetHead then
-                            targetHead.CFrame = player.Character.RightHand.CFrame
-                            targetHead.Transparency = 1  -- Make the head invisible
-                        end
-                    end
-                else
-                    warn("Punch tool not found")
-                    _G.autoPunchanim = false  -- Stop the loop if tool is not found
-                end
-                
                 -- Update the label every second
                 timeElapsed = timeElapsed + 1
                 local minutes = math.floor(timeElapsed / 60)
@@ -476,34 +453,12 @@ end)
 -- Auto Punch [No Animation] Toggle
 Kill:AddSwitch("Auto Punch [No Animation]", function(state)
     if state then
-        local player = game.Players.LocalPlayer
-        local playerName = player.Name
-        local punchTool =
-            player.Backpack:FindFirstChild("Punch") or
-            game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
-        
-        _G.autoPunchanim = true -- Global control variable
-
-        while _G.autoPunchanim do
-            if punchTool then
-                if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
-                end
-                
-                -- Fire punch events for both right and left hand
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                
-                wait() -- Adjust the delay as needed for timing between punches
-            else
-                warn("Punch tool not found")
-                _G.autoPunchanim = false -- Optional: Stop the loop if tool is not found
-            end
-        end
+        handleAutoPunch()
     else
         _G.autoPunchanim = false
     end
 end)
+
 
 
                              
