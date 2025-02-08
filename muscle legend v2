@@ -151,6 +151,152 @@ end)
 local AutoFarm = window:AddTab("Auto Farm")
 
 AutoFarm:AddLabel("Tools")
+
+local switch = AutoFarm:AddSwitch("Auto Weight", function(bool)
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local weightTool =
+        player.Backpack:FindFirstChild("Weight") or
+        game.Workspace:FindFirstChild(playerName):FindFirstChild("Weight")
+
+    _G.autoWeightUse = bool  -- Set the global variable based on toggle
+
+    if bool then
+        while _G.autoWeightUse do
+            if weightTool then
+                if weightTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    weightTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                end
+                
+                -- Fire weight use events without triggering animations
+                game.Players.LocalPlayer.muscleEvent:FireServer("useWeight", "rightHand")  -- Use weight without animation for right hand
+                game.Players.LocalPlayer.muscleEvent:FireServer("useWeight", "leftHand")   -- Use weight without animation for left hand
+
+                -- Suppress animation by setting an appropriate flag (if the game has such a feature)
+                game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false) -- Disable movement animation
+
+                wait() -- Adjust the delay as needed for timing between weight uses
+            else
+                warn("Weight tool not found")
+                _G.autoWeightUse = false -- Stop the loop if tool is not found
+            end
+        end
+    else
+        -- Re-enable animation and stop the loop when toggled off
+        game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, true)
+        _G.autoWeightUse = false
+    end
+end)
+
+local switchPushups = AutoFarm:AddSwitch("Auto Pushups", function(bool)
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local pushupsTool =
+        player.Backpack:FindFirstChild("Pushups") or
+        game.Workspace:FindFirstChild(playerName):FindFirstChild("Pushups")
+
+    _G.autoPushupsUse = bool  -- Set the global variable based on toggle
+
+    if bool then
+        while _G.autoPushupsUse do
+            if pushupsTool then
+                if pushupsTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    pushupsTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                end
+                
+                -- Fire pushups use events without triggering animations
+                game.Players.LocalPlayer.muscleEvent:FireServer("usePushups", "rightHand")  -- Use pushups without animation for right hand
+                game.Players.LocalPlayer.muscleEvent:FireServer("usePushups", "leftHand")   -- Use pushups without animation for left hand
+
+                -- Suppress animation by setting an appropriate flag (if the game has such a feature)
+                game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false) -- Disable movement animation
+
+                wait() -- Adjust the delay as needed for timing between pushups
+            else
+                warn("Pushups tool not found")
+                _G.autoPushupsUse = false -- Stop the loop if tool is not found
+            end
+        end
+    else
+        -- Re-enable animation and stop the loop when toggled off
+        game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, true)
+        _G.autoPushupsUse = false
+    end
+end)
+
+local switchHandstands = AutoFarm:AddSwitch("Auto Handstands", function(bool)
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local handstandsTool =
+        player.Backpack:FindFirstChild("Handstands") or
+        game.Workspace:FindFirstChild(playerName):FindFirstChild("Handstands")
+
+    _G.autoHandstandsUse = bool  -- Set the global variable based on toggle
+
+    if bool then
+        while _G.autoHandstandsUse do
+            if handstandsTool then
+                if handstandsTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    handstandsTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                end
+                
+                -- Fire handstands use events without triggering animations
+                game.Players.LocalPlayer.muscleEvent:FireServer("useHandstands", "rightHand")  -- Use handstands without animation for right hand
+                game.Players.LocalPlayer.muscleEvent:FireServer("useHandstands", "leftHand")   -- Use handstands without animation for left hand
+
+                -- Suppress animation by setting an appropriate flag (if the game has such a feature)
+                game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false) -- Disable movement animation
+
+                wait() -- Adjust the delay as needed for timing between handstands
+            else
+                warn("Handstands tool not found")
+                _G.autoHandstandsUse = false -- Stop the loop if tool is not found
+            end
+        end
+    else
+        -- Re-enable animation and stop the loop when toggled off
+        game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, true)
+        _G.autoHandstandsUse = false
+    end
+end)
+
+local switchSitups = AutoFarm:AddSwitch("Auto Situps", function(bool)
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local situpsTool =
+        player.Backpack:FindFirstChild("Situps") or
+        game.Workspace:FindFirstChild(playerName):FindFirstChild("Situps")
+
+    _G.autoSitupsUse = bool  -- Set the global variable based on toggle
+
+    if bool then
+        while _G.autoSitupsUse do
+            if situpsTool then
+                if situpsTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    situpsTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                end
+                
+                -- Fire situps use events without triggering animations
+                game.Players.LocalPlayer.muscleEvent:FireServer("useSitups", "rightHand")  -- Use situps without animation for right hand
+                game.Players.LocalPlayer.muscleEvent:FireServer("useSitups", "leftHand")   -- Use situps without animation for left hand
+
+                -- Suppress animation by setting an appropriate flag (if the game has such a feature)
+                game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false) -- Disable movement animation
+
+                wait() -- Adjust the delay as needed for timing between situps
+            else
+                warn("Situps tool not found")
+                _G.autoSitupsUse = false -- Stop the loop if tool is not found
+            end
+        end
+    else
+        -- Re-enable animation and stop the loop when toggled off
+        game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, true)
+        _G.autoSitupsUse = false
+    end
+end)
+
+
 AutoFarm:AddLabel("Normal Farming")
 
 local folder = AutoFarm:AddFolder("Jungle Farming")
