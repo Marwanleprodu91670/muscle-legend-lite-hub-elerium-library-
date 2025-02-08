@@ -686,47 +686,6 @@ local Credittab = window:AddTab("Credit")  -- Adding the "Credit" tab
 Credittab:AddLabel("Script Made By Adopt")
 Credittab:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local RightHand = Character:WaitForChild("RightHand")  -- Adjust if your rig's right hand is named differently
-
--- Create the dropdown in the Credittab
-local dropdown = Credittab:AddDropdown("Select a player for test", function(text)
-    -- Do nothing here for now, this is just for selection
-end)
-
--- Function to populate the dropdown with all current players
-local function populateDropdown()
-    dropdown:Clear()  -- Clear the dropdown first
-    for _, player in ipairs(Players:GetPlayers()) do
-        dropdown:Add(player.Name)  -- Add player names to the dropdown
-    end
-end
-
--- Populate dropdown initially
-populateDropdown()
-
--- Listen for player joins and update the dropdown
-Players.PlayerAdded:Connect(function(player)
-    -- Add the new player's name to the dropdown
-    dropdown:Add(player.Name)
-end)
-
--- Listen for player leaving and update the dropdown
-Players.PlayerRemoving:Connect(function(player)
-    -- Remove the player's name from the dropdown
-    dropdown:Remove(player.Name)
-end)
-
--- Variable to store the selected player
-local selectedPlayer = nil
-
--- Listen for dropdown selection changes
-dropdown.OnChanged = function(selectedText)
-    -- Set the selected player based on the dropdown selection
-    selectedPlayer = Players:FindFirstChild(selectedText)
-end
 
 
 
