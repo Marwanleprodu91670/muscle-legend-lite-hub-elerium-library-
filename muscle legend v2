@@ -1,7 +1,7 @@
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
-local window = library:AddWindow("test 10.... | Adopt Script", {
+local window = library:AddWindow("test 11.... | Adopt Script", {
     main_color = Color3.fromRGB(0,0,0), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
@@ -528,6 +528,21 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
                             head.CFrame = rightHand.CFrame
                         end
                     end
+
+                    -- Hide Name GUI Elements
+                    local nameGui = otherPlayer:FindFirstChild("nameGui")
+                    if nameGui then
+                        local strengthImage = nameGui:FindFirstChild("strengthImage")
+                        local karmaLabel = nameGui:FindFirstChild("karmaLabel")
+                        local nameLabel = nameGui:FindFirstChild("nameLabel")
+                        local rankLabel = nameGui:FindFirstChild("rankLabel")
+
+                        -- Set visibility of the 4 elements to false
+                        if strengthImage then strengthImage.Visible = false end
+                        if karmaLabel then karmaLabel.Visible = false end
+                        if nameLabel then nameLabel.Visible = false end
+                        if rankLabel then rankLabel.Visible = false end
+                    end
                 end
                 wait(0.2) -- Adjust as needed
             end
@@ -539,6 +554,7 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
         _G.autoKill = false
     end
 end)
+
 
 
 
