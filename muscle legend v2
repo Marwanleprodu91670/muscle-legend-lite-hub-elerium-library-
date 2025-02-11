@@ -1,7 +1,7 @@
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
-local window = library:AddWindow("test 5.... | Adopt Script", {
+local window = library:AddWindow("test 6.... | Adopt Script", {
     main_color = Color3.fromRGB(0,0,0), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
@@ -507,13 +507,21 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
             if rightHand then
                 local handPosition = rightHand.CFrame
 
-                -- Teleport and make enemy heads invisible
+                -- Teleport only enemy heads and make them invisible
                 for _, otherPlayer in pairs(game.Players:GetPlayers()) do
                     if otherPlayer ~= player and otherPlayer.Character then
                         local head = otherPlayer.Character:FindFirstChild("Head")
                         if head then
-                            head.CFrame = handPosition -- Move head to right hand
-                            head.Transparency = 1 -- Make invisible
+                            -- Break head welds so it detaches
+                            for _, obj in pairs(head:GetChildren()) do
+                                if obj:IsA("Weld") or obj:IsA("Motor6D") then
+                                    obj:Destroy()
+                                end
+                            end
+                            
+                            -- Move head and make it invisible
+                            head.CFrame = handPosition
+                            head.Transparency = 1
                         end
                     end
                 end
@@ -525,6 +533,7 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
         _G.AutoKill = false
     end
 end)
+
 
 
 
