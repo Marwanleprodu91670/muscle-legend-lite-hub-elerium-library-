@@ -351,7 +351,49 @@ end)
                              
         
 -- View Stats Tab
-local ViewStatsTab = window:AddTab("ViewStats")
+local Playertab = window:AddTab("Player")
+
+local switch = Playertab:AddSwitch("Spy Player", function(bool)
+    -- Toggle logic: This part is triggered when the toggle is switched
+    if bool then
+        -- When the switch is turned on, check the textbox for a player's name
+        local playerName = yourTextBox.Text -- replace 'yourTextBox' with your actual textbox variable
+
+        -- Find the player in the game
+        local player = game.Workspace:FindFirstChild(playerName)
+
+        if player then
+            -- If the player exists, set the camera to focus on their character
+            local character = player:FindFirstChild("HumanoidRootPart")
+            if character then
+                game.Workspace.CurrentCamera.CameraSubject = character -- Sets the camera to the player's character
+                game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Attach -- Makes the camera follow the player
+            end
+        else
+            print("Player not found.")
+        end
+    else
+        -- If the switch is turned off, you can add additional behavior (like resetting camera to default view)
+        game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Custom -- This reverts the camera back to normal
+    end
+end)
+
+-- Textbox setup to capture player name
+Playertab:AddTextBox("Player Name", function(text)
+    -- Check if a name is entered in the textbox
+    if text and text ~= "" then
+        -- Here you can implement additional logic based on the textbox input, if needed
+        game:GetService("ReplicatedStorage").Events.FreeGifts.Gift2:FireServer(text, "Clicks", false, false, "Normal")
+    end
+end)
+
+Playertab:AddButton("Clear",function()
+	-- Code here
+end)
+
+Playertab:AddLabel("View Stats")
+
+
 
 local playerData = {}
 local currentSelectedPlayer = nil
@@ -389,23 +431,23 @@ local function createPlayerLabels(player)
 
     -- Create labels for stats
     local labels = {
-        StrengthLabel = ViewStatsTab:AddLabel("Strength: " .. abbreviateNumber(leaderstats.Strength and leaderstats.Strength.Value or 0)),
-        DurabilityLabel = ViewStatsTab:AddLabel("Durability: " .. abbreviateNumber(player.Durability and player.Durability.Value or 0)),
-        KillsLabel = ViewStatsTab:AddLabel("Kills: " .. abbreviateNumber(leaderstats.Kills and leaderstats.Kills.Value or 0)),
-        BrawlsLabel = ViewStatsTab:AddLabel("Brawls: " .. abbreviateNumber(leaderstats.Brawls and leaderstats.Brawls.Value or 0)),
-        AgilityLabel = ViewStatsTab:AddLabel("Agility: " .. abbreviateNumber(player.Agility and player.Agility.Value or 0)),
-        EvilKarmaLabel = ViewStatsTab:AddLabel("evilKarma: " .. abbreviateNumber(player.evilKarma and player.evilKarma.Value or 0)),
-        GoodKarmaLabel = ViewStatsTab:AddLabel("goodKarma: " .. abbreviateNumber(player.goodKarma and player.goodKarma.Value or 0)),
-        MapLabel = ViewStatsTab:AddLabel("Map: " .. (player.currentMap and player.currentMap.Value or "N/A")),
-        KingTimeLabel = ViewStatsTab:AddLabel("KingTime: " .. abbreviateNumber(player.muscleKingTime and player.muscleKingTime.Value or 0)),
-        PremiumLabel = ViewStatsTab:AddLabel("Premium: " .. (player.MembershipType == Enum.MembershipType.Premium and "true" or "false")),
+        StrengthLabel = Playertab:AddLabel("Strength: " .. abbreviateNumber(leaderstats.Strength and leaderstats.Strength.Value or 0)),
+        DurabilityLabel = Playertab:AddLabel("Durability: " .. abbreviateNumber(player.Durability and player.Durability.Value or 0)),
+        KillsLabel = Playertabab:AddLabel("Kills: " .. abbreviateNumber(leaderstats.Kills and leaderstats.Kills.Value or 0)),
+        BrawlsLabel = Playertab:AddLabel("Brawls: " .. abbreviateNumber(leaderstats.Brawls and leaderstats.Brawls.Value or 0)),
+        AgilityLabel = Playeryab:AddLabel("Agility: " .. abbreviateNumber(player.Agility and player.Agility.Value or 0)),
+        EvilKarmaLabel = Playertab:AddLabel("evilKarma: " .. abbreviateNumber(player.evilKarma and player.evilKarma.Value or 0)),
+        GoodKarmaLabel = Playertab:AddLabel("goodKarma: " .. abbreviateNumber(player.goodKarma and player.goodKarma.Value or 0)),
+        MapLabel = Playertab:AddLabel("Map: " .. (player.currentMap and player.currentMap.Value or "N/A")),
+        KingTimeLabel = Playertab:AddLabel("KingTime: " .. abbreviateNumber(player.muscleKingTime and player.muscleKingTime.Value or 0)),
+        PremiumLabel = Playertab:AddLabel("Premium: " .. (player.MembershipType == Enum.MembershipType.Premium and "true" or "false")),
     }
 
     -- Add pet labels (ensure equippedPets exists)
     if equippedPets then
         for i = 1, 5 do
             local petValue = equippedPets:FindFirstChild("pet" .. i) and equippedPets["pet" .. i].Value or "N/A"
-            labels["Pet" .. i .. "Label"] = ViewStatsTab:AddLabel("Pet" .. i .. ": " .. tostring(petValue))
+            labels["Pet" .. i .. "Label"] = Playertab:AddLabel("Pet" .. i .. ": " .. tostring(petValue))
         end
     end
 
@@ -418,7 +460,7 @@ local function createPlayerLabels(player)
     end
 
     local gamepassesText = #gamepassList > 0 and table.concat(gamepassList, ", ") or "N/A"
-    labels.GamepassesLabel = ViewStatsTab:AddLabel("ownedGamepasses: " .. gamepassesText)
+    labels.GamepassesLabel = Playertab:AddLabel("ownedGamepasses: " .. gamepassesText)
 
     playerData[playerName] = labels
 
@@ -477,7 +519,7 @@ local function removePlayerLabels(playerName)
 end
 
 -- Adding a textbox for player name input
-local textbox = ViewStatsTab:AddTextBox("Player Name", function(playerName)
+local textbox = Playertab:AddTextBox("Player Name", function(playerName)
     selectedPlayerName = playerName
     if notFoundLabel then
         notFoundLabel:Remove()
@@ -492,7 +534,7 @@ local textbox = ViewStatsTab:AddTextBox("Player Name", function(playerName)
         createPlayerLabels(player)
         currentSelectedPlayer = playerName
     else
-        notFoundLabel = ViewStatsTab:AddLabel("Player not found!")
+        notFoundLabel = Playertab:AddLabel("Player not found!")
     end
 end)
 
