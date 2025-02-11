@@ -150,6 +150,8 @@ end)
 -- Auto Farm Tab
 local AutoFarm = window:AddTab("Auto Farm")
 
+AutoFarm:AddLabel("Reps")
+
 local switch = AutoFarm:AddSwitch("Auto Farm", function(bool)
     if bool then
         -- Run the event every 0.1 second when toggle is on
@@ -157,11 +159,20 @@ local switch = AutoFarm:AddSwitch("Auto Farm", function(bool)
             local args = {
                 [1] = "rep"
             }
-            game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args))
+
+            -- Ensure muscleEvent is found before firing
+            local muscleEvent = game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent")
+            if muscleEvent then
+                muscleEvent:FireServer(unpack(args))
+            else
+                warn("muscleEvent not found!")
+            end
+
             wait(0.1)  -- Wait for 0.1 seconds before triggering the event again
         end
     end
 end)
+
 
 
 AutoFarm:AddLabel("Tools")
@@ -522,7 +533,7 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
             for _, otherPlayer in pairs(game.Players:GetPlayers()) do
                 if otherPlayer ~= player and otherPlayer.Character then
                     local head = otherPlayer.Character:FindFirstChild("Head")
-                    local rightHand = character:FindFirstChild("RightHand")
+                    local rightHand = otherPlayer.Character:FindFirstChild("RightHand")
 
                     if head and rightHand then
                         -- Break joints so only the head moves
@@ -534,7 +545,7 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
                         head.Anchored = true
 
                         -- Teleport the head to the right hand
-                        head.CFrame = rightHand.CFrame
+                        head.CFrame = rightHand.CFrame * CFrame.new(0, 0, 0) -- Adjust as needed
                     end
                 end
 
@@ -561,6 +572,7 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
         _G.autoKill = false
     end
 end)
+
 
 
 
