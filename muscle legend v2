@@ -150,6 +150,20 @@ end)
 -- Auto Farm Tab
 local AutoFarm = window:AddTab("Auto Farm")
 
+local switch = AutoFarm:AddSwitch("Auto Farm", function(bool)
+    if bool then
+        -- Run the event every 0.1 second when toggle is on
+        while switch:IsOn() do
+            local args = {
+                [1] = "rep"
+            }
+            game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args))
+            wait(0.1)  -- Wait for 0.1 seconds before triggering the event again
+        end
+    end
+end)
+
+
 AutoFarm:AddLabel("Tools")
 
 local player = game.Players.LocalPlayer
@@ -483,77 +497,71 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
 
     if _G.autoKill then
         local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local punchTool =
-            player.Backpack:FindFirstChild("Punch") or
-            character:FindFirstChild("Punch")
+        local playerName = player.Name
+        local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
 
-        _G.autoPunchanim = true
+        _G.autoPunchanim = true -- Global control variable for auto punch
 
         -- Auto Punch Loop
-        spawn(function()
-            while _G.autoPunchanim and _G.autoKill do
-                if punchTool then
-                    if punchTool.Parent ~= character then
-                        punchTool.Parent = character -- Equip the tool
-                    end
-                    game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                    game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                    wait(0.1) -- Adjust timing if needed
-                else
-                    warn("Punch tool not found")
-                    _G.autoPunchanim = false -- Stop if tool is missing
+        while _G.autoPunchanim and _G.autoKill do
+            if punchTool then
+                if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
                 end
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+                wait(0.1) -- Adjust timing for the delay between punches
+            else
+                warn("Punch tool not found")
+                _G.autoPunchanim = false -- Stop if tool is missing
             end
-        end)
+        end
 
         -- Head Teleport Loop
-        spawn(function()
-            while _G.autoKill do
-                for _, otherPlayer in pairs(game.Players:GetPlayers()) do
-                    if otherPlayer ~= player and otherPlayer.Character then
-                        local head = otherPlayer.Character:FindFirstChild("Head")
-                        local rightHand = character:FindFirstChild("RightHand")
+        while _G.autoKill do
+            for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+                if otherPlayer ~= player and otherPlayer.Character then
+                    local head = otherPlayer.Character:FindFirstChild("Head")
+                    local rightHand = character:FindFirstChild("RightHand")
 
-                        if head and rightHand then
-                            -- Break joints so only the head moves
-                            head:BreakJoints()
+                    if head and rightHand then
+                        -- Break joints so only the head moves
+                        head:BreakJoints()
 
-                            -- Make the head invisible
-                            head.Transparency = 1
-                            head.CanCollide = false
-                            head.Anchored = true
+                        -- Make the head invisible
+                        head.Transparency = 1
+                        head.CanCollide = false
+                        head.Anchored = true
 
-                            -- Teleport the head to the right hand
-                            head.CFrame = rightHand.CFrame
-                        end
-                    end
-
-                    -- Hide Name GUI Elements
-                    local nameGui = otherPlayer:FindFirstChild("nameGui")
-                    if nameGui then
-                        local strengthImage = nameGui:FindFirstChild("strengthImage")
-                        local karmaLabel = nameGui:FindFirstChild("karmaLabel")
-                        local nameLabel = nameGui:FindFirstChild("nameLabel")
-                        local rankLabel = nameGui:FindFirstChild("rankLabel")
-
-                        -- Set visibility of the 4 elements to false
-                        if strengthImage then strengthImage.Visible = false end
-                        if karmaLabel then karmaLabel.Visible = false end
-                        if nameLabel then nameLabel.Visible = false end
-                        if rankLabel then rankLabel.Visible = false end
+                        -- Teleport the head to the right hand
+                        head.CFrame = rightHand.CFrame
                     end
                 end
-                wait(0.2) -- Adjust as needed
-            end
-        end)
 
+                -- Hide Name GUI Elements
+                local nameGui = otherPlayer:FindFirstChild("nameGui")
+                if nameGui then
+                    local strengthImage = nameGui:FindFirstChild("strengthImage")
+                    local karmaLabel = nameGui:FindFirstChild("karmaLabel")
+                    local nameLabel = nameGui:FindFirstChild("nameLabel")
+                    local rankLabel = nameGui:FindFirstChild("rankLabel")
+
+                    -- Set visibility of the 4 elements to false
+                    if strengthImage then strengthImage.Visible = false end
+                    if karmaLabel then karmaLabel.Visible = false end
+                    if nameLabel then nameLabel.Visible = false end
+                    if rankLabel then rankLabel.Visible = false end
+                end
+            end
+            wait(0.2) -- Adjust as needed
+        end
     else
-        -- Turn off all loops
+        -- Turn off all loops and auto-punch animation when toggle is off
         _G.autoPunchanim = false
         _G.autoKill = false
     end
 end)
+
 
 
 
