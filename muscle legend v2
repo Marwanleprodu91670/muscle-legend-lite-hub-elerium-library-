@@ -1,7 +1,7 @@
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
-local window = library:AddWindow("test 6.... | Adopt Script", {
+local window = library:AddWindow("test 7.... | Adopt Script", {
     main_color = Color3.fromRGB(0,0,0), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
@@ -478,61 +478,58 @@ local Credittab = window:AddTab("Credit")  -- Adding the "Credit" tab
 Credittab:AddLabel("Script Made By Adopt")
 Credittab:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
 
-local switch = Credittab:AddSwitch("Auto Kill", function(bool) 
-    if bool then
-        _G.AutoKill = true
-        while _G.AutoKill do
-            -- Get local player
-            local player = game.Players.LocalPlayer
-            local char = player.Character
-            if not char then continue end
+local switch = Credittab:AddSwitch("Auto Kill", function(bool)
+    _G.autoKill = bool
 
-            -- Equip the "Punch" tool
-            local backpack = player:FindFirstChild("Backpack")
-            if backpack then
-                local punchTool = backpack:FindFirstChild("Punch")
+    if _G.autoKill then
+        -- Start Auto Punch
+        local player = game.Players.LocalPlayer
+        local playerName = player.Name
+        local punchTool =
+            player.Backpack:FindFirstChild("Punch") or
+            game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+
+        _G.autoPunchanim = true
+
+        spawn(function()
+            while _G.autoPunchanim and _G.autoKill do
                 if punchTool then
-                    char.Humanoid:EquipTool(punchTool)
+                    if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                        punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                    end
+                    game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+                    game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+                    wait(0.1) -- Adjust timing for better performance
+                else
+                    warn("Punch tool not found")
+                    _G.autoPunchanim = false -- Stop if tool is missing
                 end
             end
+        end)
 
-            -- Simulate using the tool
-            local tool = char:FindFirstChild("Punch")
-            if tool then
-                tool:Activate()
-            end
-
-            -- Get position of right hand
-            local rightHand = char:FindFirstChild("RightHand") or char:FindFirstChild("Right Arm")
-            if rightHand then
-                local handPosition = rightHand.CFrame
-
-                -- Teleport only enemy heads and make them invisible
+        -- Start Head Teleport
+        spawn(function()
+            while _G.autoKill do
                 for _, otherPlayer in pairs(game.Players:GetPlayers()) do
                     if otherPlayer ~= player and otherPlayer.Character then
                         local head = otherPlayer.Character:FindFirstChild("Head")
                         if head then
-                            -- Break head welds so it detaches
-                            for _, obj in pairs(head:GetChildren()) do
-                                if obj:IsA("Weld") or obj:IsA("Motor6D") then
-                                    obj:Destroy()
-                                end
-                            end
-                            
-                            -- Move head and make it invisible
-                            head.CFrame = handPosition
-                            head.Transparency = 1
+                            head.Parent = nil -- Detach the head from the body
+                            head.CFrame = player.Character.RightHand.CFrame -- Move to right hand
+                            head.Transparency = 1 -- Make invisible
                         end
                     end
                 end
+                wait(0.2) -- Adjust as needed
             end
-            
-            wait(0.1) -- Prevent crashing
-        end
+        end)
+
     else
-        _G.AutoKill = false
+        _G.autoPunchanim = false
+        _G.autoKill = false
     end
 end)
+
 
 
 
