@@ -89,28 +89,7 @@ Maintab:AddButton("Destroy Ad teleport", function()
     end
 end)
 
--- Create folder "Islands Teleports"
-local folder = Maintab:AddFolder("Islands Teleports")
 
--- Teleport Buttons
-local teleportPositions = {
-    {"Beach", Vector3.new(-11, 5, -178)},
-    {"Legends", Vector3.new(4603, 989, -3898)},
-    {"Muscle", Vector3.new(-8626, 15, -5730)},
-    {"Tiny", Vector3.new(-38, 5, 1884)},
-    {"Secret", Vector3.new(-2596, -1, 5738)},
-    {"Inferno", Vector3.new(-6759, 5, -1285)},
-    {"Frost", Vector3.new(-2623, 5, -409)},
-    {"Mythical", Vector3.new(2251, 5, 1073)}
-}
-
-for _, position in pairs(teleportPositions) do
-    folder:AddButton(position[1], function()
-        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(position[2])
-        end
-    end)
-end
 
 -- Rock Farming v1 Section
 local folder2 = Maintab:AddFolder("Rock Farming v1")
@@ -349,6 +328,24 @@ end)
 -- Teleport Tab
 local Teleport = window:AddTab("Teleport")
 
+local locations = {
+    {"Beach", Vector3.new(-11, 5, -178)},
+    {"Legends Island", Vector3.new(4603, 989, -3898)},
+    {"Muscle King Gym", Vector3.new(-8626, 15, -5730)},
+    {"Tiny Island", Vector3.new(-38, 5, 1884)},
+    {"Secret Location", Vector3.new(-2596, -1, 5738)},
+    {"Inferno Island", Vector3.new(-6759, 5, -1285)},
+    {"Frost Island", Vector3.new(-2623, 5, -409)},
+    {"Mythical Island", Vector3.new(2251, 5, 1073)}
+}
+
+-- Iterate over each location and create a button for it
+for _, location in ipairs(locations) do
+    local name, position = location[1], location[2]
+    Teleport:AddButton(name, function()
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(position))
+    end)
+end
 
                              
         
