@@ -346,6 +346,8 @@ end)
 
 
 
+-- Teleport Tab
+local Teleport = window:AddTab("Teleport")
 
 
                              
