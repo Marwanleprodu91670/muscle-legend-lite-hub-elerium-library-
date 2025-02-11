@@ -1,7 +1,7 @@
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
-local window = library:AddWindow("test 9.... | Adopt Script", {
+local window = library:AddWindow("test 10.... | Adopt Script", {
     main_color = Color3.fromRGB(0,0,0), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
@@ -516,10 +516,13 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
                         local rightHand = character:FindFirstChild("RightHand")
 
                         if head and rightHand then
+                            -- Break joints so only the head moves
+                            head:BreakJoints()
+
                             -- Make the head invisible
                             head.Transparency = 1
                             head.CanCollide = false
-                            head.Anchored = false
+                            head.Anchored = true
 
                             -- Teleport the head to the right hand
                             head.CFrame = rightHand.CFrame
@@ -536,6 +539,7 @@ local switch = Credittab:AddSwitch("Auto Kill", function(bool)
         _G.autoKill = false
     end
 end)
+
 
 
 
