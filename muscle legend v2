@@ -409,15 +409,16 @@ folder2:AddSwitch("Auto Muscle King Lift", function(bool)
     end
 end)
 
---Killing Tab
 local Killing = window:AddTab("Killing")
-local whitelistedPlayers = {}  -- Table to store whitelisted players
-local targetName = ""          -- Variable to store the target player's name
-local killPlayersActive = false -- Variable to track the state of "Kill Players"
-local autoKillActive = false   -- Variable to track the state of "Auto Kill"
-local autoEquipPunchActive = false -- Variable to track the state of "Auto Equip Punch"
-local killStartTime = 0        -- Timer for kill time
-local killTimeLabel            -- Reference to the label
+local whitelistedPlayers = {}
+local targetName = ""
+local killPlayersActive = false
+local autoKillActive = false
+local autoEquipPunchActive = false
+local killStartTime = 0
+local killTimeLabel
+local punchTool
+local autoPunchanim = false
 
 Killing:AddLabel("Whitelist")
 Killing:AddTextBox("Whitelist Players", function(text)
@@ -446,13 +447,46 @@ local function restoreVisibility()
                     part.CanCollide = true
                 end
             end
-            -- Restore visibility of accessories and hair
             for _, accessory in pairs(character:GetChildren()) do
                 if accessory:IsA("Accessory") or accessory:IsA("Hat") then
                     if accessory:FindFirstChild("Handle") then
                         accessory.Handle.Transparency = 0
                     end
                 end
+            end
+        end
+    end
+end
+
+-- Function to equip the Punch tool if needed
+local function equipPunchTool()
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+    if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+        punchTool.Parent = game.Workspace:FindFirstChild(playerName)
+    end
+end
+
+-- Function to perform the punch action
+local function punchAction()
+    local player = game.Players.LocalPlayer
+    player.muscleEvent:FireServer("punch", "rightHand")
+    player.muscleEvent:FireServer("punch", "leftHand")
+end
+
+-- Function to make a character invisible
+local function makeInvisible(character)
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") or part:IsA("MeshPart") then
+            part.Transparency = 1
+            part.CanCollide = false
+        end
+    end
+    for _, accessory in pairs(character:GetChildren()) do
+        if accessory:IsA("Accessory") or accessory:IsA("Hat") then
+            if accessory:FindFirstChild("Handle") then
+                accessory.Handle.Transparency = 1
             end
         end
     end
@@ -465,46 +499,19 @@ Killing:AddSwitch("Auto Kill", function(state)
         coroutine.wrap(function()
             local player = game.Players.LocalPlayer
             local playerName = player.Name
-
             while autoKillActive do
-                -- Auto-equip Punch tool
-                local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
-                if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                    punchTool.Parent = game.Workspace:FindFirstChild(playerName)
-                end
-
-                -- Punch action
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-
-                -- Teleport and make invisible
+                equipPunchTool()
+                punchAction()
                 for _, otherPlayer in pairs(game.Players:GetChildren()) do
                     if otherPlayer.Name ~= playerName and not table.find(whitelistedPlayers, otherPlayer.Name) then
                         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
                         local localCharacter = game.Workspace:FindFirstChild(playerName)
-
                         if character and localCharacter then
                             local rightHand = localCharacter:FindFirstChild("RightHand")
                             local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
                             if rightHand and humanoidRootPart then
                                 humanoidRootPart.CFrame = rightHand.CFrame
-
-                                for _, part in pairs(character:GetChildren()) do
-                                    if part:IsA("BasePart") or part:IsA("MeshPart") then
-                                        part.Transparency = 1
-                                        part.CanCollide = false
-                                    end
-                                end
-
-                                -- Make accessories and hair invisible
-                                for _, accessory in pairs(character:GetChildren()) do
-                                    if accessory:IsA("Accessory") or accessory:IsA("Hat") then
-                                        if accessory:FindFirstChild("Handle") then
-                                            accessory.Handle.Transparency = 1
-                                        end
-                                    end
-                                end
+                                makeInvisible(character)
                             end
                         end
                     end
@@ -520,18 +527,14 @@ end)
 -- Auto Equip Punch Toggle
 Killing:AddSwitch("Auto Equip Punch", function(state)
     autoEquipPunchActive = state
-    coroutine.wrap(function()
-        while autoEquipPunchActive do
-            local player = game.Players.LocalPlayer
-            local playerName = player.Name
-            local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
-
-            if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+    if autoEquipPunchActive then
+        coroutine.wrap(function()
+            while autoEquipPunchActive do
+                equipPunchTool()
+                wait(0.1)
             end
-            wait(0.1)
-        end
-    end)()
+        end)()
+    end
 end)
 
 Killing:AddLabel("Targeting")
@@ -539,65 +542,13 @@ Killing:AddTextBox("Target Name", function(text)
     targetName = text
 end)
 
--- Kill Players toggle
+-- Kill Players Toggle with Timer Label update every second
 Killing:AddSwitch("Kill Players", function(state)
     killPlayersActive = state
     if killPlayersActive then
         killStartTime = 0
-        coroutine.wrap(function()
-            local player = game.Players.LocalPlayer
-            local playerName = player.Name
 
-            while killPlayersActive do
-                -- Auto-equip Punch tool
-                local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
-                if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                    punchTool.Parent = game.Workspace:FindFirstChild(playerName)
-                end
-
-                -- Punch action
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-
-                -- Target player handling
-                if targetName ~= "" then
-                    for _, otherPlayer in pairs(game.Players:GetChildren()) do
-                        if otherPlayer.Name == targetName then
-                            local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-                            local localCharacter = game.Workspace:FindFirstChild(playerName)
-
-                            if character and localCharacter then
-                                local rightHand = localCharacter:FindFirstChild("RightHand")
-                                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
-                                if rightHand and humanoidRootPart then
-                                    humanoidRootPart.CFrame = rightHand.CFrame
-
-                                    for _, part in pairs(character:GetChildren()) do
-                                        if part:IsA("BasePart") or part:IsA("MeshPart") then
-                                            part.Transparency = 1
-                                            part.CanCollide = false
-                                        end
-                                    end
-
-                                    -- Make accessories and hair invisible
-                                    for _, accessory in pairs(character:GetChildren()) do
-                                        if accessory:IsA("Accessory") or accessory:IsA("Hat") then
-                                            if accessory:FindFirstChild("Handle") then
-                                                accessory.Handle.Transparency = 1
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-                wait(0.1)
-            end
-        end)()
-
-        -- Start the kill timer
+        -- Start the kill timer coroutine
         coroutine.wrap(function()
             while killPlayersActive do
                 wait(1)
@@ -607,85 +558,67 @@ Killing:AddSwitch("Kill Players", function(state)
                 killTimeLabel:SetText(string.format("Amount Of Time Killing Player: %02d:%02d", minutes, seconds))
             end
         end)()
+
+        coroutine.wrap(function()
+            local player = game.Players.LocalPlayer
+            local playerName = player.Name
+            while killPlayersActive do
+                equipPunchTool()
+                punchAction()
+                if targetName ~= "" then
+                    for _, otherPlayer in pairs(game.Players:GetChildren()) do
+                        if otherPlayer.Name == targetName then
+                            local character = game.Workspace:FindFirstChild(otherPlayer.Name)
+                            local localCharacter = game.Workspace:FindFirstChild(playerName)
+                            if character and localCharacter then
+                                local rightHand = localCharacter:FindFirstChild("RightHand")
+                                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                                if rightHand and humanoidRootPart then
+                                    humanoidRootPart.CFrame = rightHand.CFrame
+                                    makeInvisible(character)
+                                end
+                            end
+                        end
+                    end
+                end
+                wait(0.1)
+            end
+        end)()
     else
         restoreVisibility()
         killTimeLabel:SetText("Amount Of Time Killing Player: 00:00")
     end
 end)
 
--- Label for "Amount Of Time Killing Player:"
+-- Label for displaying the kill timer
 killTimeLabel = Killing:AddLabel("Amount Of Time Killing Player: 00:00")
 
-local switch = Killing:AddSwitch("Auto Punch", function(state)
+-- Auto Punch with Animation
+Killing:AddSwitch("Auto Punch", function(state)
     local player = game.Players.LocalPlayer
     local playerName = player.Name
-    local punchTool =
-        player.Backpack:FindFirstChild("Punch") or
-        game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
-
     if state then
-        -- Start the loop to equip and use the Punch tool
         while state do
-            punchTool = player.Backpack:FindFirstChild("Punch") or
-                        game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
-            
-            if punchTool then
-                -- Equip the Punch tool if not already equipped
-                if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
-                end
-
-                -- Use the Punch tool by firing the muscle event (if needed)
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                
-                -- Optionally, add a small delay to simulate the time between punches
-                wait(0.1) -- Adjust the delay as needed for timing between punches
-            else
-                warn("Punch tool not found")
-                break -- Exit the loop if the tool is not found
-            end
+            equipPunchTool()
+            punchAction()
+            wait(0.1)
         end
     else
-        -- Stop the loop if the toggle is off
-        -- This will stop the loop if the state is false
         print("Auto Punch is turned off")
     end
 end)
 
-local switch = Killing:AddSwitch("Auto Punch [No Animation]", function(state)
-    local player = game.Players.LocalPlayer
-    local playerName = player.Name
-    local punchTool =
-        player.Backpack:FindFirstChild("Punch") or
-        game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
-
-    -- Global control variable to track if the loop should run
-    if state then
-        _G.autoPunchanim = true
-
-        -- Start the auto-punch loop
-        while _G.autoPunchanim do
-            if punchTool then
-                -- Equip the tool if it's not already equipped
-                if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
-                end
-
-                -- Trigger punches
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-
-                -- Adjust timing between punches
-                wait(0.1)  -- Adjust the delay as needed for timing between punches
-            else
-                warn("Punch tool not found")
-                _G.autoPunchanim = false -- Stop the loop if tool is not found
-            end
+-- Auto Punch without Animation
+Killing:AddSwitch("Auto Punch [No Animation]", function(state)
+    autoPunchanim = state
+    if autoPunchanim then
+        while autoPunchanim do
+            equipPunchTool()
+            punchAction()
+            wait(0.1)
         end
     else
-        -- Stop the auto-punch loop
-        _G.autoPunchanim = false
+        print("Auto Punch [No Animation] is turned off")
     end
 end)
 
@@ -926,8 +859,9 @@ local textbox = Playertab:AddTextBox("Player Name", function(playerName)
     end
 end)
 
---Server Tab
-local Server = window:AddTab("Server")  
+-- Server Tab
+local Server = window:AddTab("Server")
+
 -- Initialize the time spent variable
 local timeSpent = 0
 
@@ -963,11 +897,13 @@ local function updateLabel()
 end
 
 -- Start a loop to update the label every second
-while true do
-    updateLabel()
-    wait(1)  -- Wait for 1 second before updating again
-    timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
-end
+spawn(function()
+    while true do
+        wait(1)  -- Wait for 1 second before updating again
+        timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
+        updateLabel()  -- Update the label with the new time
+    end
+end)
 
 -- Helper function to abbreviate large numbers
 local function abbreviateNumber(value)
@@ -987,7 +923,7 @@ local function abbreviateNumber(value)
 end
 
 -- Function to create labels for the local player's stats
-function createMyLabels()
+local function createMyLabels()
     local player = game.Players.LocalPlayer
     if not player then return end
 
@@ -1048,29 +984,12 @@ end
 -- Call the function to start tracking your own stats
 createMyLabels()
 
--- The credit tab because yes
+-- The credit tab
 local Credit = window:AddTab("Credit")
 Credit:AddLabel("Script Made By Adopt")
-Credit:AddLabel("script Inspirated By Skittle V2 Made By Lucky aka anxym.)
-Credit:AddLabel("Grosse penser à KLN qui a été la plus grosse victime durant les test du script, grosse force à lui<3")
+Credit:AddLabel("Script inspired by Skittle V2, Made By Lucky aka anxym.")
+Credit:AddLabel("Big thanks to KLN, who was the biggest victim during testing the script, much respect to him <3")
 Credit:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 -- Show the window
 window:Show()
