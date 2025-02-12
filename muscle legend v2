@@ -14,7 +14,7 @@ Client:AddLabel("Local Player")
 Client:AddButton("Set Size nan", function()
     local args = {
         [1] = "changeSize",
-        [2] = nan
+        [2] = "nan"
     }
 
     game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("changeSpeedSizeRemote"):InvokeServer(unpack(args))
@@ -23,7 +23,7 @@ end)
 Client:AddButton("Set Size 2", function()
     local args = {
         [1] = "changeSize",
-        [2] = 2
+        [2] = "2"
     }
 
     game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("changeSpeedSizeRemote"):InvokeServer(unpack(args))
@@ -468,17 +468,13 @@ local function method1()
                                 -- Teleport the HumanoidRootPart to the right hand position
                                 humanoidRootPart.CFrame = rightHand.CFrame
 
-                                -- Make the entire character invisible
+                                -- Make specific body parts of the player invisible
                                 for _, part in pairs(character:GetChildren()) do
                                     if part:IsA("BasePart") then
-                                        part.Transparency = 1
-                                        part.CanCollide = false
+                                        part.Transparency = 1 -- Make the part invisible
+                                        part.CanCollide = false -- Disable collision
                                     end
                                 end
-
-                                -- Make sure the HumanoidRootPart is still invisible
-                                humanoidRootPart.Transparency = 1
-                                humanoidRootPart.CanCollide = false
                             end
                         end
                     end
@@ -498,7 +494,7 @@ Killing:AddSwitch("Auto Kill", function(state)
         coroutine.wrap(method1)() -- Start the auto-punch and teleport HumanoidRootPart method
     else
         _G.autoPunchanim = false
-        -- Unhide the entire character and stop teleporting when Auto Kill is off
+        -- Unhide the individual parts and stop teleporting when Auto Kill is off
         for _, otherPlayer in pairs(game.Players:GetChildren()) do
             if otherPlayer.Name ~= game.Players.LocalPlayer.Name then
                 local character = game.Workspace:FindFirstChild(otherPlayer.Name)
@@ -506,7 +502,7 @@ Killing:AddSwitch("Auto Kill", function(state)
                     for _, part in pairs(character:GetChildren()) do
                         if part:IsA("BasePart") then
                             part.Transparency = 0 -- Make part visible again
-                            part.CanCollide = true
+                            part.CanCollide = true -- Re-enable collision
                         end
                     end
                 end
@@ -794,6 +790,7 @@ while true do
     wait(1)  -- Wait for 1 second before updating again
     timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
 end
+
 -- The credit tab because yes
 local Credittab = window:AddTab("Credit")  -- Adding the "Credit" tab
 
