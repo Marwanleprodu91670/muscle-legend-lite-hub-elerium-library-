@@ -20,6 +20,47 @@ Client:AddButton("Set Size 2", function()
     game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("changeSpeedSizeRemote"):InvokeServer(unpack(args))
 end)
 
+local selectedWalkSpeed = 16 -- Default WalkSpeed value
+local selectedJumpPower = 50 -- Default JumpPower value
+
+-- TextBox to enter WalkSpeed
+Playertab:AddTextBox("Set WalkSpeed", function(text)
+    local walkSpeedValue = tonumber(text) -- Convert text to a number
+
+    if walkSpeedValue and walkSpeedValue >= 1 and walkSpeedValue <= 500 then
+        selectedWalkSpeed = walkSpeedValue -- Store the valid WalkSpeed
+    end
+end)
+
+-- TextBox to enter JumpPower
+Playertab:AddTextBox("Set JumpPower", function(text)
+    local jumpPowerValue = tonumber(text) -- Convert text to a number
+
+    if jumpPowerValue and jumpPowerValue >= 1 and jumpPowerValue <= 500 then
+        selectedJumpPower = jumpPowerValue -- Store the valid JumpPower
+    end
+end)
+
+-- Toggle to apply WalkSpeed
+Playertab:AddSwitch("Apply WalkSpeed", function(bool)
+    if bool then
+        local player = game:GetService("Players").LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.WalkSpeed = selectedWalkSpeed
+        end
+    end
+end)
+
+-- Toggle to apply JumpPower
+Playertab:AddSwitch("Apply JumpPower", function(bool)
+    if bool then
+        local player = game:GetService("Players").LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.JumpPower = selectedJumpPower
+        end
+    end
+end)
+
 local selectedSize = 2 -- Default size value
 
 -- TextBox to enter the size
@@ -344,8 +385,88 @@ folder2:AddSwitch("Auto Muscle King Lift", function(bool)
     end
 end)
 
+--Killing Tab
+local Killing = window:AddTab("Killing")
+local whitelistedPlayers = {}  -- Table to store whitelisted players
 
+Killing:AddLabel("Whitelist")
+Killing:AddTextBox("Whitelist Players", function(text)
+    -- Add player to whitelist
+    table.insert(whitelistedPlayers, text)
+end)
 
+Killing:AddTextBox("Unwhitelist Players", function(text)
+    -- Remove player from whitelist
+    for i, player in ipairs(whitelistedPlayers) do
+        if player == text then
+            table.remove(whitelistedPlayers, i)
+            break
+        end
+    end
+end)
+
+Killing:AddLabel("Auto Killing")
+
+local autoKillActive = false -- Variable to track the state of auto-kill
+
+-- Function for auto-kill method 1
+local function method1()
+    while autoKillActive do
+        wait(0.1) -- Added delay to reduce performance impact
+        local player = game.Players.LocalPlayer
+        player.muscleEvent:FireServer("punch", "rightHand")
+        player.muscleEvent:FireServer("punch", "leftHand")
+
+        for _, otherPlayer in pairs(game.Players:GetChildren()) do
+            if otherPlayer.Name ~= player.Name then
+                -- Check if the player is whitelisted before attempting to kill
+                local isWhitelisted = false
+                for _, whitelistedPlayer in pairs(whitelistedPlayers) do
+                    if otherPlayer.Name == whitelistedPlayer then
+                        isWhitelisted = true
+                        break
+                    end
+                end
+
+                -- If the player is not whitelisted, proceed with killing
+                if not isWhitelisted then
+                    local character = game.Workspace:FindFirstChild(otherPlayer.Name)
+                    local localCharacter = game.Workspace:FindFirstChild(player.Name)
+
+                    if character and localCharacter then
+                        local leftHand = localCharacter:FindFirstChild("LeftHand")
+
+                        if leftHand then
+                            local head = character:FindFirstChild("Head")
+                            if head then
+                                head.CFrame = leftHand.CFrame
+                            end
+
+                            for _, descendant in pairs(character:GetDescendants()) do
+                                if descendant:IsA("BasePart") and descendant.Name == "Handle" then
+                                    descendant.CFrame = leftHand.CFrame
+                                end
+                            end
+
+                            local sweatPart = character:FindFirstChild("sweatPart")
+                            if sweatPart then
+                                sweatPart.CFrame = leftHand.CFrame
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- Toggle for Auto Kill
+Killing:AddSwitch("Auto Kill", function(bool)
+    autoKillActive = bool
+    if autoKillActive then
+        coroutine.wrap(method1)() -- Start the auto-kill method
+    end
+end)
 
 -- Teleport Tab
 local Teleport = window:AddTab("Teleport")
