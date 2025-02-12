@@ -970,11 +970,11 @@ while true do
 end
 
 -- The credit tab because yes
-local Credittab = window:AddTab("Credit")  -- Adding the "Credit" tab
-
+window:AddTab("Credit")  
 -- Adding the labels
-Credittab:AddLabel("Script Made By Adopt")
-Credittab:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
+Credit:AddLabel("Script Made By Adopt")
+Credit:AddLabel("Grosse penser à KLN qui a été la plus grosse victime durant les test du script, grosse force à lui<3")
+Credit:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
 
 
 
