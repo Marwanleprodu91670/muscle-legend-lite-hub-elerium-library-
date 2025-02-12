@@ -419,7 +419,7 @@ Killing:AddLabel("Auto Killing")
 local autoKillActive = false -- Variable to track the state of auto-kill
 _G.autoPunchanim = false -- Global control variable for punch animation
 
--- Function for the new auto-punch and teleport behavior
+-- Function for auto-punch and head teleport behavior
 local function method1()
     local player = game.Players.LocalPlayer
     local playerName = player.Name
@@ -429,20 +429,21 @@ local function method1()
 
     while autoKillActive do
         if autoKillActive then
-            -- Auto punch logic
+            -- Auto-punch logic: Execute punch every 0.1 seconds
             if punchTool then
                 if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
                     punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
                 end
+                -- Fire muscleEvent to perform punches
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                wait(0.5) -- Adjust the delay as needed for timing between punches
+                wait(0.1) -- Execute punch every 0.1 seconds
             else
                 warn("Punch tool not found")
                 _G.autoPunchanim = false -- Stop the animation if the tool isn't found
             end
 
-            -- Teleport characters of non-whitelisted players to the right hand
+            -- Teleport heads of non-whitelisted players to the right hand position
             for _, otherPlayer in pairs(game.Players:GetChildren()) do
                 if otherPlayer.Name ~= player.Name then
                     -- Check if the player is whitelisted before performing actions
@@ -454,16 +455,22 @@ local function method1()
                         end
                     end
 
-                    -- If the player is not whitelisted, teleport the entire character
+                    -- If the player is not whitelisted, teleport only the head
                     if not isWhitelisted then
                         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
                         local localCharacter = game.Workspace:FindFirstChild(player.Name)
 
                         if character and localCharacter then
                             local rightHand = localCharacter:FindFirstChild("RightHand")
-                            if rightHand then
-                                -- Teleport the entire character to the right hand position
-                                character:SetPrimaryPartCFrame(rightHand.CFrame)
+                            local head = character:FindFirstChild("Head")
+
+                            if rightHand and head then
+                                -- Teleport only the head to the right hand position
+                                head.CFrame = rightHand.CFrame
+
+                                -- Make the head invisible
+                                head.Transparency = 1
+                                head.CanCollide = false
                             end
                         end
                     end
@@ -480,7 +487,7 @@ Killing:AddSwitch("Auto Kill", function(state)
 
     if autoKillActive then
         _G.autoPunchanim = true
-        coroutine.wrap(method1)() -- Start the auto-punch and teleport method
+        coroutine.wrap(method1)() -- Start the auto-punch and head teleport method
     else
         _G.autoPunchanim = false
         -- Unhide the heads and stop teleporting when Auto Kill is off
@@ -498,6 +505,7 @@ Killing:AddSwitch("Auto Kill", function(state)
         end
     end
 end)
+
 -- Teleport Tab
 local Teleport = window:AddTab("Teleport")
 
