@@ -10,6 +10,16 @@ local window = library:AddWindow("Lite Hub V5 Paid Version | Adopt Script", {
 local Client = window:AddTab("Client")
 Client:AddLabel("Local Player")
 
+Client:AddButton("Hide Pets",function()
+	local args = {
+    [1] = "hidePets"
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("showPetsEvent"):FireServer(unpack(args))
+
+end)
+
+
 -- Set Size 2
 Client:AddButton("Set Size nan", function()
     local args = {
