@@ -446,7 +446,7 @@ Killing:AddSwitch("Auto Kill", function(state)
             while autoKillActive do
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                
+
                 for _, otherPlayer in pairs(game.Players:GetChildren()) do
                     if otherPlayer.Name ~= playerName and not table.find(whitelistedPlayers, otherPlayer.Name) then
                         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
@@ -475,23 +475,21 @@ Killing:AddSwitch("Auto Kill", function(state)
     end
 end)
 
--- Auto Equip Punch Toggle (Placed under Auto Kill toggle)
+-- Auto Equip Punch Toggle
 Killing:AddSwitch("Auto Equip Punch", function(state)
     autoEquipPunchActive = state
-    if autoEquipPunchActive then
-        coroutine.wrap(function()
+    coroutine.wrap(function()
+        while autoEquipPunchActive do
             local player = game.Players.LocalPlayer
             local playerName = player.Name
+            local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
 
-            while autoEquipPunchActive do
-                local punchTool = player.Backpack:FindFirstChild("Punch")
-                if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
-                end
-                wait(0.1) -- Runs every 0.1 seconds to ensure it's always equipped
+            if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
             end
-        end)()
-    end
+            wait(0.1)
+        end
+    end)()
 end)
 
 Killing:AddLabel("Targeting")
@@ -509,9 +507,17 @@ Killing:AddSwitch("Kill Players", function(state)
             local playerName = player.Name
 
             while killPlayersActive do
+                -- Auto-equip Punch tool
+                local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+                if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                end
+
+                -- Punch action
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
 
+                -- Target player handling
                 if targetName ~= "" then
                     for _, otherPlayer in pairs(game.Players:GetChildren()) do
                         if otherPlayer.Name == targetName then
@@ -540,7 +546,7 @@ Killing:AddSwitch("Kill Players", function(state)
             end
         end)()
 
-        -- Start the kill timer
+        -- Start the kill timer (Updates every second)
         coroutine.wrap(function()
             while killPlayersActive do
                 wait(1)
