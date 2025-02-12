@@ -41,6 +41,16 @@ Client:AddTextBox("Set WalkSpeed", function(text)
     end
 end)
 
+-- Toggle to apply WalkSpeed
+Client:AddSwitch("Apply WalkSpeed", function(bool)
+    if bool then
+        local player = game:GetService("Players").LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.WalkSpeed = selectedWalkSpeed
+        end
+    end
+end)
+
 -- TextBox to enter JumpPower
 Client:AddTextBox("Set JumpPower", function(text)
     local jumpPowerValue = tonumber(text) -- Convert text to a number
@@ -50,18 +60,10 @@ Client:AddTextBox("Set JumpPower", function(text)
     end
 end)
 
--- Toggle to apply WalkSpeed
-Playertab:AddSwitch("Apply WalkSpeed", function(bool)
-    if bool then
-        local player = game:GetService("Players").LocalPlayer
-        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.WalkSpeed = selectedWalkSpeed
-        end
-    end
-end)
+
 
 -- Toggle to apply JumpPower
-Playertab:AddSwitch("Apply JumpPower", function(bool)
+Client:AddSwitch("Apply JumpPower", function(bool)
     if bool then
         local player = game:GetService("Players").LocalPlayer
         if player and player.Character and player.Character:FindFirstChild("Humanoid") then
