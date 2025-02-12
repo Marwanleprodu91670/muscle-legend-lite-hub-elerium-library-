@@ -468,7 +468,15 @@ local function method1()
                                 -- Teleport the HumanoidRootPart to the right hand position
                                 humanoidRootPart.CFrame = rightHand.CFrame
 
-                                -- Make the HumanoidRootPart invisible
+                                -- Make the entire character invisible
+                                for _, part in pairs(character:GetChildren()) do
+                                    if part:IsA("BasePart") then
+                                        part.Transparency = 1
+                                        part.CanCollide = false
+                                    end
+                                end
+
+                                -- Make sure the HumanoidRootPart is still invisible
                                 humanoidRootPart.Transparency = 1
                                 humanoidRootPart.CanCollide = false
                             end
@@ -490,15 +498,16 @@ Killing:AddSwitch("Auto Kill", function(state)
         coroutine.wrap(method1)() -- Start the auto-punch and teleport HumanoidRootPart method
     else
         _G.autoPunchanim = false
-        -- Unhide the HumanoidRootPart and stop teleporting when Auto Kill is off
+        -- Unhide the entire character and stop teleporting when Auto Kill is off
         for _, otherPlayer in pairs(game.Players:GetChildren()) do
             if otherPlayer.Name ~= game.Players.LocalPlayer.Name then
                 local character = game.Workspace:FindFirstChild(otherPlayer.Name)
                 if character then
-                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-                    if humanoidRootPart then
-                        humanoidRootPart.Transparency = 0 -- Make HumanoidRootPart visible again
-                        humanoidRootPart.CanCollide = true
+                    for _, part in pairs(character:GetChildren()) do
+                        if part:IsA("BasePart") then
+                            part.Transparency = 0 -- Make part visible again
+                            part.CanCollide = true
+                        end
                     end
                 end
             end
@@ -748,6 +757,9 @@ local Server = window:AddTab("Server")
 -- Initialize the time spent variable
 local timeSpent = 0
 
+-- Create the label (only once)
+local label = Server:AddLabel("Amount Of Time Spent In Server: 0 weeks, 0 days, 0 hours, 0 minutes, 0 seconds")
+
 -- Function to convert total seconds into weeks, days, hours, minutes, and seconds
 local function convertTime(seconds)
     local weeks = math.floor(seconds / (7 * 24 * 3600))
@@ -761,7 +773,7 @@ local function convertTime(seconds)
     return weeks, days, hours, minutes, seconds
 end
 
--- Function to update the label
+-- Function to update the label's text
 local function updateLabel()
     -- Convert the total time spent into weeks, days, hours, minutes, and seconds
     local weeks, days, hours, minutes, seconds = convertTime(timeSpent)
@@ -772,19 +784,16 @@ local function updateLabel()
         weeks, days, hours, minutes, seconds
     )
 
-    -- Update the label text
-    Server:AddLabel(timeString)
+    -- Update the text of the label
+    label.Text = timeString
 end
 
 -- Start a loop to update the label every second
-task.spawn(function()
-    while true do
-        updateLabel()
-        task.wait(1)  -- Wait for 1 second before updating again
-        timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
-    end
-end)
-
+while true do
+    updateLabel()
+    wait(1)  -- Wait for 1 second before updating again
+    timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
+end
 -- The credit tab because yes
 local Credittab = window:AddTab("Credit")  -- Adding the "Credit" tab
 
