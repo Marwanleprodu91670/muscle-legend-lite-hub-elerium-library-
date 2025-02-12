@@ -1,4 +1,4 @@
-ok--Main Script
+--Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
 local window = library:AddWindow("Lite Hub V5 Paid Version | Adopt Script", {
