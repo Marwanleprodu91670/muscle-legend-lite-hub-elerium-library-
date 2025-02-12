@@ -1,4 +1,4 @@
---Main Script
+ok--Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
 local window = library:AddWindow("Lite Hub V5 Paid Version | Adopt Script", {
@@ -414,6 +414,8 @@ local Killing = window:AddTab("Killing")
 local whitelistedPlayers = {}  -- Table to store whitelisted players
 local targetName = ""          -- Variable to store the target player's name
 local killPlayersActive = false -- Variable to track the state of "Kill Players"
+local autoKillActive = false   -- Variable to track the state of "Auto Kill"
+local autoEquipPunchActive = false -- Variable to track the state of "Auto Equip Punch"
 local killStartTime = 0        -- Timer for kill time
 local killTimeLabel            -- Reference to the label
 
@@ -433,38 +435,22 @@ end)
 
 Killing:AddLabel("Auto Killing")
 
-local function method1(playerNameToTarget)
-    local player = game.Players.LocalPlayer
-    local playerName = player.Name
-    local punchTool =
-        player.Backpack:FindFirstChild("Punch") or
-        game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+-- Auto Kill Toggle
+Killing:AddSwitch("Auto Kill", function(state)
+    autoKillActive = state
+    if autoKillActive then
+        coroutine.wrap(function()
+            local player = game.Players.LocalPlayer
+            local playerName = player.Name
 
-    while killPlayersActive do
-        if punchTool then
-            if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                punchTool.Parent = game.Workspace:FindFirstChild(playerName)
-            end
-            game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-            game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-        else
-            warn("Punch tool not found")
-        end
-
-        if playerNameToTarget then
-            for _, otherPlayer in pairs(game.Players:GetChildren()) do
-                if otherPlayer.Name == playerNameToTarget then
-                    local isWhitelisted = false
-                    for _, whitelistedPlayer in pairs(whitelistedPlayers) do
-                        if otherPlayer.Name == whitelistedPlayer then
-                            isWhitelisted = true
-                            break
-                        end
-                    end
-
-                    if not isWhitelisted then
+            while autoKillActive do
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+                
+                for _, otherPlayer in pairs(game.Players:GetChildren()) do
+                    if otherPlayer.Name ~= playerName and not table.find(whitelistedPlayers, otherPlayer.Name) then
                         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-                        local localCharacter = game.Workspace:FindFirstChild(player.Name)
+                        local localCharacter = game.Workspace:FindFirstChild(playerName)
 
                         if character and localCharacter then
                             local rightHand = localCharacter:FindFirstChild("RightHand")
@@ -478,22 +464,71 @@ local function method1(playerNameToTarget)
                                         part.Transparency = 1
                                         part.CanCollide = false
                                     end
-
-                                    if part:IsA("Model") and part:FindFirstChild("Handle") then
-                                        local accessoryHandle = part:FindFirstChild("Handle")
-                                        if accessoryHandle then
-                                            accessoryHandle.Transparency = 1
-                                            accessoryHandle.CanCollide = false
-                                        end
-                                    end
                                 end
+                            end
+                        end
+                    end
+                end
+                wait(0.1)
+            end
+        end)()
+    end
+end)
 
-                                for _, accessory in pairs(character:GetChildren()) do
-                                    if accessory:IsA("Accessory") then
-                                        local hairPart = accessory:FindFirstChildOfClass("MeshPart")
-                                        if hairPart then
-                                            hairPart.Transparency = 1
-                                            hairPart.CanCollide = false
+-- Auto Equip Punch Toggle (Placed under Auto Kill toggle)
+Killing:AddSwitch("Auto Equip Punch", function(state)
+    autoEquipPunchActive = state
+    if autoEquipPunchActive then
+        coroutine.wrap(function()
+            local player = game.Players.LocalPlayer
+            local playerName = player.Name
+
+            while autoEquipPunchActive do
+                local punchTool = player.Backpack:FindFirstChild("Punch")
+                if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                end
+                wait(0.1) -- Runs every 0.1 seconds to ensure it's always equipped
+            end
+        end)()
+    end
+end)
+
+Killing:AddLabel("Targeting")
+Killing:AddTextBox("Target Name", function(text)
+    targetName = text
+end)
+
+-- Kill Players toggle
+Killing:AddSwitch("Kill Players", function(state)
+    killPlayersActive = state
+    if killPlayersActive then
+        killStartTime = 0
+        coroutine.wrap(function()
+            local player = game.Players.LocalPlayer
+            local playerName = player.Name
+
+            while killPlayersActive do
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+
+                if targetName ~= "" then
+                    for _, otherPlayer in pairs(game.Players:GetChildren()) do
+                        if otherPlayer.Name == targetName then
+                            local character = game.Workspace:FindFirstChild(otherPlayer.Name)
+                            local localCharacter = game.Workspace:FindFirstChild(playerName)
+
+                            if character and localCharacter then
+                                local rightHand = localCharacter:FindFirstChild("RightHand")
+                                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+                                if rightHand and humanoidRootPart then
+                                    humanoidRootPart.CFrame = rightHand.CFrame
+
+                                    for _, part in pairs(character:GetChildren()) do
+                                        if part:IsA("BasePart") then
+                                            part.Transparency = 1
+                                            part.CanCollide = false
                                         end
                                     end
                                 end
@@ -501,23 +536,11 @@ local function method1(playerNameToTarget)
                         end
                     end
                 end
+                wait(0.1)
             end
-        end
-        wait(0.1)
-    end
-end
+        end)()
 
-Killing:AddLabel("Targeting")
-Killing:AddTextBox("Target Name", function(text)
-    targetName = text
-end)
-
--- Kill Players toggle (BEFORE the "Amount Of Time" label)
-Killing:AddSwitch("Kill Players", function(state)
-    killPlayersActive = state
-    if killPlayersActive then
-        killStartTime = 0
-        coroutine.wrap(method1)(targetName)
+        -- Start the kill timer
         coroutine.wrap(function()
             while killPlayersActive do
                 wait(1)
@@ -529,6 +552,7 @@ Killing:AddSwitch("Kill Players", function(state)
             end
         end)()
     else
+        -- Reset visibility and timer when the toggle is turned off
         for _, otherPlayer in pairs(game.Players:GetChildren()) do
             if otherPlayer.Name == targetName then
                 local character = game.Workspace:FindFirstChild(otherPlayer.Name)
@@ -538,29 +562,10 @@ Killing:AddSwitch("Kill Players", function(state)
                             part.Transparency = 0
                             part.CanCollide = true
                         end
-
-                        if part:IsA("Model") and part:FindFirstChild("Handle") then
-                            local accessoryHandle = part:FindFirstChild("Handle")
-                            if accessoryHandle then
-                                accessoryHandle.Transparency = 0
-                                accessoryHandle.CanCollide = true
-                            end
-                        end
-                    end
-
-                    for _, accessory in pairs(character:GetChildren()) do
-                        if accessory:IsA("Accessory") then
-                            local hairPart = accessory:FindFirstChildOfClass("MeshPart")
-                            if hairPart then
-                                hairPart.Transparency = 0
-                                hairPart.CanCollide = true
-                            end
-                        end
                     end
                 end
             end
         end
-        -- Reset label when toggle is off
         killTimeLabel:SetText("Amount Of Time Killing Player: 00:00")
     end
 end)
