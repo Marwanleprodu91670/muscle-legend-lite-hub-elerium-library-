@@ -163,16 +163,11 @@ local switch = AutoFarm:AddSwitch("Auto Farm", function(bool)
         -- Run the event every 0.1 second when toggle is on
         while switch:IsOn() do
             local args = {
-                [1] = "rep"
-            }
+    [1] = "rep"
+}
 
-            -- Ensure muscleEvent is found before firing
-            local muscleEvent = game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent")
-            if muscleEvent then
-                muscleEvent:FireServer(unpack(args))
-            else
-                warn("muscleEvent not found!")
-            end
+game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args))
+
 
             wait(0.1)  -- Wait for 0.1 seconds before triggering the event again
         end
