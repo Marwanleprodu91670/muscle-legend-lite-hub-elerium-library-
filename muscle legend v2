@@ -1,7 +1,7 @@
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
-local window = library:AddWindow("Lite Hub Paid Version | Adopt Script", {
+local window = library:AddWindow("Lite Hub V5 Paid Version | Adopt Script", {
     main_color = Color3.fromRGB(0,0,0), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
@@ -419,7 +419,7 @@ Killing:AddLabel("Auto Killing")
 local autoKillActive = false -- Variable to track the state of auto-kill
 _G.autoPunchanim = false -- Global control variable for punch animation
 
--- Function for auto-punch and head teleport behavior
+-- Function for auto-punch and teleport HumanoidRootPart
 local function method1()
     local player = game.Players.LocalPlayer
     local playerName = player.Name
@@ -443,7 +443,7 @@ local function method1()
                 _G.autoPunchanim = false -- Stop the animation if the tool isn't found
             end
 
-            -- Teleport heads of non-whitelisted players to the right hand position
+            -- Teleport HumanoidRootPart of non-whitelisted players to the right hand position
             for _, otherPlayer in pairs(game.Players:GetChildren()) do
                 if otherPlayer.Name ~= player.Name then
                     -- Check if the player is whitelisted before performing actions
@@ -455,54 +455,22 @@ local function method1()
                         end
                     end
 
-                    -- If the player is not whitelisted, teleport only the head
+                    -- If the player is not whitelisted, teleport their HumanoidRootPart
                     if not isWhitelisted then
                         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
                         local localCharacter = game.Workspace:FindFirstChild(player.Name)
 
                         if character and localCharacter then
                             local rightHand = localCharacter:FindFirstChild("RightHand")
-                            local head = character:FindFirstChild("Head")
+                            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
 
-                            if rightHand and head then
-                                -- Remove head from character model temporarily
-                                head.Parent = nil
+                            if rightHand and humanoidRootPart then
+                                -- Teleport the HumanoidRootPart to the right hand position
+                                humanoidRootPart.CFrame = rightHand.CFrame
 
-                                -- Create a new part (dummy part) to attach the head to the right hand position
-                                local dummyPart = Instance.new("Part")
-                                dummyPart.Name = "HeadAttachment"
-                                dummyPart.Size = Vector3.new(1, 1, 1)
-                                dummyPart.Position = rightHand.Position
-                                dummyPart.Anchored = true
-                                dummyPart.CanCollide = false
-                                dummyPart.Parent = game.Workspace
-
-                                -- Weld the head to the dummy part at the right hand position
-                                local weld = Instance.new("WeldConstraint")
-                                weld.Part0 = rightHand
-                                weld.Part1 = dummyPart
-                                weld.Parent = dummyPart
-
-                                -- Reattach the head to the dummy part
-                                head.Parent = dummyPart
-
-                                -- Make the head invisible
-                                head.Transparency = 1
-                                head.CanCollide = false
-
-                                -- Move the dummy part and head continuously to the right hand position
-                                while autoKillActive do
-                                    dummyPart.CFrame = rightHand.CFrame
-                                    wait(0.1) -- Adjust this delay to match punch timing
-                                end
-
-                                -- Clean up after Auto Kill is turned off
-                                if not autoKillActive then
-                                    dummyPart:Destroy()
-                                    head.Parent = character
-                                    head.Transparency = 0 -- Make the head visible again
-                                    head.CanCollide = true
-                                end
+                                -- Make the HumanoidRootPart invisible
+                                humanoidRootPart.Transparency = 1
+                                humanoidRootPart.CanCollide = false
                             end
                         end
                     end
@@ -519,18 +487,18 @@ Killing:AddSwitch("Auto Kill", function(state)
 
     if autoKillActive then
         _G.autoPunchanim = true
-        coroutine.wrap(method1)() -- Start the auto-punch and head teleport method
+        coroutine.wrap(method1)() -- Start the auto-punch and teleport HumanoidRootPart method
     else
         _G.autoPunchanim = false
-        -- Unhide the heads and stop teleporting when Auto Kill is off
+        -- Unhide the HumanoidRootPart and stop teleporting when Auto Kill is off
         for _, otherPlayer in pairs(game.Players:GetChildren()) do
             if otherPlayer.Name ~= game.Players.LocalPlayer.Name then
                 local character = game.Workspace:FindFirstChild(otherPlayer.Name)
                 if character then
-                    local head = character:FindFirstChild("Head")
-                    if head then
-                        head.Transparency = 0 -- Make head visible again
-                        head.CanCollide = true
+                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                    if humanoidRootPart then
+                        humanoidRootPart.Transparency = 0 -- Make HumanoidRootPart visible again
+                        humanoidRootPart.CanCollide = true
                     end
                 end
             end
@@ -809,11 +777,13 @@ local function updateLabel()
 end
 
 -- Start a loop to update the label every second
-while true do
-    updateLabel()
-    wait(1)  -- Wait for 1 second before updating again
-    timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
-end
+task.spawn(function()
+    while true do
+        updateLabel()
+        task.wait(1)  -- Wait for 1 second before updating again
+        timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
+    end
+end)
 
 -- The credit tab because yes
 local Credittab = window:AddTab("Credit")  -- Adding the "Credit" tab
