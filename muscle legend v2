@@ -435,6 +435,29 @@ end)
 
 Killing:AddLabel("Auto Killing")
 
+-- Function to restore visibility of players
+local function restoreVisibility()
+    for _, otherPlayer in pairs(game.Players:GetChildren()) do
+        local character = game.Workspace:FindFirstChild(otherPlayer.Name)
+        if character then
+            for _, part in pairs(character:GetChildren()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.Transparency = 0
+                    part.CanCollide = true
+                end
+            end
+            -- Restore visibility of accessories and hair
+            for _, accessory in pairs(character:GetChildren()) do
+                if accessory:IsA("Accessory") or accessory:IsA("Hat") then
+                    if accessory:FindFirstChild("Handle") then
+                        accessory.Handle.Transparency = 0
+                    end
+                end
+            end
+        end
+    end
+end
+
 -- Auto Kill Toggle
 Killing:AddSwitch("Auto Kill", function(state)
     autoKillActive = state
@@ -489,6 +512,8 @@ Killing:AddSwitch("Auto Kill", function(state)
                 wait(0.1)
             end
         end)()
+    else
+        restoreVisibility()
     end
 end)
 
@@ -572,40 +597,26 @@ Killing:AddSwitch("Kill Players", function(state)
             end
         end)()
 
-        -- Start the kill timer (Updates every second)
+        -- Start the kill timer
         coroutine.wrap(function()
             while killPlayersActive do
                 wait(1)
                 killStartTime = killStartTime + 1
                 local minutes = math.floor(killStartTime / 60)
                 local seconds = killStartTime % 60
-                local formattedTime = string.format("Amount Of Time Killing Player: %02d:%02d", minutes, seconds)
-                killTimeLabel:SetText(formattedTime)
+                killTimeLabel:SetText(string.format("Amount Of Time Killing Player: %02d:%02d", minutes, seconds))
             end
         end)()
     else
-        -- Reset visibility and timer when the toggle is turned off
-        for _, otherPlayer in pairs(game.Players:GetChildren()) do
-            if otherPlayer.Name == targetName then
-                local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-                if character then
-                    for _, part in pairs(character:GetChildren()) do
-                        if part:IsA("BasePart") or part:IsA("MeshPart") then
-                            part.Transparency = 0
-                            part.CanCollide = true
-                        end
-                    end
-                end
-            end
-        end
+        restoreVisibility()
         killTimeLabel:SetText("Amount Of Time Killing Player: 00:00")
     end
 end)
 
--- Label for "Amount Of Time Killing Player:" (Placed AFTER Kill Players toggle)
+-- Label for "Amount Of Time Killing Player:"
 killTimeLabel = Killing:AddLabel("Amount Of Time Killing Player: 00:00")
 
-local switch = AutoFarm:AddSwitch("Auto Punch", function(state)
+local switch = Killing:AddSwitch("Auto Punch", function(state)
     local player = game.Players.LocalPlayer
     local playerName = player.Name
     local punchTool =
@@ -642,7 +653,7 @@ local switch = AutoFarm:AddSwitch("Auto Punch", function(state)
     end
 end)
 
-local switch = AutoFarm:AddSwitch("Auto Punch [No Animation]", function(state)
+local switch = Killing:AddSwitch("Auto Punch [No Animation]", function(state)
     local player = game.Players.LocalPlayer
     local playerName = player.Name
     local punchTool =
