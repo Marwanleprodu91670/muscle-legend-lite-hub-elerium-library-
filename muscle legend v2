@@ -438,7 +438,7 @@ local function method1()
                 end
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                wait(0.5) -- Adjust the delay as needed for timing between punches
+                wait(0.1) -- Adjust the delay as needed for timing between punches
             else
                 warn("Punch tool not found")
                 _G.autoPunchanim = false -- Stop the animation if the tool isn't found
@@ -475,7 +475,7 @@ local function method1()
                                 -- Reattach the head to the character
                                 head.Parent = character
 
-                                -- Make head invisible (you can make it visible by setting Transparency to 0 later)
+                                -- Make head invisible
                                 head.Transparency = 1
                                 head.CanCollide = false
                             end
@@ -511,7 +511,6 @@ Killing:AddSwitch("Auto Kill", function(state)
         end
     end
 end)
-
 
 -- Teleport Tab
 local Teleport = window:AddTab("Teleport")
