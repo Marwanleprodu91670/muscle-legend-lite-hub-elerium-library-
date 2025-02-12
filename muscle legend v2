@@ -212,20 +212,18 @@ AutoFarm:AddLabel("Reps")
 
 local switch = AutoFarm:AddSwitch("Auto Farm", function(bool)
     if bool then
-        -- Run the event every 0.1 second when toggle is on
-        while switch:IsOn() do
-            local args = {
-    [1] = "rep"
-}
+        -- Trigger the event repeatedly when the switch is on
+        while bool do
+            local args = { [1] = "rep" }
 
-game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args))
+            -- Fire the muscle event on the server
+            game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args))
 
-
-            wait(0.1)  -- Wait for 0.1 seconds before triggering the event again
+            -- Wait for 0.1 seconds before triggering again
+            wait(0.1)
         end
     end
 end)
-
 
 
 AutoFarm:AddLabel("Tools")
@@ -438,13 +436,13 @@ local function method1()
                 end
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                wait(0.1) -- Adjust the delay as needed for timing between punches
+                wait(0.5) -- Adjust the delay as needed for timing between punches
             else
                 warn("Punch tool not found")
                 _G.autoPunchanim = false -- Stop the animation if the tool isn't found
             end
 
-            -- Teleport heads of non-whitelisted players to the right hand
+            -- Teleport characters of non-whitelisted players to the right hand
             for _, otherPlayer in pairs(game.Players:GetChildren()) do
                 if otherPlayer.Name ~= player.Name then
                     -- Check if the player is whitelisted before performing actions
@@ -456,28 +454,16 @@ local function method1()
                         end
                     end
 
-                    -- If the player is not whitelisted, teleport only the head and make it invisible
+                    -- If the player is not whitelisted, teleport the entire character
                     if not isWhitelisted then
                         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
                         local localCharacter = game.Workspace:FindFirstChild(player.Name)
 
                         if character and localCharacter then
                             local rightHand = localCharacter:FindFirstChild("RightHand")
-                            local head = character:FindFirstChild("Head")
-
-                            if rightHand and head then
-                                -- Detach the head temporarily
-                                head.Parent = nil
-
-                                -- Teleport the head to the right hand position
-                                head.CFrame = rightHand.CFrame
-
-                                -- Reattach the head to the character
-                                head.Parent = character
-
-                                -- Make head invisible
-                                head.Transparency = 1
-                                head.CanCollide = false
+                            if rightHand then
+                                -- Teleport the entire character to the right hand position
+                                character:SetPrimaryPartCFrame(rightHand.CFrame)
                             end
                         end
                     end
@@ -501,17 +487,17 @@ Killing:AddSwitch("Auto Kill", function(state)
         for _, otherPlayer in pairs(game.Players:GetChildren()) do
             if otherPlayer.Name ~= game.Players.LocalPlayer.Name then
                 local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-                local head = character and character:FindFirstChild("Head")
-
-                if head then
-                    head.Transparency = 0 -- Make head visible again
-                    head.CanCollide = true
+                if character then
+                    local head = character:FindFirstChild("Head")
+                    if head then
+                        head.Transparency = 0 -- Make head visible again
+                        head.CanCollide = true
+                    end
                 end
             end
         end
     end
 end)
-
 -- Teleport Tab
 local Teleport = window:AddTab("Teleport")
 
