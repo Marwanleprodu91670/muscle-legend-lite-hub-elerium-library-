@@ -468,11 +468,31 @@ local function method1()
                                 -- Teleport the HumanoidRootPart to the right hand position
                                 humanoidRootPart.CFrame = rightHand.CFrame
 
-                                -- Make specific body parts of the player invisible
+                                -- Make specific body parts, accessories, and hair invisible
                                 for _, part in pairs(character:GetChildren()) do
                                     if part:IsA("BasePart") then
                                         part.Transparency = 1 -- Make the part invisible
                                         part.CanCollide = false -- Disable collision
+                                    end
+                                    
+                                    -- Make accessories (like hats, glasses, etc.) invisible
+                                    if part:IsA("Model") and part:FindFirstChild("Handle") then
+                                        local accessoryHandle = part:FindFirstChild("Handle")
+                                        if accessoryHandle then
+                                            accessoryHandle.Transparency = 1
+                                            accessoryHandle.CanCollide = false
+                                        end
+                                    end
+                                end
+
+                                -- Make hair accessories invisible if they exist
+                                for _, accessory in pairs(character:GetChildren()) do
+                                    if accessory:IsA("Accessory") then
+                                        local hairPart = accessory:FindFirstChildOfClass("MeshPart")
+                                        if hairPart then
+                                            hairPart.Transparency = 1
+                                            hairPart.CanCollide = false
+                                        end
                                     end
                                 end
                             end
@@ -494,7 +514,7 @@ Killing:AddSwitch("Auto Kill", function(state)
         coroutine.wrap(method1)() -- Start the auto-punch and teleport HumanoidRootPart method
     else
         _G.autoPunchanim = false
-        -- Unhide the individual parts and stop teleporting when Auto Kill is off
+        -- Unhide the individual parts, accessories, and hair when Auto Kill is off
         for _, otherPlayer in pairs(game.Players:GetChildren()) do
             if otherPlayer.Name ~= game.Players.LocalPlayer.Name then
                 local character = game.Workspace:FindFirstChild(otherPlayer.Name)
@@ -503,6 +523,26 @@ Killing:AddSwitch("Auto Kill", function(state)
                         if part:IsA("BasePart") then
                             part.Transparency = 0 -- Make part visible again
                             part.CanCollide = true -- Re-enable collision
+                        end
+                        
+                        -- Restore visibility of accessories
+                        if part:IsA("Model") and part:FindFirstChild("Handle") then
+                            local accessoryHandle = part:FindFirstChild("Handle")
+                            if accessoryHandle then
+                                accessoryHandle.Transparency = 0
+                                accessoryHandle.CanCollide = true
+                            end
+                        end
+                    end
+
+                    -- Restore visibility of hair accessories
+                    for _, accessory in pairs(character:GetChildren()) do
+                        if accessory:IsA("Accessory") then
+                            local hairPart = accessory:FindFirstChildOfClass("MeshPart")
+                            if hairPart then
+                                hairPart.Transparency = 0
+                                hairPart.CanCollide = true
+                            end
                         end
                     end
                 end
