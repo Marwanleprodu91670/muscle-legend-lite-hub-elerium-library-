@@ -775,6 +775,46 @@ local textbox = Playertab:AddTextBox("Player Name", function(playerName)
     end
 end)
 
+--Server Tab
+local Server = window:AddTab("Server")  
+-- Initialize the time spent variable
+local timeSpent = 0
+
+-- Function to convert total seconds into weeks, days, hours, minutes, and seconds
+local function convertTime(seconds)
+    local weeks = math.floor(seconds / (7 * 24 * 3600))
+    seconds = seconds - weeks * 7 * 24 * 3600
+    local days = math.floor(seconds / (24 * 3600))
+    seconds = seconds - days * 24 * 3600
+    local hours = math.floor(seconds / 3600)
+    seconds = seconds - hours * 3600
+    local minutes = math.floor(seconds / 60)
+    seconds = seconds - minutes * 60
+    return weeks, days, hours, minutes, seconds
+end
+
+-- Function to update the label
+local function updateLabel()
+    -- Convert the total time spent into weeks, days, hours, minutes, and seconds
+    local weeks, days, hours, minutes, seconds = convertTime(timeSpent)
+
+    -- Format the time into a readable string
+    local timeString = string.format(
+        "Amount Of Time Spent In Server: %d weeks, %d days, %d hours, %d minutes, %d seconds",
+        weeks, days, hours, minutes, seconds
+    )
+
+    -- Update the label text
+    Server:AddLabel(timeString)
+end
+
+-- Start a loop to update the label every second
+while true do
+    updateLabel()
+    wait(1)  -- Wait for 1 second before updating again
+    timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
+end
+
 -- The credit tab because yes
 local Credittab = window:AddTab("Credit")  -- Adding the "Credit" tab
 
