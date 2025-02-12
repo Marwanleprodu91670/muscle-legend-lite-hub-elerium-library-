@@ -23,7 +23,7 @@ end)
 local selectedSize = 2 -- Default size value
 
 -- TextBox to enter the size
-Playertab:AddTextBox("Set Size", function(text)
+Client:AddTextBox("Set Size", function(text)
     local sizeValue = tonumber(text) -- Convert text to a number
     
     if sizeValue and sizeValue >= 1 and sizeValue <= 100 then
@@ -32,7 +32,7 @@ Playertab:AddTextBox("Set Size", function(text)
 end)
 
 -- Toggle to apply the size change
-Playertab:AddSwitch("Apply Size", function(bool)
+Client:AddSwitch("Apply Size", function(bool)
     if bool then
         -- Validate that ReplicatedStorage and the event exist
         local replicatedStorage = game:GetService("ReplicatedStorage")
