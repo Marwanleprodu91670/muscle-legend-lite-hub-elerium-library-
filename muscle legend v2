@@ -24,7 +24,7 @@ local selectedWalkSpeed = 16 -- Default WalkSpeed value
 local selectedJumpPower = 50 -- Default JumpPower value
 
 -- TextBox to enter WalkSpeed
-Playertab:AddTextBox("Set WalkSpeed", function(text)
+Client:AddTextBox("Set WalkSpeed", function(text)
     local walkSpeedValue = tonumber(text) -- Convert text to a number
 
     if walkSpeedValue and walkSpeedValue >= 1 and walkSpeedValue <= 500 then
@@ -33,7 +33,7 @@ Playertab:AddTextBox("Set WalkSpeed", function(text)
 end)
 
 -- TextBox to enter JumpPower
-Playertab:AddTextBox("Set JumpPower", function(text)
+Client:AddTextBox("Set JumpPower", function(text)
     local jumpPowerValue = tonumber(text) -- Convert text to a number
 
     if jumpPowerValue and jumpPowerValue >= 1 and jumpPowerValue <= 500 then
