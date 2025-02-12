@@ -969,6 +969,85 @@ while true do
     timeSpent = timeSpent + 1  -- Increment the time spent by 1 second
 end
 
+-- Helper function to abbreviate large numbers
+local function abbreviateNumber(value)
+    if value >= 1e15 then
+        return string.format("%.1fQa", value / 1e15)
+    elseif value >= 1e12 then
+        return string.format("%.1fT", value / 1e12)
+    elseif value >= 1e9 then
+        return string.format("%.1fB", value / 1e9)
+    elseif value >= 1e6 then
+        return string.format("%.1fM", value / 1e6)
+    elseif value >= 1e3 then
+        return string.format("%.1fK", value / 1e3)
+    else
+        return tostring(value)
+    end
+end
+
+-- Function to create labels for the local player's stats
+function createMyLabels()
+    local player = game.Players.LocalPlayer
+    if not player then return end
+
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if not leaderstats then return end
+
+    -- Create labels for the stats we want to track
+    local labels = {
+        StrengthGainedLabel = Server:AddLabel("Amount of strength gained in this server: 0"),
+        DurabilityGainedLabel = Server:AddLabel("Amount of durability gained in this server: 0"),
+        AgilityGainedLabel = Server:AddLabel("Amount of agility gained in this server: 0"),
+        KillsGainedLabel = Server:AddLabel("Amount of kills gained in this server: 0"),
+    }
+
+    -- Assume playerData is already defined in your main script
+    playerData[player.Name] = labels
+
+    -- Capture the initial values when you join the server
+    local initialStrength = leaderstats.Strength and leaderstats.Strength.Value or 0
+    local initialDurability = player.Durability and player.Durability.Value or 0
+    local initialAgility = player.Agility and player.Agility.Value or 0
+    local initialKills = leaderstats.Kills and leaderstats.Kills.Value or 0
+
+    -- Function to update labels based on stat changes
+    local function updateLabels()
+        local strengthGained = leaderstats.Strength and leaderstats.Strength.Value - initialStrength or 0
+        local durabilityGained = player.Durability and player.Durability.Value - initialDurability or 0
+        local agilityGained = player.Agility and player.Agility.Value - initialAgility or 0
+        local killsGained = leaderstats.Kills and leaderstats.Kills.Value - initialKills or 0
+
+        labels.StrengthGainedLabel.Text = "Amount of strength gained in this server: " .. abbreviateNumber(strengthGained)
+        labels.DurabilityGainedLabel.Text = "Amount of durability gained in this server: " .. abbreviateNumber(durabilityGained)
+        labels.AgilityGainedLabel.Text = "Amount of agility gained in this server: " .. abbreviateNumber(agilityGained)
+        labels.KillsGainedLabel.Text = "Amount of kills gained in this server: " .. abbreviateNumber(killsGained)
+    end
+
+    -- Connect change events to update the labels when your stats change
+    if leaderstats.Strength then
+        leaderstats.Strength.Changed:Connect(updateLabels)
+    end
+
+    if player.Durability then
+        player.Durability.Changed:Connect(updateLabels)
+    end
+
+    if player.Agility then
+        player.Agility.Changed:Connect(updateLabels)
+    end
+
+    if leaderstats.Kills then
+        leaderstats.Kills.Changed:Connect(updateLabels)
+    end
+
+    -- Initial update
+    updateLabels()
+end
+
+-- Call the function to start tracking your own stats
+createMyLabels()
+
 -- The credit tab because yes
 local Credit = window:AddTab("Credit")
 Credit:AddLabel("Script Made By Adopt")
