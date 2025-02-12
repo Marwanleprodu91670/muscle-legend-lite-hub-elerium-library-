@@ -20,6 +20,35 @@ Client:AddButton("Set Size 2", function()
     game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("changeSpeedSizeRemote"):InvokeServer(unpack(args))
 end)
 
+local selectedSize = 2 -- Default size value
+
+-- Create a TextBox to enter the size value
+Playertab:AddTextBox("Set Size", function(text)
+    local sizeValue = tonumber(text) -- Convert text to a number
+    if sizeValue and sizeValue >= 1 and sizeValue <= 100 then
+        selectedSize = sizeValue -- Store the valid size
+        print("Selected size: " .. selectedSize)
+    else
+        print("Invalid size! Enter a number between 1 and 100.")
+    end
+end)
+
+-- Toggle to apply the size change
+Playertab:AddSwitch("Apply Size", function(bool)
+    if bool then
+        -- Create the arguments for the event
+        local args = {
+            [1] = "changeSize",
+            [2] = selectedSize
+        }
+
+        -- Fire the remote event
+        game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("changeSpeedSizeRemote"):InvokeServer(unpack(args))
+
+        print("Size changed to: " .. selectedSize)
+    end
+end)
+
 local Maintab = window:AddTab("Main")
 
 -- Anti Crash Button
@@ -352,42 +381,67 @@ end
 -- View Stats Tab
 local Playertab = window:AddTab("Player")
 
+Playertab:AddLabel("Spying")
+
+local selectedPlayerName = "" -- Variable to store player name
+
+-- Switch for spying on a player
 local switch = Playertab:AddSwitch("Spy Player", function(bool)
-    -- Toggle logic: This part is triggered when the toggle is switched
     if bool then
-        -- When the switch is turned on, check the textbox for a player's name
-        local playerName = yourTextBox.Text -- replace 'yourTextBox' with your actual textbox variable
-
         -- Find the player in the game
-        local player = game.Workspace:FindFirstChild(playerName)
-
-        if player then
-            -- If the player exists, set the camera to focus on their character
-            local character = player:FindFirstChild("HumanoidRootPart")
+        local player = game.Players:FindFirstChild(selectedPlayerName)
+        
+        if player and player.Character then
+            local character = player.Character:FindFirstChild("HumanoidRootPart")
             if character then
-                game.Workspace.CurrentCamera.CameraSubject = character -- Sets the camera to the player's character
-                game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Attach -- Makes the camera follow the player
+                local camera = game.Workspace.CurrentCamera
+                camera.CameraSubject = character -- Follow the player
+                camera.CameraType = Enum.CameraType.Follow -- Ensures smooth tracking
             end
         else
-            print("Player not found.")
+            print("Player not found or not loaded.")
         end
     else
-        -- If the switch is turned off, you can add additional behavior (like resetting camera to default view)
-        game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Custom -- This reverts the camera back to normal
+        -- Reset the camera back to the default view
+        local camera = game.Workspace.CurrentCamera
+        camera.CameraSubject = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") -- Focus on the local player
+        camera.CameraType = Enum.CameraType.Custom
     end
 end)
 
 -- Textbox setup to capture player name
 Playertab:AddTextBox("Player Name", function(text)
-    -- Check if a name is entered in the textbox
     if text and text ~= "" then
-        -- Here you can implement additional logic based on the textbox input, if needed
-        game:GetService("ReplicatedStorage").Events.FreeGifts.Gift2:FireServer(text, "Clicks", false, false, "Normal")
+        selectedPlayerName = text -- Store the inputted player name
     end
 end)
 
+
 Playertab:AddButton("Clear",function()
 	-- Code here
+end)
+
+Playertab:AddButton("Teleport To Player", function()
+    local localPlayer = game.Players.LocalPlayer -- Get the local player
+    local character = localPlayer.Character -- Get the local player's character
+
+    if selectedPlayerName and selectedPlayerName ~= "" then
+        local targetPlayer = game.Players:FindFirstChild(selectedPlayerName) -- Find the target player
+        
+        if targetPlayer and targetPlayer.Character then
+            local targetPosition = targetPlayer.Character:FindFirstChild("HumanoidRootPart") -- Get target's position
+            
+            if character and targetPosition then
+                character:MoveTo(targetPosition.Position) -- Teleport the local player
+            else
+                print("Target player's HumanoidRootPart not found.")
+            end
+        else
+            print("Player not found or not loaded.")
+        end
+    else
+        print("No player selected.")
+    end
 end)
 
 Playertab:AddLabel("View Stats")
@@ -544,75 +598,7 @@ local Credittab = window:AddTab("Credit")  -- Adding the "Credit" tab
 Credittab:AddLabel("Script Made By Adopt")
 Credittab:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
 
-local switch = Credittab:AddSwitch("Auto Kill", function(bool)
-    _G.autoKill = bool
 
-    if _G.autoKill then
-        local player = game.Players.LocalPlayer
-        local playerName = player.Name
-        local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
-
-        _G.autoPunchanim = true -- Global control variable for auto punch
-
-        -- Auto Punch Loop
-        while _G.autoPunchanim and _G.autoKill do
-            if punchTool then
-                if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
-                end
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
-                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
-                wait(0.1) -- Adjust timing for the delay between punches
-            else
-                warn("Punch tool not found")
-                _G.autoPunchanim = false -- Stop if tool is missing
-            end
-        end
-
-        -- Head Teleport Loop
-        while _G.autoKill do
-            for _, otherPlayer in pairs(game.Players:GetPlayers()) do
-                if otherPlayer ~= player and otherPlayer.Character then
-                    local head = otherPlayer.Character:FindFirstChild("Head")
-                    local rightHand = otherPlayer.Character:FindFirstChild("RightHand")
-
-                    if head and rightHand then
-                        -- Break joints so only the head moves
-                        head:BreakJoints()
-
-                        -- Make the head invisible
-                        head.Transparency = 1
-                        head.CanCollide = false
-                        head.Anchored = true
-
-                        -- Teleport the head to the right hand
-                        head.CFrame = rightHand.CFrame * CFrame.new(0, 0, 0) -- Adjust as needed
-                    end
-                end
-
-                -- Hide Name GUI Elements
-                local nameGui = otherPlayer:FindFirstChild("nameGui")
-                if nameGui then
-                    local strengthImage = nameGui:FindFirstChild("strengthImage")
-                    local karmaLabel = nameGui:FindFirstChild("karmaLabel")
-                    local nameLabel = nameGui:FindFirstChild("nameLabel")
-                    local rankLabel = nameGui:FindFirstChild("rankLabel")
-
-                    -- Set visibility of the 4 elements to false
-                    if strengthImage then strengthImage.Visible = false end
-                    if karmaLabel then karmaLabel.Visible = false end
-                    if nameLabel then nameLabel.Visible = false end
-                    if rankLabel then rankLabel.Visible = false end
-                end
-            end
-            wait(0.2) -- Adjust as needed
-        end
-    else
-        -- Turn off all loops and auto-punch animation when toggle is off
-        _G.autoPunchanim = false
-        _G.autoKill = false
-    end
-end)
 
 
 
