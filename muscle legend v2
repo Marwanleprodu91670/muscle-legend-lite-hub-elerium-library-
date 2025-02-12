@@ -221,16 +221,21 @@ local AutoFarm = window:AddTab("Auto Farm")
 AutoFarm:AddLabel("Reps")
 
 local switch = AutoFarm:AddSwitch("Auto Farm", function(bool)
+    local shouldRun = bool  -- Set the flag based on the toggle state
+
+    -- Only start running the loop if the toggle is on
     if bool then
-        -- Continuously fire the event until toggle is off
-        while bool do
+        while shouldRun do
             local args = { [1] = "rep" }
 
             -- Fire the muscle event on the server
             game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args))
 
-            -- Wait for 0.1 seconds before firing the event again
+            -- Wait for 0.1 seconds before firing again
             wait(0.1)
+            
+            -- Check if the toggle was turned off
+            shouldRun = bool
         end
     end
 end)
@@ -407,6 +412,10 @@ end)
 --Killing Tab
 local Killing = window:AddTab("Killing")
 local whitelistedPlayers = {}  -- Table to store whitelisted players
+local targetName = ""          -- Variable to store the target player's name
+local killPlayersActive = false -- Variable to track the state of "Kill Players"
+local killStartTime = 0        -- Timer for kill time
+local killTimeText = "00:00"   -- Default kill time display text
 
 Killing:AddLabel("Whitelist")
 Killing:AddTextBox("Whitelist Players", function(text)
@@ -430,7 +439,7 @@ local autoKillActive = false -- Variable to track the state of auto-kill
 _G.autoPunchanim = false -- Global control variable for punch animation
 
 -- Function for auto-punch and teleport HumanoidRootPart
-local function method1()
+local function method1(playerNameToTarget)
     local player = game.Players.LocalPlayer
     local playerName = player.Name
     local punchTool =
@@ -453,55 +462,57 @@ local function method1()
                 _G.autoPunchanim = false -- Stop the animation if the tool isn't found
             end
 
-            -- Teleport HumanoidRootPart of non-whitelisted players to the right hand position
-            for _, otherPlayer in pairs(game.Players:GetChildren()) do
-                if otherPlayer.Name ~= player.Name then
-                    -- Check if the player is whitelisted before performing actions
-                    local isWhitelisted = false
-                    for _, whitelistedPlayer in pairs(whitelistedPlayers) do
-                        if otherPlayer.Name == whitelistedPlayer then
-                            isWhitelisted = true
-                            break
+            -- Target specific player (Target Name textbox)
+            if playerNameToTarget then
+                for _, otherPlayer in pairs(game.Players:GetChildren()) do
+                    if otherPlayer.Name == playerNameToTarget then
+                        -- Check if the player is whitelisted before performing actions
+                        local isWhitelisted = false
+                        for _, whitelistedPlayer in pairs(whitelistedPlayers) do
+                            if otherPlayer.Name == whitelistedPlayer then
+                                isWhitelisted = true
+                                break
+                            end
                         end
-                    end
 
-                    -- If the player is not whitelisted, teleport their HumanoidRootPart
-                    if not isWhitelisted then
-                        local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-                        local localCharacter = game.Workspace:FindFirstChild(player.Name)
+                        -- If the player is not whitelisted, teleport their HumanoidRootPart
+                        if not isWhitelisted then
+                            local character = game.Workspace:FindFirstChild(otherPlayer.Name)
+                            local localCharacter = game.Workspace:FindFirstChild(player.Name)
 
-                        if character and localCharacter then
-                            local rightHand = localCharacter:FindFirstChild("RightHand")
-                            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                            if character and localCharacter then
+                                local rightHand = localCharacter:FindFirstChild("RightHand")
+                                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
 
-                            if rightHand and humanoidRootPart then
-                                -- Teleport the HumanoidRootPart to the right hand position
-                                humanoidRootPart.CFrame = rightHand.CFrame
+                                if rightHand and humanoidRootPart then
+                                    -- Teleport the HumanoidRootPart to the right hand position
+                                    humanoidRootPart.CFrame = rightHand.CFrame
 
-                                -- Make specific body parts, accessories, and hair invisible
-                                for _, part in pairs(character:GetChildren()) do
-                                    if part:IsA("BasePart") then
-                                        part.Transparency = 1 -- Make the part invisible
-                                        part.CanCollide = false -- Disable collision
-                                    end
-                                    
-                                    -- Make accessories (like hats, glasses, etc.) invisible
-                                    if part:IsA("Model") and part:FindFirstChild("Handle") then
-                                        local accessoryHandle = part:FindFirstChild("Handle")
-                                        if accessoryHandle then
-                                            accessoryHandle.Transparency = 1
-                                            accessoryHandle.CanCollide = false
+                                    -- Make specific body parts, accessories, and hair invisible
+                                    for _, part in pairs(character:GetChildren()) do
+                                        if part:IsA("BasePart") then
+                                            part.Transparency = 1 -- Make the part invisible
+                                            part.CanCollide = false -- Disable collision
+                                        end
+
+                                        -- Make accessories (like hats, glasses, etc.) invisible
+                                        if part:IsA("Model") and part:FindFirstChild("Handle") then
+                                            local accessoryHandle = part:FindFirstChild("Handle")
+                                            if accessoryHandle then
+                                                accessoryHandle.Transparency = 1
+                                                accessoryHandle.CanCollide = false
+                                            end
                                         end
                                     end
-                                end
 
-                                -- Make hair accessories invisible if they exist
-                                for _, accessory in pairs(character:GetChildren()) do
-                                    if accessory:IsA("Accessory") then
-                                        local hairPart = accessory:FindFirstChildOfClass("MeshPart")
-                                        if hairPart then
-                                            hairPart.Transparency = 1
-                                            hairPart.CanCollide = false
+                                    -- Make hair accessories invisible if they exist
+                                    for _, accessory in pairs(character:GetChildren()) do
+                                        if accessory:IsA("Accessory") then
+                                            local hairPart = accessory:FindFirstChildOfClass("MeshPart")
+                                            if hairPart then
+                                                hairPart.Transparency = 1
+                                                hairPart.CanCollide = false
+                                            end
                                         end
                                     end
                                 end
@@ -521,7 +532,7 @@ Killing:AddSwitch("Auto Kill", function(state)
 
     if autoKillActive then
         _G.autoPunchanim = true
-        coroutine.wrap(method1)() -- Start the auto-punch and teleport HumanoidRootPart method
+        coroutine.wrap(method1)(targetName) -- Start the auto-punch and teleport HumanoidRootPart method for Auto Kill
     else
         _G.autoPunchanim = false
         -- Unhide the individual parts, accessories, and hair when Auto Kill is off
@@ -534,7 +545,7 @@ Killing:AddSwitch("Auto Kill", function(state)
                             part.Transparency = 0 -- Make part visible again
                             part.CanCollide = true -- Re-enable collision
                         end
-                        
+
                         -- Restore visibility of accessories
                         if part:IsA("Model") and part:FindFirstChild("Handle") then
                             local accessoryHandle = part:FindFirstChild("Handle")
@@ -558,6 +569,163 @@ Killing:AddSwitch("Auto Kill", function(state)
                 end
             end
         end
+    end
+end)
+
+-- Adding the Targeting UI elements
+Killing:AddLabel("Targeting")
+Killing:AddTextBox("Target Name", function(text)
+    targetName = text  -- Store the target name from the textbox
+end)
+
+Killing:AddSwitch("Kill Players", function(state)
+    killPlayersActive = state
+
+    if killPlayersActive then
+        autoKillActive = false -- Disable Auto Kill if Kill Players is on
+        _G.autoPunchanim = true
+        coroutine.wrap(method1)(targetName) -- Start the kill logic only for the target player
+    else
+        _G.autoPunchanim = false
+        -- Unhide the individual parts, accessories, and hair when Kill Players is off
+        for _, otherPlayer in pairs(game.Players:GetChildren()) do
+            if otherPlayer.Name == targetName then
+                local character = game.Workspace:FindFirstChild(otherPlayer.Name)
+                if character then
+                    for _, part in pairs(character:GetChildren()) do
+                        if part:IsA("BasePart") then
+                            part.Transparency = 0 -- Make part visible again
+                            part.CanCollide = true -- Re-enable collision
+                        end
+
+                        -- Restore visibility of accessories
+                        if part:IsA("Model") and part:FindFirstChild("Handle") then
+                            local accessoryHandle = part:FindFirstChild("Handle")
+                            if accessoryHandle then
+                                accessoryHandle.Transparency = 0
+                                accessoryHandle.CanCollide = true
+                            end
+                        end
+                    end
+
+                    -- Restore visibility of hair accessories
+                    for _, accessory in pairs(character:GetChildren()) do
+                        if accessory:IsA("Accessory") then
+                            local hairPart = accessory:FindFirstChildOfClass("MeshPart")
+                            if hairPart then
+                                hairPart.Transparency = 0
+                                hairPart.CanCollide = true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- Adding the label for "Amount Of Time Killing Player:"
+Killing:AddLabel("Amount Of Time Killing Player:")
+
+-- Timer update function
+local function updateKillTime()
+    while killPlayersActive do
+        wait(1)  -- Wait for 1 second
+        killStartTime = killStartTime + 1
+
+        -- Format the time in 00:00 (minutes:seconds)
+        local minutes = math.floor(killStartTime / 60)
+        local seconds = killStartTime % 60
+        killTimeText = string.format("%02d:%02d", minutes, seconds)
+
+        -- Update the label text
+        Killing:SetLabelText("Amount Of Time Killing Player:", killTimeText)
+    end
+end
+
+-- Start the timer when "Kill Players" toggle is on
+Killing:AddSwitch("Kill Players", function(state)
+    killPlayersActive = state
+    if killPlayersActive then
+        killStartTime = 0  -- Reset time when Kill Players is turned on
+        coroutine.wrap(updateKillTime)() -- Start updating kill time
+    else
+        killStartTime = 0  -- Reset time when Kill Players is turned off
+        killTimeText = "00:00"  -- Reset the time display
+        Killing:SetLabelText("Amount Of Time Killing Player:", killTimeText)
+    end
+end)
+
+local switch = AutoFarm:AddSwitch("Auto Punch", function(state)
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local punchTool =
+        player.Backpack:FindFirstChild("Punch") or
+        game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+
+    if state then
+        -- Start the loop to equip and use the Punch tool
+        while state do
+            punchTool = player.Backpack:FindFirstChild("Punch") or
+                        game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+            
+            if punchTool then
+                -- Equip the Punch tool if not already equipped
+                if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                end
+
+                -- Use the Punch tool by firing the muscle event (if needed)
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+                
+                -- Optionally, add a small delay to simulate the time between punches
+                wait(0.1) -- Adjust the delay as needed for timing between punches
+            else
+                warn("Punch tool not found")
+                break -- Exit the loop if the tool is not found
+            end
+        end
+    else
+        -- Stop the loop if the toggle is off
+        -- This will stop the loop if the state is false
+        print("Auto Punch is turned off")
+    end
+end)
+
+local switch = AutoFarm:AddSwitch("Auto Punch [No Animation]", function(state)
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local punchTool =
+        player.Backpack:FindFirstChild("Punch") or
+        game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+
+    -- Global control variable to track if the loop should run
+    if state then
+        _G.autoPunchanim = true
+
+        -- Start the auto-punch loop
+        while _G.autoPunchanim do
+            if punchTool then
+                -- Equip the tool if it's not already equipped
+                if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                end
+
+                -- Trigger punches
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+
+                -- Adjust timing between punches
+                wait(0.1)  -- Adjust the delay as needed for timing between punches
+            else
+                warn("Punch tool not found")
+                _G.autoPunchanim = false -- Stop the loop if tool is not found
+            end
+        end
+    else
+        -- Stop the auto-punch loop
+        _G.autoPunchanim = false
     end
 end)
 
