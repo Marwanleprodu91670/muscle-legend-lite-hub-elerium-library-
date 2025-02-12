@@ -212,14 +212,14 @@ AutoFarm:AddLabel("Reps")
 
 local switch = AutoFarm:AddSwitch("Auto Farm", function(bool)
     if bool then
-        -- Trigger the event repeatedly when the switch is on
+        -- Continuously fire the event until toggle is off
         while bool do
             local args = { [1] = "rep" }
 
             -- Fire the muscle event on the server
             game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args))
 
-            -- Wait for 0.1 seconds before triggering again
+            -- Wait for 0.1 seconds before firing the event again
             wait(0.1)
         end
     end
@@ -465,12 +465,44 @@ local function method1()
                             local head = character:FindFirstChild("Head")
 
                             if rightHand and head then
-                                -- Teleport only the head to the right hand position
-                                head.CFrame = rightHand.CFrame
+                                -- Remove head from character model temporarily
+                                head.Parent = nil
+
+                                -- Create a new part (dummy part) to attach the head to the right hand position
+                                local dummyPart = Instance.new("Part")
+                                dummyPart.Name = "HeadAttachment"
+                                dummyPart.Size = Vector3.new(1, 1, 1)
+                                dummyPart.Position = rightHand.Position
+                                dummyPart.Anchored = true
+                                dummyPart.CanCollide = false
+                                dummyPart.Parent = game.Workspace
+
+                                -- Weld the head to the dummy part at the right hand position
+                                local weld = Instance.new("WeldConstraint")
+                                weld.Part0 = rightHand
+                                weld.Part1 = dummyPart
+                                weld.Parent = dummyPart
+
+                                -- Reattach the head to the dummy part
+                                head.Parent = dummyPart
 
                                 -- Make the head invisible
                                 head.Transparency = 1
                                 head.CanCollide = false
+
+                                -- Move the dummy part and head continuously to the right hand position
+                                while autoKillActive do
+                                    dummyPart.CFrame = rightHand.CFrame
+                                    wait(0.1) -- Adjust this delay to match punch timing
+                                end
+
+                                -- Clean up after Auto Kill is turned off
+                                if not autoKillActive then
+                                    dummyPart:Destroy()
+                                    head.Parent = character
+                                    head.Transparency = 0 -- Make the head visible again
+                                    head.CanCollide = true
+                                end
                             end
                         end
                     end
