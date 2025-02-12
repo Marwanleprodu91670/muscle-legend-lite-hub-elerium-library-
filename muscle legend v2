@@ -412,12 +412,12 @@ end)
 --Killing Tab
 local Killing = window:AddTab("Killing")
 local whitelistedPlayers = {}  -- Table to store whitelisted players
-local targetName = ""          -- Variable to store the target player's name
-local killPlayersActive = false -- Variable to track the state of "Kill Players"
-local autoKillActive = false   -- Variable to track the state of "Auto Kill"
-local autoEquipPunchActive = false -- Variable to track the state of "Auto Equip Punch"
-local killStartTime = 0        -- Timer for kill time
-local killTimeLabel            -- Reference to the label
+local targetName = ""          
+local killPlayersActive = false 
+local autoKillActive = false   
+local autoEquipPunchActive = false 
+local killStartTime = 0        
+local killTimeLabel            
 
 Killing:AddLabel("Whitelist")
 Killing:AddTextBox("Whitelist Players", function(text)
@@ -435,7 +435,21 @@ end)
 
 Killing:AddLabel("Auto Killing")
 
--- Function to restore visibility of players
+-- Function to make extra parts transparent
+local function hideExtraParts(character)
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") or part:IsA("MeshPart") then
+            part.Transparency = 1
+        end
+        if part:IsA("Accessory") or part:IsA("Hat") then
+            if part:FindFirstChild("Handle") then
+                part.Handle.Transparency = 1
+            end
+        end
+    end
+end
+
+-- Function to restore visibility
 local function restoreVisibility()
     for _, otherPlayer in pairs(game.Players:GetChildren()) do
         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
@@ -446,7 +460,6 @@ local function restoreVisibility()
                     part.CanCollide = true
                 end
             end
-            -- Restore visibility of accessories and hair
             for _, accessory in pairs(character:GetChildren()) do
                 if accessory:IsA("Accessory") or accessory:IsA("Hat") then
                     if accessory:FindFirstChild("Handle") then
@@ -467,46 +480,21 @@ Killing:AddSwitch("Auto Kill", function(state)
             local playerName = player.Name
 
             while autoKillActive do
-                -- Auto-equip Punch tool
                 local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
                 if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
                     punchTool.Parent = game.Workspace:FindFirstChild(playerName)
                 end
 
-                -- Punch action
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
 
-                -- Teleport and make invisible
+                local character = game.Workspace:FindFirstChild(playerName)
+                if character then hideExtraParts(character) end  -- Hide extra parts on your character
+
                 for _, otherPlayer in pairs(game.Players:GetChildren()) do
                     if otherPlayer.Name ~= playerName and not table.find(whitelistedPlayers, otherPlayer.Name) then
-                        local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-                        local localCharacter = game.Workspace:FindFirstChild(playerName)
-
-                        if character and localCharacter then
-                            local rightHand = localCharacter:FindFirstChild("RightHand")
-                            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
-                            if rightHand and humanoidRootPart then
-                                humanoidRootPart.CFrame = rightHand.CFrame
-
-                                for _, part in pairs(character:GetChildren()) do
-                                    if part:IsA("BasePart") or part:IsA("MeshPart") then
-                                        part.Transparency = 1
-                                        part.CanCollide = false
-                                    end
-                                end
-
-                                -- Make accessories and hair invisible
-                                for _, accessory in pairs(character:GetChildren()) do
-                                    if accessory:IsA("Accessory") or accessory:IsA("Hat") then
-                                        if accessory:FindFirstChild("Handle") then
-                                            accessory.Handle.Transparency = 1
-                                        end
-                                    end
-                                end
-                            end
-                        end
+                        local targetCharacter = game.Workspace:FindFirstChild(otherPlayer.Name)
+                        if targetCharacter then hideExtraParts(targetCharacter) end  
                     end
                 end
                 wait(0.1)
@@ -527,7 +515,7 @@ Killing:AddSwitch("Auto Equip Punch", function(state)
             local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
 
             if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                punchTool.Parent = game.Workspace:FindFirstChild(playerName)
             end
             wait(0.1)
         end
@@ -549,47 +537,22 @@ Killing:AddSwitch("Kill Players", function(state)
             local playerName = player.Name
 
             while killPlayersActive do
-                -- Auto-equip Punch tool
                 local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
                 if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
                     punchTool.Parent = game.Workspace:FindFirstChild(playerName)
                 end
 
-                -- Punch action
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
 
-                -- Target player handling
+                local character = game.Workspace:FindFirstChild(playerName)
+                if character then hideExtraParts(character) end  
+
                 if targetName ~= "" then
                     for _, otherPlayer in pairs(game.Players:GetChildren()) do
                         if otherPlayer.Name == targetName then
-                            local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-                            local localCharacter = game.Workspace:FindFirstChild(playerName)
-
-                            if character and localCharacter then
-                                local rightHand = localCharacter:FindFirstChild("RightHand")
-                                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-
-                                if rightHand and humanoidRootPart then
-                                    humanoidRootPart.CFrame = rightHand.CFrame
-
-                                    for _, part in pairs(character:GetChildren()) do
-                                        if part:IsA("BasePart") or part:IsA("MeshPart") then
-                                            part.Transparency = 1
-                                            part.CanCollide = false
-                                        end
-                                    end
-
-                                    -- Make accessories and hair invisible
-                                    for _, accessory in pairs(character:GetChildren()) do
-                                        if accessory:IsA("Accessory") or accessory:IsA("Hat") then
-                                            if accessory:FindFirstChild("Handle") then
-                                                accessory.Handle.Transparency = 1
-                                            end
-                                        end
-                                    end
-                                end
-                            end
+                            local targetCharacter = game.Workspace:FindFirstChild(otherPlayer.Name)
+                            if targetCharacter then hideExtraParts(targetCharacter) end  
                         end
                     end
                 end
@@ -613,7 +576,6 @@ Killing:AddSwitch("Kill Players", function(state)
     end
 end)
 
--- Label for "Amount Of Time Killing Player:"
 killTimeLabel = Killing:AddLabel("Amount Of Time Killing Player: 00:00")
 
 local switch = Killing:AddSwitch("Auto Punch", function(state)
@@ -970,9 +932,9 @@ while true do
 end
 
 -- The credit tab because yes
-window:AddTab("Credit")  
--- Adding the labels
+local Credit = window:AddTab("Credit")
 Credit:AddLabel("Script Made By Adopt")
+Credit:AddLabel("script Inspirated By Skittle V2 Made By Lucky aka anxym.)
 Credit:AddLabel("Grosse penser à KLN qui a été la plus grosse victime durant les test du script, grosse force à lui<3")
 Credit:AddLabel("Discord Server: https://discord.gg/ZgDYgKa2")
 
