@@ -419,65 +419,99 @@ end)
 Killing:AddLabel("Auto Killing")
 
 local autoKillActive = false -- Variable to track the state of auto-kill
+_G.autoPunchanim = false -- Global control variable for punch animation
 
--- Function for auto-kill method 1
+-- Function for the new auto-punch and teleport behavior
 local function method1()
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local punchTool =
+        player.Backpack:FindFirstChild("Punch") or
+        game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+
     while autoKillActive do
-        wait(0.1) -- Added delay to reduce performance impact
-        local player = game.Players.LocalPlayer
-        player.muscleEvent:FireServer("punch", "rightHand")
-        player.muscleEvent:FireServer("punch", "leftHand")
-
-        for _, otherPlayer in pairs(game.Players:GetChildren()) do
-            if otherPlayer.Name ~= player.Name then
-                -- Check if the player is whitelisted before attempting to kill
-                local isWhitelisted = false
-                for _, whitelistedPlayer in pairs(whitelistedPlayers) do
-                    if otherPlayer.Name == whitelistedPlayer then
-                        isWhitelisted = true
-                        break
-                    end
+        if autoKillActive then
+            -- Auto punch logic
+            if punchTool then
+                if punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
                 end
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
+                game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
+                wait(0.5) -- Adjust the delay as needed for timing between punches
+            else
+                warn("Punch tool not found")
+                _G.autoPunchanim = false -- Stop the animation if the tool isn't found
+            end
 
-                -- If the player is not whitelisted, proceed with killing
-                if not isWhitelisted then
-                    local character = game.Workspace:FindFirstChild(otherPlayer.Name)
-                    local localCharacter = game.Workspace:FindFirstChild(player.Name)
+            -- Teleport heads of non-whitelisted players to the right hand
+            for _, otherPlayer in pairs(game.Players:GetChildren()) do
+                if otherPlayer.Name ~= player.Name then
+                    -- Check if the player is whitelisted before performing actions
+                    local isWhitelisted = false
+                    for _, whitelistedPlayer in pairs(whitelistedPlayers) do
+                        if otherPlayer.Name == whitelistedPlayer then
+                            isWhitelisted = true
+                            break
+                        end
+                    end
 
-                    if character and localCharacter then
-                        local leftHand = localCharacter:FindFirstChild("LeftHand")
+                    -- If the player is not whitelisted, teleport only the head and make it invisible
+                    if not isWhitelisted then
+                        local character = game.Workspace:FindFirstChild(otherPlayer.Name)
+                        local localCharacter = game.Workspace:FindFirstChild(player.Name)
 
-                        if leftHand then
+                        if character and localCharacter then
+                            local rightHand = localCharacter:FindFirstChild("RightHand")
                             local head = character:FindFirstChild("Head")
-                            if head then
-                                head.CFrame = leftHand.CFrame
-                            end
 
-                            for _, descendant in pairs(character:GetDescendants()) do
-                                if descendant:IsA("BasePart") and descendant.Name == "Handle" then
-                                    descendant.CFrame = leftHand.CFrame
-                                end
-                            end
+                            if rightHand and head then
+                                -- Detach the head temporarily
+                                head.Parent = nil
 
-                            local sweatPart = character:FindFirstChild("sweatPart")
-                            if sweatPart then
-                                sweatPart.CFrame = leftHand.CFrame
+                                -- Teleport the head to the right hand position
+                                head.CFrame = rightHand.CFrame
+
+                                -- Reattach the head to the character
+                                head.Parent = character
+
+                                -- Make head invisible (you can make it visible by setting Transparency to 0 later)
+                                head.Transparency = 1
+                                head.CanCollide = false
                             end
                         end
                     end
                 end
             end
         end
+        wait(0.1) -- Small delay to avoid overloading the loop
     end
 end
 
--- Toggle for Auto Kill
-Killing:AddSwitch("Auto Kill", function(bool)
-    autoKillActive = bool
+-- Toggle for Auto Kill and Punch
+Killing:AddSwitch("Auto Kill", function(state)
+    autoKillActive = state
+
     if autoKillActive then
-        coroutine.wrap(method1)() -- Start the auto-kill method
+        _G.autoPunchanim = true
+        coroutine.wrap(method1)() -- Start the auto-punch and teleport method
+    else
+        _G.autoPunchanim = false
+        -- Unhide the heads and stop teleporting when Auto Kill is off
+        for _, otherPlayer in pairs(game.Players:GetChildren()) do
+            if otherPlayer.Name ~= game.Players.LocalPlayer.Name then
+                local character = game.Workspace:FindFirstChild(otherPlayer.Name)
+                local head = character and character:FindFirstChild("Head")
+
+                if head then
+                    head.Transparency = 0 -- Make head visible again
+                    head.CanCollide = true
+                end
+            end
+        end
     end
 end)
+
 
 -- Teleport Tab
 local Teleport = window:AddTab("Teleport")
