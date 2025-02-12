@@ -444,9 +444,17 @@ Killing:AddSwitch("Auto Kill", function(state)
             local playerName = player.Name
 
             while autoKillActive do
+                -- Auto-equip Punch tool
+                local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
+                if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
+                    punchTool.Parent = game.Workspace:FindFirstChild(playerName)
+                end
+
+                -- Punch action
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
                 game.Players.LocalPlayer.muscleEvent:FireServer("punch", "leftHand")
 
+                -- Teleport and make invisible
                 for _, otherPlayer in pairs(game.Players:GetChildren()) do
                     if otherPlayer.Name ~= playerName and not table.find(whitelistedPlayers, otherPlayer.Name) then
                         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
@@ -460,9 +468,18 @@ Killing:AddSwitch("Auto Kill", function(state)
                                 humanoidRootPart.CFrame = rightHand.CFrame
 
                                 for _, part in pairs(character:GetChildren()) do
-                                    if part:IsA("BasePart") then
+                                    if part:IsA("BasePart") or part:IsA("MeshPart") then
                                         part.Transparency = 1
                                         part.CanCollide = false
+                                    end
+                                end
+
+                                -- Make accessories and hair invisible
+                                for _, accessory in pairs(character:GetChildren()) do
+                                    if accessory:IsA("Accessory") or accessory:IsA("Hat") then
+                                        if accessory:FindFirstChild("Handle") then
+                                            accessory.Handle.Transparency = 1
+                                        end
                                     end
                                 end
                             end
@@ -510,7 +527,7 @@ Killing:AddSwitch("Kill Players", function(state)
                 -- Auto-equip Punch tool
                 local punchTool = player.Backpack:FindFirstChild("Punch") or game.Workspace:FindFirstChild(playerName):FindFirstChild("Punch")
                 if punchTool and punchTool.Parent ~= game.Workspace:FindFirstChild(playerName) then
-                    punchTool.Parent = game.Workspace:FindFirstChild(playerName) -- Equip the tool
+                    punchTool.Parent = game.Workspace:FindFirstChild(playerName)
                 end
 
                 -- Punch action
@@ -532,9 +549,18 @@ Killing:AddSwitch("Kill Players", function(state)
                                     humanoidRootPart.CFrame = rightHand.CFrame
 
                                     for _, part in pairs(character:GetChildren()) do
-                                        if part:IsA("BasePart") then
+                                        if part:IsA("BasePart") or part:IsA("MeshPart") then
                                             part.Transparency = 1
                                             part.CanCollide = false
+                                        end
+                                    end
+
+                                    -- Make accessories and hair invisible
+                                    for _, accessory in pairs(character:GetChildren()) do
+                                        if accessory:IsA("Accessory") or accessory:IsA("Hat") then
+                                            if accessory:FindFirstChild("Handle") then
+                                                accessory.Handle.Transparency = 1
+                                            end
                                         end
                                     end
                                 end
@@ -564,7 +590,7 @@ Killing:AddSwitch("Kill Players", function(state)
                 local character = game.Workspace:FindFirstChild(otherPlayer.Name)
                 if character then
                     for _, part in pairs(character:GetChildren()) do
-                        if part:IsA("BasePart") then
+                        if part:IsA("BasePart") or part:IsA("MeshPart") then
                             part.Transparency = 0
                             part.CanCollide = true
                         end
