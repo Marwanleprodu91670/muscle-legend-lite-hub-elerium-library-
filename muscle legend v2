@@ -434,35 +434,35 @@ end)
 
 -- Assuming the 'window' is initialized correctly somewhere in the code:
 local Rock = window:AddTab("Rock Farming V1")
+
 local switch = Rock:AddSwitch("Auto Jungle Rock", function(bool)
     local player = game.Players.LocalPlayer
     local character = player.Character
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
     local originalRock = workspace:FindFirstChild("Ancient Jungle Rock")
+    local rock = originalRock and originalRock:FindFirstChild("Rock")
     local hitboxPart
 
     -- When the toggle is turned on
-    if bool then
-        if originalRock then
-            -- Create a new hitbox part that will scale the hitbox size
-            hitboxPart = Instance.new("Part")
-            hitboxPart.Size = originalRock.Size * 100000  -- Increase the hitbox size by 100000
-            hitboxPart.Position = originalRock.Position
-            hitboxPart.Transparency = 1  -- Make it invisible
-            hitboxPart.Anchored = true
-            hitboxPart.CanCollide = true  -- This part will handle collisions
-            hitboxPart.Parent = workspace
+    if bool and rock then
+        -- Create a new hitbox part that will scale the hitbox size of the "Rock" part
+        hitboxPart = Instance.new("Part")
+        hitboxPart.Size = rock.Size * 100000  -- Increase the hitbox size by 100000
+        hitboxPart.Position = rock.Position
+        hitboxPart.Transparency = 1  -- Make it invisible
+        hitboxPart.Anchored = true
+        hitboxPart.CanCollide = true  -- This part will handle collisions for "Rock"
+        hitboxPart.Parent = workspace
 
-            -- Set the hitbox part in the same position as the rock, but with a large collision area
-            originalRock.CanCollide = false  -- Disable collision for the rock itself
-        end
-    else
+        -- Disable collision on the original "Rock" part to avoid conflict
+        rock.CanCollide = false
+    elseif not bool and hitboxPart then
         -- When the toggle is turned off, remove the hitbox part
-        if hitboxPart then
-            hitboxPart:Destroy()
-        end
-        if originalRock then
-            originalRock.CanCollide = true  -- Enable collision again for the rock
+        hitboxPart:Destroy()
+        
+        -- Re-enable collision for the "Rock" part
+        if rock then
+            rock.CanCollide = true
         end
     end
 end)
