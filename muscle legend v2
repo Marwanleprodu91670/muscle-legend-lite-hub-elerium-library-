@@ -720,6 +720,18 @@ local function hidePlayerNameChildren(hide)
     end
 end
 
+local dropdown = Killing:AddDropdown("select", function(text)
+    -- You can use this to do something with the selected player's name
+    print(text .. " selected!")
+end)
+
+-- Dynamically add player names to the dropdown
+for _, player in ipairs(game.Players:GetPlayers()) do
+    if player.Name ~= game.Players.LocalPlayer.Name then  -- Exclude the local player
+        dropdown:Add(player.Name)  -- Add each player's name to the dropdown
+    end
+end
+
 -- Teleport Tab
 local Teleport = window:AddTab("Teleport")
 
