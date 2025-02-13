@@ -2,7 +2,7 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
 
 local window = library:AddWindow("Nova Hub V1 Free Version | Adopt Script", {
-    main_color = Color3.fromRGB(0,0,0), -- Color
+    main_color = Color3.fromRGB(128,0,128), -- Color
     min_size = Vector2.new(700, 640), -- Size of the gui
     can_resize = false, -- true or false
 })
