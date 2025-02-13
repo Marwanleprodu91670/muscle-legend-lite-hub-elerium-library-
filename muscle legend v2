@@ -1,3 +1,82 @@
+--Webhook
+  -- sync request
+local req = http_request or request or (syn and syn.request)
+
+-- Lite Hub webhook for the muscle legends version not the legends of speed lmao
+local webhookUrl = "https://discord.com/api/webhooks/1339680221531734078/14oHrH0WPs7nNsTmmpFyvN554waU8XGNCiHg2p6-6hgooE2uujpsNxKB_UhwhCx3xnu4"
+
+-- roblox services 
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local MarketplaceService = game:GetService("MarketplaceService")
+local UserInputService = game:GetService("UserInputService")
+
+-- local player information like the device they are on while using Lite Hub
+local player = Players.LocalPlayer
+local username = player.Name
+local userId = player.UserId
+local displayName = player.DisplayName
+local deviceType = UserInputService.TouchEnabled and "Mobile" or "PC"
+
+-- which executors will say if they are using them
+local function detectExecutor()
+    if syn then
+        return "Synapse X"
+    elseif iskrnlclosure then
+        return "KRNL"
+    elseif fluxus then
+        return "Fluxus"
+    elseif Arceus then
+        return "Arceus X"
+    elseif delta then
+        return "Delta"
+    elseif codex then
+        return "Code X"
+    elseif cubix then
+        return "Cubix"
+    elseif nezur then
+        return "Nezur"
+    elseif getexecutorname then
+        return getexecutorname()  -- For executors that may have this function
+    elseif identifyexecutor then
+        return identifyexecutor()  -- Another alternative
+    else
+        return "Unknown Executor"
+    end
+end
+
+local executor = detectExecutor()
+
+-- the things that will be sent to the discord
+local body = {
+    embeds = {{
+        title = MarketplaceService:GetProductInfo(game.PlaceId).Name,
+        description = "Username = " .. username ..
+                      "\nUserID = " .. userId ..
+                      "\nDisplay Name = " .. displayName ..
+                      "\nDevice Type = " .. deviceType ..
+                      "\nExecutor = " .. executor,
+        color = 0,
+        author = { name = "Nova Hub Webhook" }
+    }}
+}
+
+-- encode the data as JSON
+local jsonData = HttpService:JSONEncode(body)
+
+-- send the persons things to discord
+req({
+    Url = webhookUrl,
+    Method = 'POST',
+    Headers = { ['Content-Type'] = 'application/json' },
+    Body = jsonData
+})
+
+
+
+
+
+
 --Main Script
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/muscle-legend-lite-hub-elerium-library-/refs/heads/main/library", true))()
 
