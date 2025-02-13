@@ -291,6 +291,27 @@ folder3:AddSwitch("Auto Join Brawl", function(State)
     end
 end)
 
+Maintab:AddLabel("Scripts Hub:")
+Maintab:AddButton("Infinite yield",function()
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)
+
+Maintab:AddButton("Dex Eplorer",function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Main/refs/heads/main/Dex-Explorer"))()
+end)
+
+Maintab:AddButton("Chat Spy",function()
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/doIIa/Script/refs/heads/master/ChatSpy.lua'))()
+end)
+
+Maintab:AddButton("Chat Bypass",function()
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/CrystalDMC/roblox-chat-bypass/refs/heads/main/script.lua'))()
+end)
+
+Maintab:AddButton("Permanent shiftlock",function()
+	loadstring(game:HttpGet('https://pastebin.com/raw/CjNsnSDy'))()
+end)
+
 -- Auto Farm Tab
 local AutoFarm = window:AddTab("Auto Farm")
 
