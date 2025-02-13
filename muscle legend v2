@@ -435,8 +435,35 @@ local switchMuscleKingSquat = AutoFarmTab:AddSwitch("Muscle King Squat", functio
 end)
 
 
+local Rock = window:AddTab("Rock Farming")
 
+local toggleAutoJungleRock = false
+local originalPosition = workspace:WaitForChild("Ancient Jungle Rock").Position -- Store original position
 
+local function teleportJungleRock()
+    local jungleRock = workspace:WaitForChild("Ancient Jungle Rock")
+
+    while toggleAutoJungleRock do
+        -- Teleport the rock to a new position (for example, move it somewhere in the world)
+        jungleRock.CFrame = CFrame.new(Vector3.new(100, 50, 100)) -- Change this position as needed
+
+        wait(0.1) -- Adjust delay if needed
+    end
+
+    -- Return the rock to its original position when toggled off
+    jungleRock.CFrame = CFrame.new(originalPosition)
+end
+
+local switchAutoJungleRock = Rock:AddSwitch("Auto Jungle Rock", function(state)
+    toggleAutoJungleRock = state -- Update toggle state
+
+    if toggleAutoJungleRock then
+        spawn(teleportJungleRock) -- Start the loop in a separate thread
+    else
+        local jungleRock = workspace:WaitForChild("Ancient Jungle Rock")
+        jungleRock.CFrame = CFrame.new(originalPosition) -- Teleport back to the original position
+    end
+end)
 
 local Killing = window:AddTab("Killing")
 local whitelistedPlayers = {}
