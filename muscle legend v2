@@ -180,9 +180,6 @@ end)
 
 
 
--- Rock Farming v1 Section
-local folder2 = Maintab:AddFolder("Rock Farming v1")
-folder2:AddLabel("Coming Soon")
 
 -- Brawl Things
 local folder3 = Maintab:AddFolder("Brawl")
@@ -436,40 +433,40 @@ end)
 
 
 -- Assuming the 'window' is initialized correctly somewhere in the code:
-local Rock = window:AddTab("Rock Farming")
-
+local Rock = window:AddTab("Rock Farming V1")
 local switch = Rock:AddSwitch("Auto Jungle Rock", function(bool)
     local player = game.Players.LocalPlayer
     local character = player.Character
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    local hand = character:WaitForChild("RightHand") -- Assuming it's the right hand
     local originalRock = workspace:FindFirstChild("Ancient Jungle Rock")
-    local originalPosition
+    local hitboxPart
 
     -- When the toggle is turned on
     if bool then
         if originalRock then
-            -- Save the original position of the rock
-            originalPosition = originalRock.Position
-            
-            -- Teleport the rock inside the player's avatar
-            originalRock.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 0, 5)  -- Adjust position as needed
+            -- Create a new hitbox part that will scale the hitbox size
+            hitboxPart = Instance.new("Part")
+            hitboxPart.Size = originalRock.Size * 100000  -- Increase the hitbox size by 100000
+            hitboxPart.Position = originalRock.Position
+            hitboxPart.Transparency = 1  -- Make it invisible
+            hitboxPart.Anchored = true
+            hitboxPart.CanCollide = true  -- This part will handle collisions
+            hitboxPart.Parent = workspace
 
-            -- Make the rock invisible
-            originalRock.Transparency = 1
-            originalRock.CanCollide = false
+            -- Set the hitbox part in the same position as the rock, but with a large collision area
+            originalRock.CanCollide = false  -- Disable collision for the rock itself
         end
     else
-        -- When the toggle is turned off, teleport the rock back to its original position
-        if originalRock and originalPosition then
-            originalRock.CFrame = CFrame.new(originalPosition)
-            
-            -- Make the rock visible again and enable collisions
-            originalRock.Transparency = 0
-            originalRock.CanCollide = true
+        -- When the toggle is turned off, remove the hitbox part
+        if hitboxPart then
+            hitboxPart:Destroy()
+        end
+        if originalRock then
+            originalRock.CanCollide = true  -- Enable collision again for the rock
         end
     end
 end)
+
 
 local Killing = window:AddTab("Killing")
 local whitelistedPlayers = {}
