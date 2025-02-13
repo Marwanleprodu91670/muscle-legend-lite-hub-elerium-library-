@@ -438,46 +438,43 @@ end)
 -- Assuming the 'window' is initialized correctly somewhere in the code:
 local Rock = window:AddTab("Rock Farming")
 
-local toggleAutoJungleRock = false
-local originalPosition = workspace:WaitForChild("Ancient Jungle Rock").Position -- Store original position
+local switch = Rock:AddSwitch("Auto Jungle Rock", function(bool)
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local hand = character:WaitForChild("RightHand") -- Assuming it's the right hand
+    local rock
 
-local function teleportJungleRock()
-    local jungleRock = workspace:WaitForChild("Ancient Jungle Rock")
-
-    while toggleAutoJungleRock do
-        -- Teleport the rock to your character's position
-        local character = game.Players.LocalPlayer.Character
-        if character then
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-            if humanoidRootPart then
-                -- Position the rock inside the player
-                jungleRock.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 0, 0) -- Adjust the offset as needed
+    -- Find the original rock in the workspace
+    local originalRock = workspace:FindFirstChild("Ancient Jungle Rock")
+    
+    -- When the toggle is turned on
+    if bool then
+        if originalRock then
+            -- Duplicate the rock
+            rock = originalRock:Clone()
+            rock.Parent = workspace
+            
+            -- Make the rock invisible
+            rock.Transparency = 1
+            rock.CanCollide = false
+            
+            -- Create a loop to teleport the rock in front of the player's hand
+            while bool do
+                -- Teleport the rock in front of the hand
+                local handPosition = hand.Position
+                rock.Position = handPosition + (hand.CFrame.LookVector * 5)  -- Adjust the distance as needed
+                wait(0.1)  -- Adjust how fast it updates
             end
         end
-
-        wait(0.1) -- Adjust delay if needed
-    end
-
-    -- Return the rock to its original position when toggled off
-    jungleRock.CFrame = CFrame.new(originalPosition)
-end
-
--- Adding the toggle switch for Auto Jungle Rock
-local switchAutoJungleRock = Rock:AddSwitch("Auto Jungle Rock", function(state)
-    toggleAutoJungleRock = state -- Update toggle state
-
-    if toggleAutoJungleRock then
-        spawn(teleportJungleRock) -- Start the loop in a separate thread
     else
-        local jungleRock = workspace:WaitForChild("Ancient Jungle Rock")
-        jungleRock.CFrame = CFrame.new(originalPosition) -- Teleport back to the original position
+        -- When the toggle is turned off, delete the duplicated rock
+        if rock then
+            rock:Destroy()
+        end
     end
 end)
 
--- Make sure to verify the 'window' object initialization
-if not window then
-    warn("Window not initialized properly.")
-end
 
 local Killing = window:AddTab("Killing")
 local whitelistedPlayers = {}
