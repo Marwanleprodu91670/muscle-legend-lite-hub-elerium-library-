@@ -684,16 +684,19 @@ end)
 -- Create the toggle for "Hide Other Player Name GUI"
 local switch = Killing:AddSwitch("Hide Other Player Name GUI", function(bool)
     if bool then
-        -- Start hiding all children of NameGui when the toggle is on
+        -- Start hiding the specified children of NameGui when the toggle is on
         hidePlayerNameChildren(true)
     else
-        -- Start showing all children of NameGui when the toggle is off
+        -- Start showing the specified children of NameGui when the toggle is off
         hidePlayerNameChildren(false)
     end
 end)
 
--- Function to hide/show all children of the NameGui
+-- Function to hide/show specified children of the NameGui
 local function hidePlayerNameChildren(hide)
+    -- List of the specific child names to hide/show
+    local childrenToHide = {"strengthImage", "karmaLabel", "rankLabel", "nameLabel"}
+    
     -- Iterate through all players in the game
     for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
         if targetPlayer ~= game.Players.LocalPlayer then  -- Exclude the local player
@@ -703,10 +706,13 @@ local function hidePlayerNameChildren(hide)
                 -- Check if the player has a NameGui
                 local nameGui = playerGui:FindFirstChild("NameGui")
                 if nameGui then
-                    -- Iterate through all children of NameGui
-                    for _, child in pairs(nameGui:GetChildren()) do
-                        -- Set the visibility based on the toggle state
-                        child.Visible = not hide
+                    -- Iterate through the specific children in NameGui
+                    for _, childName in ipairs(childrenToHide) do
+                        local child = nameGui:FindFirstChild(childName)
+                        if child then
+                            -- Set the visibility based on the toggle state
+                            child.Visible = not hide
+                        end
                     end
                 end
             end
