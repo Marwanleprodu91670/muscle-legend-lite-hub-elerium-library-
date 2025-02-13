@@ -495,7 +495,6 @@ end)
 
 Killing:AddLabel("Auto Killing")
 
--- Function to restore visibility of players
 local function restoreVisibility()
     for _, otherPlayer in pairs(game.Players:GetChildren()) do
         local character = game.Workspace:FindFirstChild(otherPlayer.Name)
@@ -517,7 +516,6 @@ local function restoreVisibility()
     end
 end
 
--- Function to equip the Punch tool if needed
 local function equipPunchTool()
     local player = game.Players.LocalPlayer
     local playerName = player.Name
@@ -527,14 +525,12 @@ local function equipPunchTool()
     end
 end
 
--- Function to perform the punch action
 local function punchAction()
     local player = game.Players.LocalPlayer
     player.muscleEvent:FireServer("punch", "rightHand")
     player.muscleEvent:FireServer("punch", "leftHand")
 end
 
--- Function to make a character invisible
 local function makeInvisible(character)
     for _, part in pairs(character:GetChildren()) do
         if part:IsA("BasePart") or part:IsA("MeshPart") then
@@ -551,7 +547,6 @@ local function makeInvisible(character)
     end
 end
 
--- Auto Kill Toggle
 Killing:AddSwitch("Auto Kill", function(state)
     autoKillActive = state
     if autoKillActive then
@@ -583,7 +578,6 @@ Killing:AddSwitch("Auto Kill", function(state)
     end
 end)
 
--- Auto Equip Punch Toggle
 Killing:AddSwitch("Auto Equip Punch", function(state)
     autoEquipPunchActive = state
     if autoEquipPunchActive then
@@ -597,23 +591,33 @@ Killing:AddSwitch("Auto Equip Punch", function(state)
 end)
 
 Killing:AddLabel("Targeting")
-Killing:AddTextBox("Target Name", function(text)
+
+-- Create Dropdown for selecting a player
+local dropdown = Killing:AddDropdown("Select Player", function(text)
     targetName = text
+    print(text .. " selected!")
 end)
 
--- Kill Players Toggle with Timer Label update every second
+-- Dynamically add player names to the dropdown
+for _, player in ipairs(game.Players:GetPlayers()) do
+    if player.Name ~= game.Players.LocalPlayer.Name then  -- Exclude the local player
+        dropdown:Add(player.Name)  -- Add each player's name to the dropdown
+    end
+end
+
 Killing:AddSwitch("Kill Players", function(state)
     killPlayersActive = state
     if killPlayersActive then
         killStartTime = 0
-
+        
         -- Start the kill timer coroutine
         coroutine.wrap(function()
             while killPlayersActive do
-                wait(1)
+                wait(1)  -- Wait for 1 second
                 killStartTime = killStartTime + 1
                 local minutes = math.floor(killStartTime / 60)
                 local seconds = killStartTime % 60
+                -- Update the label text every second
                 killTimeLabel:SetText(string.format("Amount Of Time Killing Player: %02d:%02d", minutes, seconds))
             end
         end)()
@@ -652,7 +656,6 @@ end)
 -- Label for displaying the kill timer
 killTimeLabel = Killing:AddLabel("Amount Of Time Killing Player: 00:00")
 
--- Auto Punch with Animation
 Killing:AddSwitch("Auto Punch", function(state)
     local player = game.Players.LocalPlayer
     local playerName = player.Name
@@ -667,7 +670,6 @@ Killing:AddSwitch("Auto Punch", function(state)
     end
 end)
 
--- Auto Punch without Animation
 Killing:AddSwitch("Auto Punch [No Animation]", function(state)
     autoPunchanim = state
     if autoPunchanim then
@@ -680,57 +682,6 @@ Killing:AddSwitch("Auto Punch [No Animation]", function(state)
         print("Auto Punch [No Animation] is turned off")
     end
 end)
-
--- Create the toggle for "Hide Other Player Name GUI"
-local switch = Killing:AddSwitch("Hide Other Player Name GUI", function(bool)
-    if bool then
-        -- Start hiding the specified children of NameGui when the toggle is on
-        hidePlayerNameChildren(true)
-    else
-        -- Start showing the specified children of NameGui when the toggle is off
-        hidePlayerNameChildren(false)
-    end
-end)
-
--- Function to hide/show specified children of the NameGui
-local function hidePlayerNameChildren(hide)
-    -- List of the specific child names to hide/show
-    local childrenToHide = {"strengthImage", "karmaLabel", "rankLabel", "nameLabel"}
-    
-    -- Iterate through all players in the game
-    for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
-        if targetPlayer ~= game.Players.LocalPlayer then  -- Exclude the local player
-            -- Check if the player has a PlayerGui
-            local playerGui = targetPlayer:FindFirstChild("PlayerGui")
-            if playerGui then
-                -- Check if the player has a NameGui
-                local nameGui = playerGui:FindFirstChild("NameGui")
-                if nameGui then
-                    -- Iterate through the specific children in NameGui
-                    for _, childName in ipairs(childrenToHide) do
-                        local child = nameGui:FindFirstChild(childName)
-                        if child then
-                            -- Set the visibility based on the toggle state
-                            child.Visible = not hide
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
-
-local dropdown = Killing:AddDropdown("select", function(text)
-    -- You can use this to do something with the selected player's name
-    print(text .. " selected!")
-end)
-
--- Dynamically add player names to the dropdown
-for _, player in ipairs(game.Players:GetPlayers()) do
-    if player.Name ~= game.Players.LocalPlayer.Name then  -- Exclude the local player
-        dropdown:Add(player.Name)  -- Add each player's name to the dropdown
-    end
-end
 
 -- Teleport Tab
 local Teleport = window:AddTab("Teleport")
