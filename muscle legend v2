@@ -324,90 +324,48 @@ local switchSitups = AutoFarm:AddSwitch("Auto Situps", function(bool)
     end
 end)
 
+local AutoFarmTab = window:AddTab("Auto Farm+++") -- Create the tab
 
+-- Function to create a toggle for a specific Muscle King machine
+local function createMuscleKingToggle(machineName)
+    local toggleState = false -- Track toggle state
 
-AutoFarm:AddLabel("Normal Farming")
+    local function machineLoop()
+        while toggleState do
+            -- First event
+            local args1 = {
+                [1] = "rep",
+                [2] = workspace:WaitForChild("machinesFolder"):WaitForChild(machineName):WaitForChild("interactSeat")
+            }
+            game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args1))
 
-local folder = AutoFarm:AddFolder("Jungle Farming")
+            -- Second event
+            local args2 = {
+                [1] = "useMachine",
+                [2] = workspace:WaitForChild("machinesFolder"):WaitForChild(machineName):WaitForChild("interactSeat")
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("machineInteractRemote"):InvokeServer(unpack(args2))
 
-local isInfiniteEventEnabled = false
-local eventThread = nil  -- Thread for infinite event loop
-
--- Generalized function to fire events for any machine
-function FireInfiniteEvents(machineName)
-    local machine = workspace:WaitForChild("machinesFolder"):WaitForChild(machineName):WaitForChild("interactSeat")
-
-    while isInfiniteEventEnabled do
-        -- First event (muscleEvent)
-        local args1 = { [1] = "rep", [2] = machine }
-        game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args1))
-
-        -- Second event (machineInteractRemote)
-        local args2 = { [1] = "useMachine", [2] = machine }
-        game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("machineInteractRemote"):InvokeServer(unpack(args2))
-
-        -- Wait before repeating
-        wait(0.1)
+            wait(0.1) -- Adjust delay if needed
+        end
     end
+
+    AutoFarmTab:AddSwitch(machineName, function(state)
+        toggleState = state -- Update toggle state
+
+        if toggleState then
+            spawn(machineLoop) -- Start the loop in a separate thread
+        end
+    end)
 end
 
--- Toggle callback for Jungle Squat
-folder:AddSwitch("Auto Jungle Squat", function(bool)
-    isInfiniteEventEnabled = bool
-    if isInfiniteEventEnabled then
-        if not eventThread then
-            eventThread = spawn(function() FireInfiniteEvents("Jungle Squat") end)
-        end
-    else
-        if eventThread then
-            eventThread = nil
-        end
-    end
-end)
+-- Add toggles for all four machines
+createMuscleKingToggle("Muscle King Bench")
+createMuscleKingToggle("Muscle King Lift")
+createMuscleKingToggle("King Boulder")
+createMuscleKingToggle("Muscle King Squat")
 
--- Toggle callback for Jungle Bench
-folder:AddSwitch("Auto Jungle Bench", function(bool)
-    isInfiniteEventEnabled = bool
-    if isInfiniteEventEnabled then
-        if not eventThread then
-            eventThread = spawn(function() FireInfiniteEvents("Jungle Bench") end)
-        end
-    else
-        if eventThread then
-            eventThread = nil
-        end
-    end
-end)
 
-local folder2 = AutoFarm:AddFolder("Muscle King Farming")
-
--- Toggle callback for Muscle King Bench
-folder2:AddSwitch("Auto Muscle King Bench", function(bool)
-    isInfiniteEventEnabled = bool
-    if isInfiniteEventEnabled then
-        if not eventThread then
-            eventThread = spawn(function() FireInfiniteEvents("Muscle King Bench") end)
-        end
-    else
-        if eventThread then
-            eventThread = nil
-        end
-    end
-end)
-
--- Toggle callback for Muscle King Lift
-folder2:AddSwitch("Auto Muscle King Lift", function(bool)
-    isInfiniteEventEnabled = bool
-    if isInfiniteEventEnabled then
-        if not eventThread then
-            eventThread = spawn(function() FireInfiniteEvents("Muscle King Lift") end)
-        end
-    else
-        if eventThread then
-            eventThread = nil
-        end
-    end
-end)
 
 local Killing = window:AddTab("Killing")
 local whitelistedPlayers = {}
