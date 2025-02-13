@@ -1,5 +1,5 @@
 --Main Script
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/adopttesting/Testing/refs/heads/main/Library", true))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Marwanleprodu91670/muscle-legend-lite-hub-elerium-library-/refs/heads/main/library", true))()
 
 local window = library:AddWindow("Nova Hub V1 Free Version | Adopt Script", {
     main_color = Color3.fromRGB(128,0,128), -- Color
