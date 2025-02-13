@@ -443,38 +443,33 @@ local switch = Rock:AddSwitch("Auto Jungle Rock", function(bool)
     local character = player.Character
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
     local hand = character:WaitForChild("RightHand") -- Assuming it's the right hand
-    local rock
-
-    -- Find the original rock in the workspace
     local originalRock = workspace:FindFirstChild("Ancient Jungle Rock")
-    
+    local originalPosition
+
     -- When the toggle is turned on
     if bool then
         if originalRock then
-            -- Duplicate the rock
-            rock = originalRock:Clone()
-            rock.Parent = workspace
+            -- Save the original position of the rock
+            originalPosition = originalRock.Position
             
+            -- Teleport the rock inside the player's avatar
+            originalRock.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 0, 5)  -- Adjust position as needed
+
             -- Make the rock invisible
-            rock.Transparency = 1
-            rock.CanCollide = false
-            
-            -- Create a loop to teleport the rock in front of the player's hand
-            while bool do
-                -- Teleport the rock in front of the hand
-                local handPosition = hand.Position
-                rock.Position = handPosition + (hand.CFrame.LookVector * 5)  -- Adjust the distance as needed
-                wait(0.1)  -- Adjust how fast it updates
-            end
+            originalRock.Transparency = 1
+            originalRock.CanCollide = false
         end
     else
-        -- When the toggle is turned off, delete the duplicated rock
-        if rock then
-            rock:Destroy()
+        -- When the toggle is turned off, teleport the rock back to its original position
+        if originalRock and originalPosition then
+            originalRock.CFrame = CFrame.new(originalPosition)
+            
+            -- Make the rock visible again and enable collisions
+            originalRock.Transparency = 0
+            originalRock.CanCollide = true
         end
     end
 end)
-
 
 local Killing = window:AddTab("Killing")
 local whitelistedPlayers = {}
