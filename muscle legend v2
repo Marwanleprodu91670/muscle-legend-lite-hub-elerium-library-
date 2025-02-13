@@ -321,28 +321,78 @@ local switchSitups = AutoFarm:AddSwitch("Auto Situps", function(bool)
     end
 end)
 
-local AutoFarmTab = window:AddTab("Auto Farm+++") -- Create the tab
-AutoFarmTab:AddLabel("Muscle King Farming")
-local switch = AutoFarmTab:AddSwitch("Turn this on before", function(bool)
-    local shouldRun = bool  -- Set the flag based on the toggle state
+local Rebirth = window:AddTab("Auto Rebirthing") -- Create the tab
+Rebirth:AddLabel("Rebirth Features:")
+local rebirthCount = 0 -- Variable to store the desired number of rebirths
 
-    -- Only start running the loop if the toggle is on
-    if bool then
-        while shouldRun do
-            local args = { [1] = "rep" }
-
-            -- Fire the muscle event on the server
-            game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args))
-
-            -- Wait for 0.1 seconds before firing again
-            wait(0.1)
-            
-            -- Check if the toggle was turned off
-            shouldRun = bool
-        end
+Rebirth:AddSwitch("Auto Rebirth", function(state)
+    if state then
+        -- Start a coroutine to run the rebirth request continuously
+        coroutine.wrap(function()
+            while state do
+                local args = {
+                    [1] = "rebirthRequest"
+                }
+                -- Trigger the rebirth event
+                game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("rebirthRemote"):InvokeServer(unpack(args))
+                wait(1)  -- Wait 1 second before sending another rebirth request (adjustable)
+            end
+        end)()
     end
 end)
 
+-- Textbox to input the amount of rebirths
+Rebirth:AddTextBox("Amount of rebirth you wanna do", function(text)
+    rebirthCount = tonumber(text) or 0  -- Convert input to a number, default to 0 if invalid
+end)
+
+-- Toggle to auto rebirth until reaching the specified amount
+Rebirth:AddSwitch("Auto rebirth until reach amount", function(state)
+    if state then
+        -- Start a coroutine to rebirth the specified amount of times
+        coroutine.wrap(function()
+            local count = 0
+            while state and count < rebirthCount do
+                local args = {
+                    [1] = "rebirthRequest"
+                }
+                -- Trigger the rebirth event
+                game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("rebirthRemote"):InvokeServer(unpack(args))
+                count = count + 1
+                wait(1)  -- Wait 1 second before sending the next rebirth request (adjustable)
+            end
+        end)()
+    end
+end)
+
+-- New Toggle: Auto rebirth + set size 2 + Auto teleport to muscle king
+Rebirth:AddSwitch("Auto rebirth+set size 2+Auto teleport muscle king", function(state)
+    if state then
+        -- Start the coroutine for infinite rebirths, teleport, and size change
+        coroutine.wrap(function()
+            while state do
+                -- Rebirth event
+                local args = {
+                    [1] = "rebirthRequest"
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("rebirthRemote"):InvokeServer(unpack(args))
+
+                -- Set size to 2
+                local sizeArgs = {
+                    [1] = "changeSize",
+                    [2] = "2"
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("sizeRemote"):InvokeServer(unpack(sizeArgs))
+
+                -- Teleport to the given position
+                local muscleKingPosition = CFrame.new(-8768.96875, 9.1000309, -5863.37402, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(muscleKingPosition)
+
+                wait(1)  -- Delay before doing the next action (adjustable)
+            end
+        end)()
+    end
+end)
 
 
 
