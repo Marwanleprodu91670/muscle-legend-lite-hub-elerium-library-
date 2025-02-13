@@ -360,7 +360,7 @@ local function muscleKingBenchLoop()
     end
 end
 
-local switchMuscleKingBench = AutoFarm2:AddSwitch("Muscle King Bench", function(state)
+local switchMuscleKingBench = AutoFarmTab:AddSwitch("Muscle King Bench", function(state)
     toggleMuscleKingBench = state -- Update toggle state
 
     if toggleMuscleKingBench then
@@ -382,7 +382,7 @@ local function muscleKingLiftLoop()
     end
 end
 
-local switchMuscleKingLift = AutoFarm2:AddSwitch("Muscle King Lift", function(state)
+local switchMuscleKingLift = AutoFarmTab:AddSwitch("Muscle King Lift", function(state)
     toggleMuscleKingLift = state -- Update toggle state
 
     if toggleMuscleKingLift then
@@ -404,7 +404,7 @@ local function muscleKingBoulderLoop()
     end
 end
 
-local switchMuscleKingBoulder = AutoFarm2:AddSwitch("Muscle King Boulder", function(state)
+local switchMuscleKingBoulder = AutoFarmTab:AddSwitch("Muscle King Boulder", function(state)
     toggleMuscleKingBoulder = state -- Update toggle state
 
     if toggleMuscleKingBoulder then
@@ -426,7 +426,7 @@ local function muscleKingSquatLoop()
     end
 end
 
-local switchMuscleKingSquat = AutoFarm2:AddSwitch("Muscle King Squat", function(state)
+local switchMuscleKingSquat = AutoFarmTab:AddSwitch("Muscle King Squat", function(state)
     toggleMuscleKingSquat = state -- Update toggle state
 
     if toggleMuscleKingSquat then
