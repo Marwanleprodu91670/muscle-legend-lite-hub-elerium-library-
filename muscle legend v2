@@ -444,8 +444,15 @@ local function teleportJungleRock()
     local jungleRock = workspace:WaitForChild("Ancient Jungle Rock")
 
     while toggleAutoJungleRock do
-        -- Teleport the rock to a new position (for example, move it somewhere in the world)
-        jungleRock.CFrame = CFrame.new(Vector3.new(100, 50, 100)) -- Change this position as needed
+        -- Teleport the rock to your character's position
+        local character = game.Players.LocalPlayer.Character
+        if character then
+            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+            if humanoidRootPart then
+                -- Position the rock inside the player
+                jungleRock.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 0, 0) -- Adjust the offset as needed
+            end
+        end
 
         wait(0.1) -- Adjust delay if needed
     end
