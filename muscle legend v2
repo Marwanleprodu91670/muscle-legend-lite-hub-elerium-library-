@@ -325,45 +325,112 @@ local switchSitups = AutoFarm:AddSwitch("Auto Situps", function(bool)
 end)
 
 local AutoFarmTab = window:AddTab("Auto Farm+++") -- Create the tab
+AutoFarmTab:AddLabel("Muscle King Farming")
 
--- Function to create a toggle for a specific Muscle King machine
-local function createMuscleKingToggle(machineName)
-    local toggleState = false -- Track toggle state
 
-    local function machineLoop()
-        while toggleState do
-            -- First event
-            local args1 = {
-                [1] = "rep",
-                [2] = workspace:WaitForChild("machinesFolder"):WaitForChild(machineName):WaitForChild("interactSeat")
-            }
-            game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args1))
+-- Toggle: Muscle King Bench
+local toggleMuscleKingBench = false
 
-            -- Second event
-            local args2 = {
-                [1] = "useMachine",
-                [2] = workspace:WaitForChild("machinesFolder"):WaitForChild(machineName):WaitForChild("interactSeat")
-            }
-            game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("machineInteractRemote"):InvokeServer(unpack(args2))
+local function muscleKingBenchLoop()
+    while toggleMuscleKingBench do
+        local args1 = {
+            [1] = "rep",
+            [2] = workspace:WaitForChild("machinesFolder"):WaitForChild("Muscle King Bench"):WaitForChild("interactSeat")
+        }
+        game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args1))
 
-            wait(0.1) -- Adjust delay if needed
-        end
+        local args2 = {
+            [1] = "useMachine",
+            [2] = workspace:WaitForChild("machinesFolder"):WaitForChild("Muscle King Bench"):WaitForChild("interactSeat")
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("machineInteractRemote"):InvokeServer(unpack(args2))
+
+        wait(0.1)
     end
-
-    AutoFarmTab:AddSwitch(machineName, function(state)
-        toggleState = state -- Update toggle state
-
-        if toggleState then
-            spawn(machineLoop) -- Start the loop in a separate thread
-        end
-    end)
 end
 
--- Add toggles for all four machines
-createMuscleKingToggle("Muscle King Bench")
-createMuscleKingToggle("Muscle King Lift")
-createMuscleKingToggle("King Boulder")
-createMuscleKingToggle("Muscle King Squat")
+AutoFarmTab:AddSwitch("Muscle King Bench", function(state)
+    toggleMuscleKingBench = state
+    if toggleMuscleKingBench then spawn(muscleKingBenchLoop) end
+end)
+
+-- Toggle: Muscle King Lift
+local toggleMuscleKingLift = false
+
+local function muscleKingLiftLoop()
+    while toggleMuscleKingLift do
+        local args1 = {
+            [1] = "rep",
+            [2] = workspace:WaitForChild("machinesFolder"):WaitForChild("Muscle King Lift"):WaitForChild("interactSeat")
+        }
+        game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args1))
+
+        local args2 = {
+            [1] = "useMachine",
+            [2] = workspace:WaitForChild("machinesFolder"):WaitForChild("Muscle King Lift"):WaitForChild("interactSeat")
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("machineInteractRemote"):InvokeServer(unpack(args2))
+
+        wait(0.1)
+    end
+end
+
+AutoFarmTab:AddSwitch("Muscle King Lift", function(state)
+    toggleMuscleKingLift = state
+    if toggleMuscleKingLift then spawn(muscleKingLiftLoop) end
+end)
+
+-- Toggle: King Boulder
+local toggleMuscleKingBoulder = false
+
+local function muscleKingBoulderLoop()
+    while toggleMuscleKingBoulder do
+        local args1 = {
+            [1] = "rep",
+            [2] = workspace:WaitForChild("machinesFolder"):WaitForChild("King Boulder"):WaitForChild("interactSeat")
+        }
+        game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args1))
+
+        local args2 = {
+            [1] = "useMachine",
+            [2] = workspace:WaitForChild("machinesFolder"):WaitForChild("King Boulder"):WaitForChild("interactSeat")
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("machineInteractRemote"):InvokeServer(unpack(args2))
+
+        wait(0.1)
+    end
+end
+
+AutoFarmTab:AddSwitch("Muscle King Boulder", function(state)
+    toggleMuscleKingBoulder = state
+    if toggleMuscleKingBoulder then spawn(muscleKingBoulderLoop) end
+end)
+
+-- Toggle: Muscle King Squat
+local toggleMuscleKingSquat = false
+
+local function muscleKingSquatLoop()
+    while toggleMuscleKingSquat do
+        local args1 = {
+            [1] = "rep",
+            [2] = workspace:WaitForChild("machinesFolder"):WaitForChild("Muscle King Squat"):WaitForChild("interactSeat")
+        }
+        game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer(unpack(args1))
+
+        local args2 = {
+            [1] = "useMachine",
+            [2] = workspace:WaitForChild("machinesFolder"):WaitForChild("Muscle King Squat"):WaitForChild("interactSeat")
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("machineInteractRemote"):InvokeServer(unpack(args2))
+
+        wait(0.1)
+    end
+end
+
+AutoFarmTab:AddSwitch("Muscle King Squat", function(state)
+    toggleMuscleKingSquat = state
+    if toggleMuscleKingSquat then spawn(muscleKingSquatLoop) end
+end)
 
 
 
