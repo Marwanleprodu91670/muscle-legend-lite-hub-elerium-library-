@@ -364,10 +364,14 @@ local switch = Rock:AddSwitch("Teleport Jungle Rock", function(bool)
         -- Teleport player to the platform
         humanoidRootPart.CFrame = CFrame.new(platform.Position + Vector3.new(0, 3, 0))
 
-        -- Move "Ancient Jungle Rock" in front of the player
+        -- Find "Ancient Jungle Rock" and its child "Rock"
         local ancientRock = game.Workspace:FindFirstChild("Ancient Jungle Rock")
         if ancientRock then
-            ancientRock.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 0, -5)
+            local rock = ancientRock:FindFirstChild("Rock")
+            if rock then
+                -- Teleport "Rock" in front of the player
+                rock.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 0, -5)
+            end
         end
     end
 end)
